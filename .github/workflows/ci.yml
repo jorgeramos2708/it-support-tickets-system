@@ -71,12 +71,26 @@ jobs:
       - name: Esperar salud de los servicios
         shell: bash
         run: |
-          node scripts/wait-healthy.mjs 300000 || {
-            echo "exit code: $?"
-            docker compose ps || true
-            curl -s http://127.0.0.1/api/incidents/health || echo "gateway sigue sin responder"
-            exit 1
-          }
+          timeout=300
+          elapsed=0
+          while [ $elapsed -lt $timeout ]; do
+            all_healthy=true
+            for svc in auth incidents problems changes cmdb kb notifications; do
+              if ! curl -sf "http://127.0.0.1/api/$svc/health" > /dev/null 2>&1; then
+                all_healthy=false
+                echo "Esperando: $svc (elapsed=${elapsed}s)"
+                break
+              fi
+            done
+            if [ "$all_healthy" = true ]; then
+              echo "Todos los servicios saludables (${elapsed}s)"
+              exit 0
+            fi
+            sleep 5
+            elapsed=$((elapsed + 5))
+          done
+          echo "Timeout tras ${timeout}s"
+          exit 1
       - name: Smoke E2E
         shell: bash
         run: node scripts/e2e-smoke.mjs
