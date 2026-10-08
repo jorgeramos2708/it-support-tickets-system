@@ -17,29 +17,54 @@ TickITFlow gestiona el ciclo completo de soporte de TI con las seis prácticas I
 
 ## Ejecución
 
+### Con Caddy (producción, detrás de Cloudflare)
+
+El Caddy del host (en `caddy_net`) rutea `tickitflow.edrs.xyz` a los servicios. Los servicios se conectan a `caddy_net` automáticamente.
+
 ```bash
-# Clonar y levantar el stack completo (20 contenedores)
-git clone https://github.com/jorgeramos2708/it-support-tickets-system.git
-cd it-support-tickets-system
+# En el servidor (después de agregar el bloque al Caddyfile del host):
+cd /opt/tickitflow
+docker compose up -d --build
+```
+
+### Despliegue independiente (Traefik con certificados manuales)
+
+Para infraestructura sin Caddy ni Cloudflare:
+
+```bash
+# Coloca los certificados
+mkdir -p certs
+cp tu-certificado.crt certs/tickitflow.edrs.xyz.crt
+cp tu-llave.key certs/tickitflow.edrs.xyz.key
+
+# Levanta con Traefik como gateway (HTTP → HTTPS redirect automático)
+docker compose -f docker-compose.yml -f docker-compose.traefik.yml up -d --build
+```
+
+### Desarrollo local
+
+```bash
+# Crear la red de Caddy si no existe
+docker network create caddy_net
+
+# Levantar sin gateway (los servicios quedan en caddy_net)
 docker compose up -d --build
 
-# Verificar que todos los servicios estén saludables
-curl http://127.0.0.1/api/incidents/health
+# O con Traefik standalone para probar el gateway completo
+docker compose -f docker-compose.yml -f docker-compose.traefik.yml up -d --build
 ```
 
 ### URLs
 
-| Servicio | URL |
+| Entorno | URL |
 |---|---|
-| Consola de agentes | http://127.0.0.1 |
-| Portal de autoservicio | http://127.0.0.1/portal |
-| Landing | http://127.0.0.1/landing |
-| Traefik dashboard | http://127.0.0.1:8080 |
-| RabbitMQ management | http://127.0.0.1:15672 (tickit/tickit) |
-| Prometheus | http://127.0.0.1:9090 |
-| Grafana | http://127.0.0.1:3000 (tickit/tickit) |
-| Swagger auth | http://127.0.0.1/api/auth/api/docs |
-| Swagger incidents | http://127.0.0.1/api/incidents/api/docs |
+| Producción | https://tickitflow.edrs.xyz |
+| Portal | `/portal` |
+| Landing | `/landing` |
+| RabbitMQ | `:15672` (tickit/tickit) |
+| Prometheus | `:9090` |
+| Grafana | `:3000` (tickit/tickit) |
+| Swagger | `/api/auth/api/docs`, `/api/incidents/api/docs`, etc. |
 
 ### Cuentas de demostración
 
@@ -123,15 +148,30 @@ Total: 30 tests backend + 21 frontend + 18 smoke E2E = **69 verificaciones**.
 
 ## Producción
 
-```bash
-# Generar certificado autofirmado de demo
-node scripts/gen-cert.mjs
+### Con Caddy (arquitectura actual)
 
-# Levantar con TLS y redirect HTTP→HTTPS
-docker compose -f docker-compose.yml -f compose.prod.yml up -d
+```
+Cloudflare → Caddy (caddy_net) → auth:4001, incidents:4003, ..., frontend:80
 ```
 
-Para producción real: sustituye el certificado autofirmado por Let's Encrypt con un dominio propio.
+El Caddyfile del host tiene el bloque `tickitflow.edrs.xyz` que rutea cada `/api/<servicio>/*` al microservicio correspondiente (con `handle_path` que strip el prefijo).
+
+### Con Traefik independiente
+
+```
+Internet → Traefik :443 (certificados manuales) → servicios
+```
+
+El override `docker-compose.traefik.yml` agrega el gateway Traefik con:
+- Redirect HTTP :80 → HTTPS :443
+- Certificados montados desde `certs/`
+- Rutas con `stripPrefix` (equivalente a `handle_path` de Caddy)
+
+### Requisitos del servidor
+
+- Docker + Docker Compose
+- Red `caddy_net` existente (o crearla con `docker network create caddy_net`)
+- DNS: `tickitflow.edrs.xyz` → IP del servidor (vía Cloudflare)
 
 ## CI/CD
 

@@ -1,0 +1,121 @@
+# Configuración dinámica de Traefik con TLS manual (sin Caddy ni Cloudflare).
+# Para despliegue independiente de TickITFlow en infraestructura propia.
+#
+# Requisitos:
+#   certs/tickitflow.edrs.xyz.crt  — certificado (pem/crt)
+#   certs/tickitflow.edrs.xyz.key  — llave privada
+#
+# El archivo docker-compose.traefik.yml monta este archivo y los certificados.
+
+http:
+  routers:
+    auth:
+      rule: PathPrefix(`/api/auth`)
+      entryPoints: [web, websecure]
+      middlewares: [auth-strip]
+      service: auth
+      tls: {}
+    incidents:
+      rule: PathPrefix(`/api/incidents`)
+      entryPoints: [web, websecure]
+      middlewares: [incidents-strip]
+      service: incidents
+      tls: {}
+    problems:
+      rule: PathPrefix(`/api/problems`)
+      entryPoints: [web, websecure]
+      middlewares: [problems-strip]
+      service: problems
+      tls: {}
+    changes:
+      rule: PathPrefix(`/api/changes`)
+      entryPoints: [web, websecure]
+      middlewares: [changes-strip]
+      service: changes
+      tls: {}
+    cmdb:
+      rule: PathPrefix(`/api/cmdb`)
+      entryPoints: [web, websecure]
+      middlewares: [cmdb-strip]
+      service: cmdb
+      tls: {}
+    kb:
+      rule: PathPrefix(`/api/kb`)
+      entryPoints: [web, websecure]
+      middlewares: [kb-strip]
+      service: kb
+      tls: {}
+    notifications:
+      rule: PathPrefix(`/api/notifications`)
+      entryPoints: [web, websecure]
+      middlewares: [notifications-strip]
+      service: notifications
+      tls: {}
+    frontend:
+      rule: PathPrefix(`/`)
+      priority: 1
+      entryPoints: [web, websecure]
+      service: frontend
+      tls: {}
+
+  middlewares:
+    auth-strip:
+      stripPrefix:
+        prefixes: ["/api/auth"]
+    incidents-strip:
+      stripPrefix:
+        prefixes: ["/api/incidents"]
+    problems-strip:
+      stripPrefix:
+        prefixes: ["/api/problems"]
+    changes-strip:
+      stripPrefix:
+        prefixes: ["/api/changes"]
+    cmdb-strip:
+      stripPrefix:
+        prefixes: ["/api/cmdb"]
+    kb-strip:
+      stripPrefix:
+        prefixes: ["/api/kb"]
+    notifications-strip:
+      stripPrefix:
+        prefixes: ["/api/notifications"]
+
+  services:
+    auth:
+      loadBalancer:
+        servers:
+          - url: "http://auth:4001"
+    incidents:
+      loadBalancer:
+        servers:
+          - url: "http://incidents:4003"
+    problems:
+      loadBalancer:
+        servers:
+          - url: "http://problems:4005"
+    changes:
+      loadBalancer:
+        servers:
+          - url: "http://changes:4006"
+    cmdb:
+      loadBalancer:
+        servers:
+          - url: "http://cmdb:4007"
+    kb:
+      loadBalancer:
+        servers:
+          - url: "http://kb:4008"
+    notifications:
+      loadBalancer:
+        servers:
+          - url: "http://notifications:4009"
+    frontend:
+      loadBalancer:
+        servers:
+          - url: "http://frontend:80"
+
+tls:
+  certificates:
+    - certFile: /certs/tickitflow.edrs.xyz.crt
+      keyFile: /certs/tickitflow.edrs.xyz.key

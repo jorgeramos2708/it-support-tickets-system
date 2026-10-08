@@ -1,0 +1,38 @@
+# Override para despliegue INDEPENDIENTE de TickITFlow con Traefik como gateway.
+# No requiere Caddy ni Cloudflare — usa certificados colocados manualmente.
+#
+# Uso:
+#   1. Coloca los certificados:
+#      mkdir -p certs
+#      cp tu-certificado.crt certs/tickitflow.edrs.xyz.crt
+#      cp tu-llave-privada.key certs/tickitflow.edrs.xyz.key
+#
+#   2. Levanta el stack con este override:
+#      docker compose -f docker-compose.yml -f docker-compose.traefik.yml up -d --build
+#
+#   3. Traefik escucha en :80 (redirect a HTTPS) y :443 (TLS con tus certificados)
+#
+# Sin este override, el docker-compose.yml base conecta a caddy_net del Caddy del host.
+
+services:
+  gateway:
+    image: traefik:v3.3
+    command:
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./gateway/traefik-manual.yml:/etc/traefik/dynamic/dynamic.yml:ro
+      - ./certs:/certs:ro
+    restart: unless-stopped
+
+networks:
+  default:
+    # Sin override de red: Traefik usa la red default del compose (interna)
+    name: tickitflow_traefik
+    external: false

@@ -1,18 +1,2 @@
-# Override de PRODUCCIÓN del stack TickITFlow.
-# Uso:
-#   node scripts/gen-cert.mjs                 # certificado autofirmado de demo
-#   docker compose -f docker-compose.yml -f compose.prod.yml up -d
-# Con dominio real: reemplaza el certificado y habilita Let's Encrypt en el gateway.
-
-services:
-  gateway:
-    command:
-      - --providers.file.directory=/etc/traefik/dynamic
-      - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./gateway/dynamic-prod.yml:/etc/traefik/dynamic/dynamic.yml:ro
-      - ./certs:/certs:ro
+# Este archivo ya no es necesario — Caddy corre fuera del compose de TickITFlow.
+# Para despliegue independiente con Traefik, usa docker-compose.traefik.yml.
