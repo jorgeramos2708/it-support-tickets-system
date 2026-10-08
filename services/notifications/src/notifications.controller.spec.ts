@@ -15,7 +15,11 @@ function makeRow(overrides: Partial<NotificationEntity> = {}): NotificationEntit
 
 function makeController(rows: NotificationEntity[]) {
   const find = jest.fn(async (opts?: { where?: Record<string, string> }) => rows);
-  const controller = new NotificationsController({ find } as never);
+  const jwtService = { verify: jest.fn(() => ({ name: "Jorge Ramos", role: "agente" })) };
+  const controller = new NotificationsController(
+    { find } as never,
+    jwtService as never,
+  );
   return { controller, find };
 }
 

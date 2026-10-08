@@ -109,8 +109,6 @@ services:
         condition: service_healthy
       minio:
         condition: service_started
-      rabbitmq:
-        condition: service_healthy
     restart: unless-stopped
 
   problems-db:
