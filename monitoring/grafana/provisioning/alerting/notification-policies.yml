@@ -1,0 +1,12 @@
+apiVersion: 1
+
+# Política de notificación: todas las alertas de TickITFlow van al contact point interno.
+# Para producción, añade rutas por severidad con canales reales.
+policies:
+  - orgId: 1
+    receiver: TickITFlow interno
+    group_by: [alertname, instance]
+    timings:
+      group_wait: 10s
+      group_interval: 30s
+      repeat_interval: 5m

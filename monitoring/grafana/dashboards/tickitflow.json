@@ -1,0 +1,94 @@
+{
+  "annotations": { "list": [] },
+  "editable": false,
+  "refresh": "30s",
+  "schemaVersion": 40,
+  "tags": ["tickitflow"],
+  "time": { "from": "now-3h", "to": "now" },
+  "timezone": "browser",
+  "title": "TickITFlow — Operación",
+  "uid": "tickitflow",
+  "version": 1,
+  "panels": [
+    {
+      "id": 1,
+      "title": "Tickets registrados / s (por práctica)",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prom" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "fieldConfig": {
+        "defaults": { "unit": "ops", "min": 0 },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prom" },
+          "expr": "sum by (practice) (rate(tickitflow_tickets_created_total[5m]))",
+          "legendFormat": "{{practice}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Tickets actualizados / s (por estado resultante)",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prom" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "fieldConfig": {
+        "defaults": { "unit": "ops", "min": 0 },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prom" },
+          "expr": "sum by (status) (rate(tickitflow_tickets_updated_total[5m]))",
+          "legendFormat": "{{status}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Peticiones HTTP / s (por servicio)",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prom" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "fieldConfig": {
+        "defaults": { "unit": "reqps", "min": 0 },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prom" },
+          "expr": "sum by (instance) (rate(tickitflow_http_requests_total[5m]))",
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Heap de Node usado (por servicio)",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prom" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "fieldConfig": {
+        "defaults": { "unit": "bytes", "min": 0 },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prom" },
+          "expr": "sum by (instance) (nodejs_heap_size_used_bytes)",
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}

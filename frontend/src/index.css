@@ -1,0 +1,189 @@
+@import "tailwindcss";
+
+@theme {
+  /* Paleta del mundo: papel, tinta, filete, color de estado */
+  --color-paper: #fbfbf9;
+  --color-raised: #ffffff;
+  --color-ink: #15181e;
+  --color-ink-2: #3d434d;
+  --color-ink-3: #666d78;
+  --color-rule: #dcded9;
+  --color-rule-2: #c3c6bf;
+  --color-signal: #da291c;
+  --color-signal-deep: #b22116;
+  --color-cobalt: #1d4ed8;
+  --color-good: #0e8345;
+  --color-amber: #b45309;
+  --color-violet: #7c3aed;
+
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Inter Tight Variable", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+
+  --animate-pulse-row: pulse-row 220ms cubic-bezier(0.16, 1, 0.3, 1) 1;
+  --animate-rise: rise 160ms cubic-bezier(0.16, 1, 0.3, 1) 1;
+}
+
+@keyframes pulse-row {
+  from {
+    background-color: color-mix(in srgb, var(--color-signal) 10%, transparent);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Superficies del navegador, tematizadas desde la paleta */
+::selection {
+  background-color: var(--color-ink);
+  color: var(--color-paper);
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  caret-color: var(--color-signal);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-rule-2) transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+a {
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+input,
+textarea,
+select,
+button {
+  font: inherit;
+  letter-spacing: inherit;
+}
+
+@utility label {
+  font-size: var(--text-2xs);
+  line-height: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Paleta de comandos: partes de cmdk con la gramática del mundo */
+[cmdk-overlay] {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--color-ink) 24%, transparent);
+}
+
+[cmdk-dialog] {
+  position: fixed;
+  top: 16vh;
+  left: 50%;
+  z-index: 51;
+  width: min(580px, calc(100vw - 32px));
+  transform: translateX(-50%);
+  overflow: hidden;
+  background: var(--color-raised);
+  border: 1px solid var(--color-rule);
+  border-radius: 4px;
+  box-shadow:
+    0 24px 48px -12px rgba(21, 24, 30, 0.22),
+    0 2px 8px rgba(21, 24, 30, 0.08);
+}
+
+[cmdk-input] {
+  width: 100%;
+  height: 3.25rem;
+  padding: 0 1rem;
+  font-size: 14px;
+  color: var(--color-ink);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-rule);
+  caret-color: var(--color-signal);
+}
+
+[cmdk-input]::placeholder {
+  color: var(--color-ink-3, #666d78);
+}
+
+[cmdk-list] {
+  max-height: 22rem;
+  overflow-y: auto;
+  padding: 0.5rem 0;
+}
+
+[cmdk-group-heading] {
+  padding: 0.5rem 1rem 0.25rem;
+  font-size: var(--text-2xs);
+  line-height: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  color: var(--color-ink-3);
+}
+
+[cmdk-item] {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 1rem;
+  font-size: 13.5px;
+  color: var(--color-ink-2);
+  cursor: pointer;
+  transition: background-color 120ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[cmdk-item][data-selected="true"] {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  box-shadow: inset 2px 0 0 var(--color-ink);
+}
+
+[cmdk-hint] {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-ink-3);
+}
+
+[cmdk-empty] {
+  padding: 2rem 1rem;
+  font-size: 13px;
+  text-align: center;
+  color: var(--color-ink-3);
+}

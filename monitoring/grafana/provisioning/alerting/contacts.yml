@@ -1,0 +1,14 @@
+apiVersion: 1
+
+# Contact points de demostración: las alertas se visualizan en la UI de Grafana.
+# Para producción, sustituye el tipo webhook por email/Slack con credenciales reales.
+contactPoints:
+  - orgId: 1
+    name: TickITFlow interno
+    receivers:
+      - uid: tickitflow-internal
+        type: webhook
+        settings:
+          url: http://gateway/api/incidents/health
+          httpMethod: POST
+          maxAlerts: 0

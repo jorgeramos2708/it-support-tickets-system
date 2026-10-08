@@ -1,0 +1,100 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: TickITFlow — Servicios
+    folder: TickITFlow
+    interval: 30s
+    rules:
+      - uid: tickitflow-svc-down
+        title: Servicio caído
+        condition: svc_down
+        data:
+          - refId: svc_down
+            relativeTimeRange:
+              from: 60
+              to: 0
+            datasourceUid: prom
+            model:
+              datasource:
+                type: prometheus
+                uid: prom
+              editorMode: code
+              expr: max by (instance) (up) == 0
+              instant: true
+              intervalMs: 1000
+              legendFormat: "{{instance}}"
+              maxDataPoints: 43200
+              range: false
+              refId: svc_down
+        noDataState: NoData
+        execErrState: Error
+        for: 30s
+        annotations:
+          summary: "Un microservicio de TickITFlow está caído (up == 0)."
+          description: "Revisa docker compose ps y los logs del servicio afectado."
+        labels:
+          severity: critical
+          team: tickitflow
+
+      - uid: tickitflow-heap
+        title: Presión de heap de Node
+        condition: heap_high
+        data:
+          - refId: heap_high
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prom
+            model:
+              datasource:
+                type: prometheus
+                uid: prom
+              editorMode: code
+              expr: nodejs_heap_size_used_bytes > 500 * 1024 * 1024
+              instant: true
+              intervalMs: 1000
+              legendFormat: "{{instance}}"
+              maxDataPoints: 43200
+              range: false
+              refId: heap_high
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        annotations:
+          summary: "El heap de un servicio supera 500 MB sostenido."
+          description: "Revisa el panel de heap en el dashboard de operaciones."
+        labels:
+          severity: warning
+          team: tickitflow
+
+      - uid: tickitflow-5xx
+        title: Errores HTTP 5xx sostenidos
+        condition: errors_high
+        data:
+          - refId: errors_high
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prom
+            model:
+              datasource:
+                type: prometheus
+                uid: prom
+              editorMode: code
+              expr: sum(rate(tickitflow_http_requests_total{code=~"5.."}[5m])) > 0.1
+              instant: true
+              intervalMs: 1000
+              legendFormat: ""
+              maxDataPoints: 43200
+              range: false
+              refId: errors_high
+        noDataState: OK
+        execErrState: Error
+        for: 2m
+        annotations:
+          summary: "Tasa de errores 5xx superior a 0.1/s sostenida."
+          description: "Revisa los logs del servicio que devuelve 5xx."
+        labels:
+          severity: critical
+          team: tickitflow

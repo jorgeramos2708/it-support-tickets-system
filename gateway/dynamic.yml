@@ -1,0 +1,103 @@
+http:
+  routers:
+    auth:
+      rule: PathPrefix(`/api/auth`)
+      entryPoints: [web]
+      middlewares: [auth-strip]
+      service: auth
+    incidents:
+      rule: PathPrefix(`/api/incidents`)
+      entryPoints: [web]
+      middlewares: [incidents-strip]
+      service: incidents
+    problems:
+      rule: PathPrefix(`/api/problems`)
+      entryPoints: [web]
+      middlewares: [problems-strip]
+      service: problems
+    changes:
+      rule: PathPrefix(`/api/changes`)
+      entryPoints: [web]
+      middlewares: [changes-strip]
+      service: changes
+    cmdb:
+      rule: PathPrefix(`/api/cmdb`)
+      entryPoints: [web]
+      middlewares: [cmdb-strip]
+      service: cmdb
+    kb:
+      rule: PathPrefix(`/api/kb`)
+      entryPoints: [web]
+      middlewares: [kb-strip]
+      service: kb
+    notifications:
+      rule: PathPrefix(`/api/notifications`)
+      entryPoints: [web]
+      middlewares: [notifications-strip]
+      service: notifications
+    frontend:
+      rule: PathPrefix(`/`)
+      priority: 1
+      entryPoints: [web]
+      middlewares: [rate-limit]
+      service: frontend
+  middlewares:
+    rate-limit:
+      rateLimit:
+        average: 100
+        burst: 200
+        period: 1s
+    auth-strip:
+      stripPrefix:
+        prefixes: ["/api/auth"]
+    incidents-strip:
+      stripPrefix:
+        prefixes: ["/api/incidents"]
+    problems-strip:
+      stripPrefix:
+        prefixes: ["/api/problems"]
+    changes-strip:
+      stripPrefix:
+        prefixes: ["/api/changes"]
+    cmdb-strip:
+      stripPrefix:
+        prefixes: ["/api/cmdb"]
+    kb-strip:
+      stripPrefix:
+        prefixes: ["/api/kb"]
+    notifications-strip:
+      stripPrefix:
+        prefixes: ["/api/notifications"]
+  services:
+    auth:
+      loadBalancer:
+        servers:
+          - url: "http://auth:4001"
+    incidents:
+      loadBalancer:
+        servers:
+          - url: "http://incidents:4003"
+    problems:
+      loadBalancer:
+        servers:
+          - url: "http://problems:4005"
+    changes:
+      loadBalancer:
+        servers:
+          - url: "http://changes:4006"
+    cmdb:
+      loadBalancer:
+        servers:
+          - url: "http://cmdb:4007"
+    kb:
+      loadBalancer:
+        servers:
+          - url: "http://kb:4008"
+    notifications:
+      loadBalancer:
+        servers:
+          - url: "http://notifications:4009"
+    frontend:
+      loadBalancer:
+        servers:
+          - url: "http://frontend:80"

@@ -1,0 +1,75 @@
+# ═══════════════════════════════════════════════════════════════
+# TickITFlow — .gitignore
+# La carpeta raíz OneDrive contiene OTROS proyectos (POS papelería);
+# este .gitignore excluye todo lo que no es TickITFlow.
+# ═══════════════════════════════════════════════════════════════
+
+# ─── Proyecto POS papelería (NO es TickITFlow) ───
+/.next/
+/app/
+/components/
+/lib/
+/public/
+/supabase/
+/pos-papeleria-desktop/
+/respaldos/
+/reports/
+/node_modules/
+/aprende-devops
+/CHANGELOG.md
+/README-offline.md
+/middleware.ts
+/middleware_backup.ts
+/next-env.d.ts
+/next.config.mjs
+/package.json
+/package-lock.json
+/pnpm-lock.yaml
+/pnpm-workspace.yaml
+/postcss.config.mjs
+/tsconfig.json
+/tsconfig.tsbuildinfo
+/.npmrc
+/.eslintrc.json
+/cookies.txt
+/dev3001.err.log
+/dev3001.out.log
+/download-bundles.ps1
+/logfile2.txt
+/pos-papeleria-*.zip
+
+# Scripts del proyecto papelería (NO de TickITFlow)
+/scripts/backup-local.mjs
+/scripts/backup-pgdump.mjs
+/scripts/configurar-admin.mjs
+/scripts/crear-admin.mjs
+/scripts/query-sales*.mjs
+/scripts/restaurar-backup.mjs
+
+# Archivos numerados sin extensión (artefactos del proyecto papelería)
+/[0-9]
+/[0-9][0-9]
+
+# ─── TickITFlow: artefactos de build ───
+frontend/node_modules/
+frontend/dist/
+services/*/node_modules/
+services/*/dist/
+
+# ─── TickITFlow: capturas de revisión (contexto de diseño sí se versiona) ───
+.impeccable/review/
+.impeccable/mocks/
+
+# ─── Certificados locales de demo ───
+certs/
+
+# ─── Sistema ───
+.DS_Store
+Thumbs.db
+*.log
+
+# ─── Otros artefactos ajenos a TickITFlow ───
+/.agents/
+/.claude/
+/.env.example
+/.env.local

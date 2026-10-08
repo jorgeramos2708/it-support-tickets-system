@@ -1,0 +1,296 @@
+name: tickitflow
+
+# Stack de integración TickITFlow — gateway Traefik + microservicios NestJS
+# Uso: docker compose up --build
+# Frontend + gateway: http://localhost (puerto 80, usa 127.0.0.1 si localhost va lento)
+# Traefik dashboard: http://localhost:8080
+# RabbitMQ management: http://localhost:15672 (tickit / tickit)
+# Nota: el gateway usa proveedor de archivo con backends estáticos
+# (compatible con Docker Desktop con aislamiento mejorado, sin leer el socket).
+
+services:
+  gateway:
+    image: traefik:v3.3
+    command:
+      - --api.insecure=true
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --entrypoints.web.address=:80
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - ./gateway/dynamic.yml:/etc/traefik/dynamic/dynamic.yml:ro
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    environment:
+      RABBITMQ_DEFAULT_USER: tickit
+      RABBITMQ_DEFAULT_PASS: tickit
+    ports:
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 12
+
+  auth-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: tickit
+      POSTGRES_PASSWORD: tickit
+      POSTGRES_DB: auth
+    volumes:
+      - auth-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tickit -d auth"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  auth:
+    build: ./services/auth
+    environment:
+      DATABASE_URL: postgres://tickit:tickit@auth-db:5432/auth
+      JWT_SECRET: tickitflow-demo-secret
+      PORT: "4001"
+    depends_on:
+      auth-db:
+        condition: service_healthy
+
+  incidents-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: tickit
+      POSTGRES_PASSWORD: tickit
+      POSTGRES_DB: incidents
+    volumes:
+      - incidents-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tickit -d incidents"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  incidents:
+    build: ./services/incidents
+    environment:
+      DATABASE_URL: postgres://tickit:tickit@incidents-db:5432/incidents
+      JWT_SECRET: tickitflow-demo-secret
+      RABBITMQ_URL: amqp://tickit:tickit@rabbitmq:5672
+      PORT: "4003"
+    depends_on:
+      incidents-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - auth
+      - incidents
+
+  # ─── Prácticas ITIL en vivo (Fase 3) ───
+
+  problems-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: tickit
+      POSTGRES_PASSWORD: tickit
+      POSTGRES_DB: problems
+    volumes:
+      - problems-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tickit -d problems"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  problems:
+    build: ./services/problems
+    environment:
+      DATABASE_URL: postgres://tickit:tickit@problems-db:5432/problems
+      JWT_SECRET: tickitflow-demo-secret
+      RABBITMQ_URL: amqp://tickit:tickit@rabbitmq:5672
+      PORT: "4005"
+    depends_on:
+      problems-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  changes-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: tickit
+      POSTGRES_PASSWORD: tickit
+      POSTGRES_DB: changes
+    volumes:
+      - changes-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tickit -d changes"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  changes:
+    build: ./services/changes
+    environment:
+      DATABASE_URL: postgres://tickit:tickit@changes-db:5432/changes
+      JWT_SECRET: tickitflow-demo-secret
+      RABBITMQ_URL: amqp://tickit:tickit@rabbitmq:5672
+      PORT: "4006"
+    depends_on:
+      changes-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  cmdb-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: tickit
+      POSTGRES_PASSWORD: tickit
+      POSTGRES_DB: cmdb
+    volumes:
+      - cmdb-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tickit -d cmdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  cmdb:
+    build: ./services/cmdb
+    environment:
+      DATABASE_URL: postgres://tickit:tickit@cmdb-db:5432/cmdb
+      JWT_SECRET: tickitflow-demo-secret
+      PORT: "4007"
+    depends_on:
+      cmdb-db:
+        condition: service_healthy
+
+  kb-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: tickit
+      POSTGRES_PASSWORD: tickit
+      POSTGRES_DB: kb
+    volumes:
+      - kb-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tickit -d kb"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  kb:
+    build: ./services/kb
+    environment:
+      DATABASE_URL: postgres://tickit:tickit@kb-db:5432/kb
+      JWT_SECRET: tickitflow-demo-secret
+      PORT: "4008"
+    depends_on:
+      kb-db:
+        condition: service_healthy
+
+  notifications-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: tickit
+      POSTGRES_PASSWORD: tickit
+      POSTGRES_DB: notifications
+    volumes:
+      - notifications-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tickit -d notifications"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  notifications:
+    build: ./services/notifications
+    environment:
+      DATABASE_URL: postgres://tickit:tickit@notifications-db:5432/notifications
+      JWT_SECRET: tickitflow-demo-secret
+      RABBITMQ_URL: amqp://tickit:tickit@rabbitmq:5672
+      PORT: "4009"
+    depends_on:
+      notifications-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  prometheus:
+    image: prom/prometheus:v3.1.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    depends_on:
+      - auth
+      - incidents
+      - problems
+      - changes
+      - cmdb
+      - kb
+      - notifications
+
+  # Dashboards como código — http://localhost:3000 (tickit / tickit)
+  grafana:
+    image: grafana/grafana:11.5.2
+    environment:
+      GF_SECURITY_ADMIN_USER: tickit
+      GF_SECURITY_ADMIN_PASSWORD: tickit
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  # Respaldos periódicos de las 7 bases (pg_dump + gzip + rotación)
+  db-backup:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      PGPASSWORD: tickit
+      BACKUP_INTERVAL_HOURS: "6"
+      BACKUP_RETENTION: "4"
+    volumes:
+      - ./scripts/backup-dbs.sh:/backup-loop.sh:ro
+      - db-backups:/backups
+    depends_on:
+      auth-db:
+        condition: service_healthy
+      incidents-db:
+        condition: service_healthy
+      problems-db:
+        condition: service_healthy
+      changes-db:
+        condition: service_healthy
+      cmdb-db:
+        condition: service_healthy
+      kb-db:
+        condition: service_healthy
+      notifications-db:
+        condition: service_healthy
+    entrypoint: ["sh", "/backup-loop.sh"]
+
+volumes:
+  auth-db-data:
+  incidents-db-data:
+  problems-db-data:
+  changes-db-data:
+  cmdb-db-data:
+  kb-db-data:
+  notifications-db-data:
+  prometheus-data:
+  grafana-data:
+  db-backups:
