@@ -26,14 +26,10 @@ services:
     image: minio/mc:latest
     depends_on:
       - minio
-    entrypoint: >
-      /bin/sh -c "
-        sleep 5
-        mc alias set tickit http://minio:9000 ${MINIO_USER:-tickit} ${MINIO_PASSWORD:-tickit}
-        mc mb tickit/tickitflow-attachments --ignore-existing
-        echo 'Bucket listo'
-        exit 0
-      "
+    entrypoint:
+      - sh
+      - -c
+      - "sleep 5; mc alias set tickit http://minio:9000 ${MINIO_USER:-tickit} ${MINIO_PASSWORD:-tickit}; mc mb tickit/tickitflow-attachments --ignore-existing; echo 'Bucket listo'"
     restart: "no"
 
   rabbitmq:
