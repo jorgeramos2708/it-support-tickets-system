@@ -108,6 +108,24 @@ jobs:
     needs: [e2e]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
+      - name: Verificar secrets
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.DEPLOY_HOST }}
+          SSH_USER: ${{ secrets.DEPLOY_USER }}
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          SSH_PORT: ${{ secrets.DEPLOY_PORT }}
+          ZOT_USER: ${{ secrets.ZOT_CI_USER }}
+          ZOT_PASS: ${{ secrets.ZOT_CI_PASSWORD }}
+        run: |
+          for s in SSH_HOST SSH_USER SSH_KEY SSH_PORT ZOT_USER ZOT_PASS; do
+            val="${!s}"
+            if [ -n "$val" ]; then
+              echo "$s: SET (${#val} chars)"
+            else
+              echo "$s: NOT SET ⚠️"
+            fi
+          done
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
         with:
