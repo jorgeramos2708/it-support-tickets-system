@@ -101,46 +101,9 @@ jobs:
         shell: bash
         run: docker compose logs --tail 40
 
-  publish:
-    name: Publicar a Zot registry (desde el servidor)
-    runs-on: ubuntu-latest
-    needs: [e2e]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    steps:
-      - name: Build + push images via SSH al servidor
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          port: ${{ secrets.DEPLOY_PORT || '2222' }}
-          command_timeout: 20m
-          script: |
-            set -e
-            cd /opt/tickitflow
-            git fetch origin main
-            git reset --hard origin/main
-
-            # Login al registry
-            echo "${{ secrets.ZOT_CI_PASSWORD }}" | docker login registry.edrs.xyz --username "${{ secrets.ZOT_CI_USER }}" --password-stdin
-
-            # Build + tag + push cada servicio
-            for svc in auth incidents problems changes cmdb kb notifications frontend; do
-              echo "--- $svc ---"
-              docker compose build $svc 2>&1 | tail -3
-              IMAGE_ID=$(docker compose images -q $svc)
-              if [ -n "$IMAGE_ID" ]; then
-                docker tag "$IMAGE_ID" "registry.edrs.xyz/tickitflow/$svc:latest"
-                docker push "registry.edrs.xyz/tickitflow/$svc:latest"
-                echo "OK: $svc"
-              else
-                echo "SKIP: $svc (imagen no encontrada)"
-              fi
-            done
-            echo "=== Publicación a Zot completada ==="
 
   deploy:
-    name: Deploy a produccion
+    name: Deploy + Publicar a Zot
     runs-on: ubuntu-latest
     needs: [e2e]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -152,25 +115,19 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           port: ${{ secrets.DEPLOY_PORT || '2222' }}
-          command_timeout: 20m
+          command_timeout: 30m
           script: |
             set -e
             echo "=== TickITFlow deploy ==="
 
             DEPLOY_DIR=/opt/tickitflow
-
-            # Clonar si no existe
             if [ ! -d "$DEPLOY_DIR" ]; then
-              echo "Clonando repo en $DEPLOY_DIR..."
+              echo "Clonando repo..."
               git clone https://github.com/jorgeramos2708/tickitflow.git "$DEPLOY_DIR"
             fi
 
             cd "$DEPLOY_DIR"
-            echo "Directorio: $(pwd)"
-
-            # Asegurar que el remote apunta al repo renombrado
             git remote set-url origin https://github.com/jorgeramos2708/tickitflow.git
-
             git fetch origin main
             git reset --hard origin/main
             git clean -fd -e .env -e certs/ -e docker-compose.override.yml
@@ -184,11 +141,25 @@ jobs:
                 external: true
             OVR
 
-            docker compose version
+            # Login al Zot registry
+            echo "${{ secrets.ZOT_CI_PASSWORD }}" | docker login registry.edrs.xyz --username "${{ secrets.ZOT_CI_USER }}" --password-stdin
+
+            # Build + tag + push (en una sola pasada)
             echo "--- build ---"
-            docker compose build 2>&1 | tail -5
+            docker compose build 2>&1 | tail -3
+
+            echo "--- tag + push a Zot ---"
+            for svc in auth incidents problems changes cmdb kb notifications frontend; do
+              IMAGE_ID=$(docker compose images -q $svc)
+              if [ -n "$IMAGE_ID" ]; then
+                docker tag "$IMAGE_ID" "registry.edrs.xyz/tickitflow/$svc:latest"
+                docker push "registry.edrs.xyz/tickitflow/$svc:latest" 2>&1 | tail -1
+                echo "OK: $svc"
+              fi
+            done
+
             echo "--- up ---"
-            docker compose up -d 2>&1 | tail -5
+            docker compose up -d 2>&1 | tail -3
 
             echo "--- health check ---"
             DOMAIN=tickitflow.edrs.xyz
@@ -203,8 +174,7 @@ jobs:
                 fi
               done
               if [ "$all_ok" = true ]; then
-                echo "Todos los servicios saludables (${elapsed}s)"
-                echo "=== DEPLOY EXITOSO ==="
+                echo "=== DEPLOY + PUSH EXITOSO ==="
                 exit 0
               fi
               echo "Esperando... ${elapsed}s"
