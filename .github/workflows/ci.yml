@@ -61,7 +61,7 @@ jobs:
         run: docker compose up -d --build
       - name: Esperar salud de los servicios
         shell: bash
-        run: node scripts/wait-healthy.mjs
+        run: node scripts/wait-healthy.mjs 300000
       - name: Smoke E2E
         shell: bash
         run: node scripts/e2e-smoke.mjs
