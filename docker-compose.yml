@@ -14,23 +14,13 @@ services:
     environment:
       MINIO_ROOT_USER: ${MINIO_USER:-tickit}
       MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD:-tickit}
-    ports:
-      - "9001:9001"
     volumes:
       - minio-data:/data
-    entrypoint: ["minio", "server", "/data", "--console-address", ":9001"]
+    entrypoint: ["minio", "server", "/data"]
     restart: unless-stopped
 
-  # Crear el bucket de TickITFlow al arrancar
-  minio-init:
-    image: minio/mc:latest
-    depends_on:
-      - minio
-    entrypoint:
-      - sh
-      - -c
-      - "sleep 5; mc alias set tickit http://minio:9000 ${MINIO_USER:-tickit} ${MINIO_PASSWORD:-tickit}; mc mb tickit/tickitflow-attachments --ignore-existing; echo 'Bucket listo'"
-    restart: "no"
+  # El bucket se crea en el deploy del servidor (scripts/init-minio.sh)
+  # No se incluye aquí para no ralentizar el arranque en CI
 
   rabbitmq:
     image: rabbitmq:3.13-management
