@@ -131,13 +131,15 @@ jobs:
           script: |
             set -e
             echo "=== TickITFlow deploy ==="
-            echo "Dominio: ${{ vars.DOMAIN || 'tickitflow.edrs.xyz' }}"
+            echo "Dominio: tickitflow.edrs.xyz"
 
             # Navegar al repo
-            cd ${{ secrets.DEPLOY_PATH || '/opt/tickitflow' }}
+            cd ${{ secrets.DEPLOY_PATH || '/opt/it-support-tickets-system' }}
 
-            # Pull latest
-            git pull origin main
+            # Forzar el estado del repo al último commit (sin cambios locales)
+            git fetch origin main
+            git reset --hard origin/main
+            git clean -fd
 
             # Verificar que la red de Caddy existe
             docker network inspect caddy_net > /dev/null 2>&1 || {
@@ -150,7 +152,7 @@ jobs:
 
             # Verificar salud vía el dominio (a través del Caddy del host)
             sleep 15
-            DOMAIN=${{ vars.SITE || 'tickitflow.edrs.xyz' }}
+            DOMAIN=tickitflow.edrs.xyz
             for svc in auth incidents problems changes cmdb kb notifications; do
               if curl -sf "https://$DOMAIN/api/$svc/health" > /dev/null 2>&1; then
                 echo "OK: $svc"
