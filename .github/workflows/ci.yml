@@ -108,6 +108,12 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
       - uses: actions/checkout@v4
+      - name: Verificar conectividad al registry
+        shell: bash
+        run: |
+          echo "Verificando registry.edrs.xyz..."
+          curl -sf https://registry.edrs.xyz/v2/ && echo "Registry accesible" || echo "Registry NO accesible"
+          curl -sf https://registry.edrs.xyz/v2/_catalog && echo "Catalog OK" || echo "Catalog NO accesible"
       - name: Construir y publicar a registry.edrs.xyz
         shell: bash
         run: node scripts/publish.mjs
@@ -133,17 +139,19 @@ jobs:
           script: |
             set -e
             echo "=== TickITFlow deploy ==="
-            echo "Dominio: tickitflow.edrs.xyz"
 
             # Navegar al repo
-            cd ${{ secrets.DEPLOY_PATH || '/opt/it-support-tickets-system' }}
+            cd /opt/it-support-tickets-system || {
+              echo "ERROR: no existe /opt/it-support-tickets-system"
+              exit 1
+            }
+            echo "Directorio: $(pwd)"
 
-            # Forzar el estado del repo al último commit
-            echo "--- git reset ---"
+            # Actualizar al último commit (sin borrar .env ni certs)
             git fetch origin main
             git reset --hard origin/main
-            git clean -fd
-            echo "--- git OK ---"
+            git clean -fd -e .env -e certs/ -e node_modules/
+            echo "Git: $(git log --oneline -1)"
 
             # Verificar red de Caddy
             docker network inspect caddy_net > /dev/null 2>&1 || {
@@ -151,23 +159,24 @@ jobs:
               docker network create caddy_net
             }
 
-            # Rebuild y levantar (primer deploy tarda 5-10 min)
+            # Build + levantar
             echo "--- docker compose build ---"
-            docker compose build --no-cache 2>&1 | tail -5
-
+            docker compose build 2>&1 | tail -5
             echo "--- docker compose up ---"
             docker compose up -d 2>&1 | tail -5
 
-            # Esperar a que los servicios estén saludables (via Caddy)
+            # Health check con retry
             echo "--- health check ---"
             DOMAIN=tickitflow.edrs.xyz
             MAX_WAIT=120
             elapsed=0
             while [ $elapsed -lt $MAX_WAIT ]; do
               all_ok=true
+              failing=""
               for svc in auth incidents problems changes cmdb kb notifications; do
                 if ! curl -sf "https://$DOMAIN/api/$svc/health" > /dev/null 2>&1; then
                   all_ok=false
+                  failing="$svc"
                   break
                 fi
               done
@@ -176,12 +185,12 @@ jobs:
                 echo "=== DEPLOY EXITOSO ==="
                 exit 0
               fi
-              echo "Esperando... ${elapsed}s (fallando: $svc)"
+              echo "Esperando... ${elapsed}s (fallando: $failing)"
               sleep 10
               elapsed=$((elapsed + 10))
             done
 
-            echo "=== TIMEOUT: servicios no saludables tras ${MAX_WAIT}s ==="
+            echo "=== TIMEOUT tras ${MAX_WAIT}s ==="
             docker compose ps
-            docker compose logs --tail 20
+            docker compose logs --tail 30
             exit 1
