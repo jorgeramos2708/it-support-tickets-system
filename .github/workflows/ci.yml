@@ -140,43 +140,33 @@ jobs:
             set -e
             echo "=== TickITFlow deploy ==="
 
-            # Navegar al repo
-            cd /opt/it-support-tickets-system || {
-              echo "ERROR: no existe /opt/it-support-tickets-system"
-              exit 1
-            }
+            cd ${{ secrets.DEPLOY_PATH || '/opt/it-support-tickets-system' }}
             echo "Directorio: $(pwd)"
 
-            # Actualizar al último commit (sin borrar .env ni certs)
             git fetch origin main
             git reset --hard origin/main
-            git clean -fd -e .env -e certs/ -e node_modules/
+            git clean -fd -e .env -e certs/
             echo "Git: $(git log --oneline -1)"
 
-            # Verificar red de Caddy
             docker network inspect caddy_net > /dev/null 2>&1 || {
               echo "Creando red caddy_net..."
               docker network create caddy_net
             }
 
-            # Build + levantar
             echo "--- docker compose build ---"
             docker compose build 2>&1 | tail -5
             echo "--- docker compose up ---"
             docker compose up -d 2>&1 | tail -5
 
-            # Health check con retry
             echo "--- health check ---"
             DOMAIN=tickitflow.edrs.xyz
             MAX_WAIT=120
             elapsed=0
             while [ $elapsed -lt $MAX_WAIT ]; do
               all_ok=true
-              failing=""
               for svc in auth incidents problems changes cmdb kb notifications; do
                 if ! curl -sf "https://$DOMAIN/api/$svc/health" > /dev/null 2>&1; then
                   all_ok=false
-                  failing="$svc"
                   break
                 fi
               done
@@ -185,12 +175,11 @@ jobs:
                 echo "=== DEPLOY EXITOSO ==="
                 exit 0
               fi
-              echo "Esperando... ${elapsed}s (fallando: $failing)"
+              echo "Esperando... ${elapsed}s"
               sleep 10
               elapsed=$((elapsed + 10))
             done
 
-            echo "=== TIMEOUT tras ${MAX_WAIT}s ==="
+            echo "=== TIMEOUT ==="
             docker compose ps
-            docker compose logs --tail 30
             exit 1
