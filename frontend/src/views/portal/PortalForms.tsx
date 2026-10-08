@@ -4,6 +4,8 @@ import { Paperclip, X } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 import { PriorityChip } from "../../components/ui/Chips";
 import { Field, Segmented, TextArea, TextInput } from "../../components/ui/Field";
+import { api } from "../../lib/api";
+import { useAuth } from "../../lib/auth";
 import { CATALOG_ITEMS, PORTAL_USER } from "../../lib/data";
 import { SLA_TARGET_LABEL, priorityOf } from "../../lib/sla";
 import { useStore } from "../../lib/store";
@@ -70,16 +72,21 @@ function PortalForm({
   >([]);
 
   const priority = priorityOf(impact, urgency);
+  const { token } = useAuth();
+  const [fileObjects, setFileObjects] = useState<File[]>([]);
 
   const handleFiles = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
-    const next = [...attachments];
+    const nextMeta = [...attachments];
+    const nextFiles = [...fileObjects];
     for (const f of files) {
-      if (next.length >= 5) break;
-      next.push({ name: f.name, sizeKb: Math.max(1, Math.round(f.size / 1024)) });
+      if (nextMeta.length >= 5) break;
+      nextMeta.push({ name: f.name, sizeKb: Math.max(1, Math.round(f.size / 1024)) });
+      nextFiles.push(f);
     }
-    setAttachments(next);
+    setAttachments(nextMeta);
+    setFileObjects(nextFiles);
     e.target.value = "";
   };
 
@@ -97,6 +104,18 @@ function PortalForm({
       priority,
       attachments,
     });
+
+    // Subir archivos reales a MinIO (si estamos en modo live con token)
+    if (token && fileObjects.length > 0) {
+      for (const file of fileObjects) {
+        try {
+          await api.uploadAttachment(token, ticket.id, file);
+        } catch (err) {
+          console.error("[portal] upload falló:", file.name, err);
+        }
+      }
+    }
+
     navigate(`/portal/ticket/${ticket.id}`, { state: { creado: true } });
   };
 

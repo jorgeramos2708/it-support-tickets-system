@@ -17,8 +17,8 @@ import { TicketsController, HealthController } from "./tickets.controller";
 import { TicketsService } from "./tickets.service";
 import { MetricsController } from "./metrics.controller";
 import { MetricsService } from "./metrics.service";
+import { AttachmentsController } from "./attachments.controller";
 import { JwtGuard } from "./jwt.guard";
-import { PromMetricsController, HttpMetricsInterceptor } from "./prom.metrics.controller";
 import { startAuditConsumer } from "./bus";
 
 const SEED: Array<{
@@ -186,7 +186,7 @@ export class TicketSeeder implements OnModuleInit {
       secret: process.env.JWT_SECRET ?? "tickitflow-demo-secret",
     }),
   ],
-  controllers: [PromMetricsController, TicketsController, HealthController, MetricsController],
+  controllers: [PromMetricsController, TicketsController, HealthController, MetricsController, AttachmentsController],
   providers: [{ provide: APP_INTERCEPTOR, useClass: HttpMetricsInterceptor }, TicketsService, TicketSeeder, MetricsService, JwtGuard],
 })
 export class AppModule {}

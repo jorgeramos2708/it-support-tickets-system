@@ -179,7 +179,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     try {
       const [ticketDtos, problemDtos, changeDtos, ciDtos, articleDtos] =
         await Promise.all([
-          api.listTickets(authToken),
+          api.listTickets(authToken, 100),
           api.listProblems(authToken),
           api.listChanges(authToken),
           api.listCis(authToken),

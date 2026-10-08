@@ -189,8 +189,11 @@ export const api = {
       { method: "POST", body: JSON.stringify({ email, password }) },
     ),
 
-  listTickets: (token: string) =>
-    request<ApiTicket[]>("/incidents/tickets", token),
+  listTickets: (token: string, limit?: number, offset?: number) =>
+    request<ApiTicket[]>(
+      `/incidents/tickets${limit ? `?limit=${limit}&offset=${offset ?? 0}` : ""}`,
+      token,
+    ),
 
   createTicket: (
     token: string,
@@ -224,6 +227,24 @@ export const api = {
       method: "PATCH",
       body: JSON.stringify(patch),
     }),
+
+  uploadAttachment: (token: string, ticketCode: string, file: File) => {
+    const form = new FormData();
+    form.append("file", file);
+    return fetch(`${BASE}/incidents/attachments/upload/${ticketCode}`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: form,
+    }).then(async (res) => {
+      if (!res.ok) throw new ApiError(res.status, await res.text());
+      return res.json() as Promise<{
+        name: string;
+        sizeKb: number;
+        objectName: string;
+        uploaded: boolean;
+      }>;
+    });
+  },
 
   listProblems: (token: string) =>
     request<ApiProblem[]>("/problems/problems", token),

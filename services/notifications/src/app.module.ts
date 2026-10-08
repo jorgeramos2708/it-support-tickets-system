@@ -6,7 +6,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { Repository } from "typeorm";
 import * as amqp from "amqplib";
 import { NotificationEntity } from "./notification.entity";
-import { NotificationsController } from "./notifications.controller";
+import { NotificationsController, notificationSubject } from "./notifications.controller";
 import { JwtGuard } from "./jwt.guard";
 import { deriveAudience, deriveSummary } from "./audience";
 import { PromMetricsController, HttpMetricsInterceptor } from "./prom.metrics.controller";
@@ -41,7 +41,7 @@ export class BusConsumer implements OnModuleInit {
               ) as Record<string, unknown>;
               const summary = deriveSummary(body, msg.fields.routingKey);
               const audience = deriveAudience(body);
-              await this.notifications.save(
+              const saved = await this.notifications.save(
                 this.notifications.create({
                   routingKey: msg.fields.routingKey,
                   code: typeof body.code === "string" ? body.code : null,
@@ -52,6 +52,15 @@ export class BusConsumer implements OnModuleInit {
                     : new Date(),
                 }),
               );
+              // Push en tiempo real a todos los clientes SSE conectados
+              notificationSubject.next({
+                id: saved.id,
+                routingKey: saved.routingKey,
+                code: saved.code,
+                summary: saved.summary,
+                audience: saved.audience,
+                occurredAt: saved.occurredAt.toISOString(),
+              });
             } catch (err) {
               console.error("[bus] mensaje no procesable:", (err as Error).message);
             } finally {

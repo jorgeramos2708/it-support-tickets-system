@@ -2,7 +2,8 @@ import { Controller, Get, Query, Req, UnauthorizedException, UseGuards } from "@
 import type { Request } from "express";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { interval, map, switchMap, filter } from "rxjs";
+import { Subject, filter } from "rxjs";
+import { JwtService } from "@nestjs/jwt";
 import { JwtGuard } from "./jwt.guard";
 import {
   NotificationEntity,
@@ -10,11 +11,15 @@ import {
   type NotificationDto,
 } from "./notification.entity";
 
+/** Bus de notificaciones en memoria: el consumidor de RabbitMQ publica aquí. */
+export const notificationSubject = new Subject<NotificationDto>();
+
 @Controller()
 export class NotificationsController {
   constructor(
     @InjectRepository(NotificationEntity)
     private readonly notifications: Repository<NotificationEntity>,
+    private readonly jwtService: JwtService,
   ) {}
 
   @Get("health")
@@ -24,8 +29,7 @@ export class NotificationsController {
 
   /**
    * Feed por rol: agentes y administradores ven todos los eventos
-   * operativos; un usuario final solo ve los de sus propios tickets
-   * (audience = su nombre).
+   * operativos; un usuario final solo ve los de sus propios tickets.
    */
   @Get("notifications")
   @UseGuards(JwtGuard)
@@ -46,55 +50,37 @@ export class NotificationsController {
   }
 
   /**
-   * Stream SSE: la última notificación llega en tiempo real.
-   * El token JWT va por query param (EventSource no soporta headers).
+   * Stream SSE: notificaciones en tiempo real vía Subject (push real).
+   * El token JWT se verifica con firma (verifyAsync) desde query param.
    */
   @Get("notifications/stream")
-  stream(@Query("token") token?: string, @Req() req?: Request): unknown {
-    // Verificar JWT desde query param
-    const jwtService = (req as unknown as { app?: unknown }).app;
-    void jwtService;
+  stream(@Query("token") token?: string): unknown {
+    if (!token) {
+      throw new UnauthorizedException("Token requerido para el stream SSE");
+    }
 
-    // Extraer el usuario del token manualmente
-    const payload = this.verifyToken(token);
-    if (!payload) {
-      throw new UnauthorizedException("Token inválido o ausente");
+    // Verificar firma del JWT (no solo decodificar)
+    let payload: { name?: string; role?: string };
+    try {
+      payload = this.jwtService.verify(token);
+    } catch {
+      throw new UnauthorizedException("Token inválido o expirado");
     }
 
     const isOperator = payload.role === "agente" || payload.role === "admin";
     const audience = payload.name ?? "";
-    const repo = this.notifications;
 
-    return interval(3000).pipe(
-      switchMap(async () => {
-        const rows = await repo.find({
-          where: isOperator ? {} : { audience },
-          order: { occurredAt: "DESC" },
-          take: 1,
-        });
-        return rows.length > 0 ? toDto(rows[0]) : null;
+    // Push real: el Subject emite cada notificación que llega del bus
+    return notificationSubject.pipe(
+      filter((dto) => {
+        // Operadores ven todo; usuarios solo las de su audiencia
+        if (isOperator) return true;
+        return dto.audience === audience;
       }),
-      filter((v) => v !== null),
       map((dto) => ({ data: dto })),
     );
   }
-
-  private verifyToken(token?: string): { name?: string; role?: string } | null {
-    if (!token) return null;
-    try {
-      // decodificar payload del JWT sin verificar firma (verificación ligera)
-      // En producción, usar JwtService.verifyAsync
-      const parts = token.split(".");
-      if (parts.length !== 3) return null;
-      const payload = JSON.parse(
-        Buffer.from(parts[1], "base64url").toString("utf-8"),
-      );
-      if (!payload.name || !payload.role) return null;
-      // Verificar expiración
-      if (payload.exp && payload.exp < Date.now() / 1000) return null;
-      return payload;
-    } catch {
-      return null;
-    }
-  }
 }
+
+// Import necesario para el map del stream
+import { map } from "rxjs/operators";
