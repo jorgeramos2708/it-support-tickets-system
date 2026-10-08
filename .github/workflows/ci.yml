@@ -137,28 +137,40 @@ jobs:
           port: ${{ secrets.DEPLOY_PORT || '2222' }}
           command_timeout: 20m
           script: |
-            set -ex
+            set -e
             echo "=== TickITFlow deploy ==="
 
-            cd ${{ secrets.DEPLOY_PATH || '/opt/it-support-tickets-system' }}
-            pwd
+            DEPLOY_DIR=/opt/tickitflow
+
+            # Clonar si no existe
+            if [ ! -d "$DEPLOY_DIR" ]; then
+              echo "Clonando repo en $DEPLOY_DIR..."
+              git clone https://github.com/jorgeramos2708/tickitflow.git "$DEPLOY_DIR"
+            fi
+
+            cd "$DEPLOY_DIR"
+            echo "Directorio: $(pwd)"
+
+            # Asegurar que el remote apunta al repo renombrado
+            git remote set-url origin https://github.com/jorgeramos2708/tickitflow.git
 
             git fetch origin main
             git reset --hard origin/main
             git clean -fd -e .env -e certs/ -e docker-compose.override.yml
-            git log --oneline -1
+            echo "Git: $(git log --oneline -1)"
 
-            # Override de red: conectar a caddy_net del host (solo en el servidor)
-            cat > docker-compose.override.yml << 'EOF'
+            # Override de red: conectar a caddy_net del host
+            cat > docker-compose.override.yml << 'OVR'
             networks:
               default:
                 name: caddy_net
                 external: true
-            EOF
+            OVR
 
             docker compose version
+            echo "--- build ---"
             docker compose build 2>&1 | tail -5
-            echo "--- docker compose up ---"
+            echo "--- up ---"
             docker compose up -d 2>&1 | tail -5
 
             echo "--- health check ---"

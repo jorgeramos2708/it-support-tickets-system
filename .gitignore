@@ -74,7 +74,7 @@ Thumbs.db
 /.agents/
 /.claude/
 # /.env.example — el template SÍ se versiona
-# /.env.local
+/.env.local
 
 # Variables de entorno con credenciales reales
 /.env
