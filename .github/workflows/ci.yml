@@ -168,11 +168,13 @@ jobs:
 
             echo "--- tag + push a Zot ---"
             for svc in auth incidents problems changes cmdb kb notifications frontend; do
-              IMAGE_ID=$(docker compose images -q $svc)
-              if [ -n "$IMAGE_ID" ]; then
-                docker tag "$IMAGE_ID" "registry.edrs.xyz/tickitflow/$svc:latest"
+              COMPOSE_IMAGE="tickitflow-$svc"
+              if docker image inspect "$COMPOSE_IMAGE" > /dev/null 2>&1; then
+                docker tag "$COMPOSE_IMAGE" "registry.edrs.xyz/tickitflow/$svc:latest"
                 docker push "registry.edrs.xyz/tickitflow/$svc:latest" 2>&1 | tail -1
                 echo "OK: $svc"
+              else
+                echo "SKIP: $svc (imagen $COMPOSE_IMAGE no encontrada)"
               fi
             done
 
