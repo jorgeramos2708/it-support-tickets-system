@@ -141,12 +141,38 @@ jobs:
                 external: true
             OVR
 
+            # Override de MinIO para adjuntos (solo en el servidor)
+            cat > docker-compose.minio.yml << 'MINIO'
+            services:
+              minio:
+                image: minio/minio:latest
+                environment:
+                  MINIO_ROOT_USER: \${MINIO_USER:-tickit}
+                  MINIO_ROOT_PASSWORD: \${MINIO_PASSWORD:-tickit}
+                volumes:
+                  - minio-data:/data
+                entrypoint: ["minio", "server", "/data", "--console-address", ":9001"]
+                restart: unless-stopped
+              incidents:
+                environment:
+                  MINIO_ENDPOINT: minio
+                  MINIO_PORT: "9000"
+                  MINIO_USER: \${MINIO_USER:-tickit}
+                  MINIO_PASSWORD: \${MINIO_PASSWORD:-tickit}
+                depends_on:
+                  minio:
+                    condition: service_started
+            volumes:
+              minio-data:
+            MINIO
+
             # Login al Zot registry
             echo "${{ secrets.ZOT_CI_PASSWORD }}" | docker login registry.edrs.xyz --username "${{ secrets.ZOT_CI_USER }}" --password-stdin
 
-            # Build + tag + push (en una sola pasada)
+            COMPOSE="docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.minio.yml"
+
             echo "--- build ---"
-            docker compose build 2>&1 | tail -3
+            $COMPOSE build 2>&1 | tail -3
 
             echo "--- tag + push a Zot ---"
             for svc in auth incidents problems changes cmdb kb notifications frontend; do
@@ -156,12 +182,12 @@ jobs:
                 docker push "registry.edrs.xyz/tickitflow/$svc:latest" 2>&1 | tail -1
                 echo "OK: $svc"
               else
-                echo "SKIP: $svc (imagen $COMPOSE_IMAGE no encontrada)"
+                echo "SKIP: $svc"
               fi
             done
 
             echo "--- up ---"
-            docker compose up -d 2>&1 | tail -3
+            $COMPOSE up -d 2>&1 | tail -3
 
             echo "--- health check ---"
             DOMAIN=tickitflow.edrs.xyz

@@ -8,17 +8,6 @@ name: tickitflow
 # CI/Desarrollo: funciona standalone sin red externa.
 
 services:
-  # Almacenamiento S3-compatible para adjuntos de tickets
-  minio:
-    image: minio/minio:latest
-    environment:
-      MINIO_ROOT_USER: ${MINIO_USER:-tickit}
-      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD:-tickit}
-    volumes:
-      - minio-data:/data
-    entrypoint: ["minio", "server", "/data"]
-    restart: unless-stopped
-
   # El bucket se crea en el deploy del servidor (scripts/init-minio.sh)
   # No se incluye aquí para no ralentizar el arranque en CI
 
@@ -83,18 +72,12 @@ services:
       DATABASE_URL: postgres://tickit:${POSTGRES_PASSWORD:-tickit}@incidents-db:5432/incidents
       JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret}
       RABBITMQ_URL: amqp://${RABBITMQ_USER:-tickit}:${RABBITMQ_PASS:-tickit}@rabbitmq:5672
-      MINIO_ENDPOINT: minio
-      MINIO_PORT: "9000"
-      MINIO_USER: ${MINIO_USER:-tickit}
-      MINIO_PASSWORD: ${MINIO_PASSWORD:-tickit}
       PORT: "4003"
     depends_on:
       incidents-db:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-      minio:
-        condition: service_started
     restart: unless-stopped
 
   problems-db:
@@ -311,4 +294,3 @@ volumes:
   prometheus-data:
   grafana-data:
   db-backups:
-  minio-data:
