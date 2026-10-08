@@ -3,6 +3,7 @@ import { BrowserRouter, Link, Route, Routes, useNavigate } from "react-router-do
 import { CommandPalette } from "./components/CommandPalette";
 import { PracticeRail, TopBar } from "./components/shell/Shell";
 import { StoreProvider } from "./lib/store";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ChangesView, ChangeDetail } from "./views/ChangesView";
 import { CmdbView } from "./views/CmdbView";
 import { KbArticleView, KbView } from "./views/KbView";
@@ -170,18 +171,20 @@ function Portal() {
 
 export default function App() {
   return (
-    <ModeProvider>
-      <AuthProvider>
-        <StoreProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/landing" element={<Landing />} />
-              <Route path="/portal/*" element={<Portal />} />
-              <Route path="/*" element={<Shell />} />
-            </Routes>
-          </BrowserRouter>
-        </StoreProvider>
-      </AuthProvider>
-    </ModeProvider>
+    <ErrorBoundary>
+      <ModeProvider>
+        <AuthProvider>
+          <StoreProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/landing" element={<Landing />} />
+                <Route path="/portal/*" element={<Portal />} />
+                <Route path="/*" element={<Shell />} />
+              </Routes>
+            </BrowserRouter>
+          </StoreProvider>
+        </AuthProvider>
+      </ModeProvider>
+    </ErrorBoundary>
   );
 }

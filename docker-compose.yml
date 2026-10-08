@@ -22,8 +22,8 @@ services:
   rabbitmq:
     image: rabbitmq:3.13-management
     environment:
-      RABBITMQ_DEFAULT_USER: tickit
-      RABBITMQ_DEFAULT_PASS: tickit
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-tickit}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-tickit}
     ports:
       - "15672:15672"
     healthcheck:
@@ -37,7 +37,7 @@ services:
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: tickit
-      POSTGRES_PASSWORD: tickit
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tickit}
       POSTGRES_DB: auth
     volumes:
       - auth-db-data:/var/lib/postgresql/data
@@ -51,8 +51,8 @@ services:
   auth:
     build: ./services/auth
     environment:
-      DATABASE_URL: postgres://tickit:tickit@auth-db:5432/auth
-      JWT_SECRET: tickitflow-demo-secret
+      DATABASE_URL: postgres://tickit:${POSTGRES_PASSWORD:-tickit}@auth-db:5432/auth
+      JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret}
       PORT: "4001"
     depends_on:
       auth-db:
@@ -63,7 +63,7 @@ services:
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: tickit
-      POSTGRES_PASSWORD: tickit
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tickit}
       POSTGRES_DB: incidents
     volumes:
       - incidents-db-data:/var/lib/postgresql/data
@@ -77,8 +77,8 @@ services:
   incidents:
     build: ./services/incidents
     environment:
-      DATABASE_URL: postgres://tickit:tickit@incidents-db:5432/incidents
-      JWT_SECRET: tickitflow-demo-secret
+      DATABASE_URL: postgres://tickit:${POSTGRES_PASSWORD:-tickit}@incidents-db:5432/incidents
+      JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret}
       RABBITMQ_URL: amqp://tickit:tickit@rabbitmq:5672
       PORT: "4003"
     depends_on:
@@ -92,7 +92,7 @@ services:
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: tickit
-      POSTGRES_PASSWORD: tickit
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tickit}
       POSTGRES_DB: problems
     volumes:
       - problems-db-data:/var/lib/postgresql/data
@@ -106,8 +106,8 @@ services:
   problems:
     build: ./services/problems
     environment:
-      DATABASE_URL: postgres://tickit:tickit@problems-db:5432/problems
-      JWT_SECRET: tickitflow-demo-secret
+      DATABASE_URL: postgres://tickit:${POSTGRES_PASSWORD:-tickit}@problems-db:5432/problems
+      JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret}
       RABBITMQ_URL: amqp://tickit:tickit@rabbitmq:5672
       PORT: "4005"
     depends_on:
@@ -121,7 +121,7 @@ services:
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: tickit
-      POSTGRES_PASSWORD: tickit
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tickit}
       POSTGRES_DB: changes
     volumes:
       - changes-db-data:/var/lib/postgresql/data
@@ -135,8 +135,8 @@ services:
   changes:
     build: ./services/changes
     environment:
-      DATABASE_URL: postgres://tickit:tickit@changes-db:5432/changes
-      JWT_SECRET: tickitflow-demo-secret
+      DATABASE_URL: postgres://tickit:${POSTGRES_PASSWORD:-tickit}@changes-db:5432/changes
+      JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret}
       RABBITMQ_URL: amqp://tickit:tickit@rabbitmq:5672
       PORT: "4006"
     depends_on:
@@ -150,7 +150,7 @@ services:
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: tickit
-      POSTGRES_PASSWORD: tickit
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tickit}
       POSTGRES_DB: cmdb
     volumes:
       - cmdb-db-data:/var/lib/postgresql/data
@@ -164,8 +164,8 @@ services:
   cmdb:
     build: ./services/cmdb
     environment:
-      DATABASE_URL: postgres://tickit:tickit@cmdb-db:5432/cmdb
-      JWT_SECRET: tickitflow-demo-secret
+      DATABASE_URL: postgres://tickit:${POSTGRES_PASSWORD:-tickit}@cmdb-db:5432/cmdb
+      JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret}
       PORT: "4007"
     depends_on:
       cmdb-db:
@@ -176,7 +176,7 @@ services:
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: tickit
-      POSTGRES_PASSWORD: tickit
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tickit}
       POSTGRES_DB: kb
     volumes:
       - kb-db-data:/var/lib/postgresql/data
@@ -190,8 +190,8 @@ services:
   kb:
     build: ./services/kb
     environment:
-      DATABASE_URL: postgres://tickit:tickit@kb-db:5432/kb
-      JWT_SECRET: tickitflow-demo-secret
+      DATABASE_URL: postgres://tickit:${POSTGRES_PASSWORD:-tickit}@kb-db:5432/kb
+      JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret}
       PORT: "4008"
     depends_on:
       kb-db:
@@ -202,7 +202,7 @@ services:
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: tickit
-      POSTGRES_PASSWORD: tickit
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tickit}
       POSTGRES_DB: notifications
     volumes:
       - notifications-db-data:/var/lib/postgresql/data
@@ -216,8 +216,8 @@ services:
   notifications:
     build: ./services/notifications
     environment:
-      DATABASE_URL: postgres://tickit:tickit@notifications-db:5432/notifications
-      JWT_SECRET: tickitflow-demo-secret
+      DATABASE_URL: postgres://tickit:${POSTGRES_PASSWORD:-tickit}@notifications-db:5432/notifications
+      JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret}
       RABBITMQ_URL: amqp://tickit:tickit@rabbitmq:5672
       PORT: "4009"
     depends_on:
@@ -251,8 +251,8 @@ services:
   grafana:
     image: grafana/grafana:11.5.2
     environment:
-      GF_SECURITY_ADMIN_USER: tickit
-      GF_SECURITY_ADMIN_PASSWORD: tickit
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-tickit}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASS:-tickit}
       GF_AUTH_ANONYMOUS_ENABLED: "false"
     ports:
       - "3000:3000"
@@ -267,7 +267,7 @@ services:
   db-backup:
     image: postgres:16-alpine
     environment:
-      PGPASSWORD: tickit
+      PGPASSWORD: ${POSTGRES_PASSWORD:-tickit}
       BACKUP_INTERVAL_HOURS: "6"
       BACKUP_RETENTION: "4"
     volumes:

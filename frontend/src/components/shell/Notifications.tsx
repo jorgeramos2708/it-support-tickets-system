@@ -20,6 +20,7 @@ export function NotificationsBell() {
   const { now } = useStore();
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<ApiNotification[]>([]);
+  const [lastEvent, setLastEvent] = useState<ApiNotification | null>(null);
 
   const load = useCallback(() => {
     if (!live || !token) return;
@@ -29,12 +30,49 @@ export function NotificationsBell() {
       .catch((err) => console.error("[notificaciones]", err));
   }, [live, token]);
 
+  // Carga inicial + fallback polling (si SSE falla)
   useEffect(() => {
     if (!live || !token) return;
     load();
-    const timer = setInterval(load, 15_000);
-    return () => clearInterval(timer);
   }, [live, token, load]);
+
+  // SSE: stream en tiempo real (token por query param)
+  useEffect(() => {
+    if (!live || !token) return;
+    const source = new EventSource(
+      `/api/notifications/notifications/stream?token=${encodeURIComponent(token)}`,
+    );
+    source.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data) as ApiNotification;
+        setLastEvent(data);
+        // Actualizar la lista con la nueva notificación
+        setItems((prev) => {
+          if (prev.some((n) => n.id === data.id)) return prev;
+          return [data, ...prev].slice(0, 20);
+        });
+      } catch {
+        // Ignorar mensajes no parseables
+      }
+    };
+    source.onerror = () => {
+      // SSE falló — activar polling como respaldo
+      source.close();
+      const timer = setInterval(load, 15_000);
+      return () => clearInterval(timer);
+    };
+    return () => source.close();
+  }, [live, token, load]);
+
+  // Cuando llega una notificación nueva vía SSE, actualizar el reloj de la lista
+  useEffect(() => {
+    if (lastEvent) {
+      setItems((prev) => {
+        if (prev.some((n) => n.id === lastEvent.id)) return prev;
+        return [lastEvent, ...prev].slice(0, 20);
+      });
+    }
+  }, [lastEvent]);
 
   if (!live) return null;
 
@@ -67,7 +105,7 @@ export function NotificationsBell() {
           }}
         >
           <header className="flex items-center justify-between border-b border-rule px-4 py-2.5">
-            <h2 className="label text-ink-2">Notificaciones del bus</h2>
+            <h2 className="label text-ink-2">Notificaciones</h2>
             <button
               type="button"
               onClick={() => setOpen(false)}
@@ -109,7 +147,7 @@ export function NotificationsBell() {
               <span className="font-mono text-[10.5px]">
                 itil.events → notifications.feed
               </span>{" "}
-              · actualiza cada 15s
+              · SSE con respaldo a polling
             </p>
           </footer>
         </div>
