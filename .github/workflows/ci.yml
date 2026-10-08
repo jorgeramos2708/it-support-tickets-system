@@ -145,20 +145,18 @@ jobs:
 
             git fetch origin main
             git reset --hard origin/main
-            git clean -fd -e .env -e certs/
+            git clean -fd -e .env -e certs/ -e docker-compose.override.yml
             git log --oneline -1
 
-            docker network inspect caddy_net > /dev/null 2>&1 || {
-              docker network create caddy_net
-            }
+            # Override de red: conectar a caddy_net del host (solo en el servidor)
+            cat > docker-compose.override.yml << 'EOF'
+            networks:
+              default:
+                name: caddy_net
+                external: true
+            EOF
 
-            echo "--- docker compose version ---"
             docker compose version
-
-            echo "--- docker compose config (validar) ---"
-            docker compose config 2>&1 | head -30
-
-            echo "--- docker compose build ---"
             docker compose build 2>&1 | tail -5
             echo "--- docker compose up ---"
             docker compose up -d 2>&1 | tail -5
