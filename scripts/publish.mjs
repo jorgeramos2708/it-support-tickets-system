@@ -44,7 +44,7 @@ if (login.status !== 0) {
 for (const { service, context } of IMAGES) {
   const tag = `${registry}/tickitflow/${service}:${VERSION}`;
   console.log(`[publish] ${tag}`);
-  execSync(`docker build --provenance=false -t ${tag} ${context}`, { stdio: "inherit" });
+  execSync(`docker build --provenance=false --sbom=false -t ${tag} ${context}`, { stdio: "inherit" });
   execSync(`docker push ${tag}`, { stdio: "inherit" });
 }
 
