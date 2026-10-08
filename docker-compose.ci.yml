@@ -1,0 +1,19 @@
+# Override para CI: Traefik HTTP plano (sin TLS ni redirect).
+# Solo para testing del stack en GitHub Actions.
+# Para producción, usa docker-compose.traefik.yml (con certificados manuales).
+
+services:
+  gateway:
+    image: traefik:v3.3
+    command:
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --entrypoints.web.address=:80
+    ports:
+      - "80:80"
+    volumes:
+      - ./gateway/dynamic.yml:/etc/traefik/dynamic/dynamic.yml:ro
+    restart: unless-stopped
+
+networks:
+  default:
+    name: tickitflow_ci

@@ -56,9 +56,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Levantar el stack completo (Traefik standalone para CI)
+      - name: Levantar el stack completo (gateway HTTP para CI)
         shell: bash
-        run: docker compose -f docker-compose.yml -f docker-compose.traefik.yml up -d --build
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build
       - name: Verificar stack
         shell: bash
         run: |

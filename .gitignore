@@ -45,6 +45,8 @@
 /scripts/crear-admin.mjs
 /scripts/query-sales*.mjs
 /scripts/restaurar-backup.mjs
+/scripts/.respaldo.env.ps1
+/scripts/backup-diario.ps1
 
 # Archivos numerados sin extensión (artefactos del proyecto papelería)
 /[0-9]
