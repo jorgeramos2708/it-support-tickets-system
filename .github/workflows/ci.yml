@@ -128,6 +128,7 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           port: ${{ secrets.DEPLOY_PORT || '2222' }}
+          command_timeout: 20m
           script: |
             set -e
             echo "=== TickITFlow deploy ==="
@@ -136,30 +137,50 @@ jobs:
             # Navegar al repo
             cd ${{ secrets.DEPLOY_PATH || '/opt/it-support-tickets-system' }}
 
-            # Forzar el estado del repo al último commit (sin cambios locales)
+            # Forzar el estado del repo al último commit
+            echo "--- git reset ---"
             git fetch origin main
             git reset --hard origin/main
             git clean -fd
+            echo "--- git OK ---"
 
-            # Verificar que la red de Caddy existe
+            # Verificar red de Caddy
             docker network inspect caddy_net > /dev/null 2>&1 || {
-              echo "ERROR: la red caddy_net no existe. Creándola..."
+              echo "Creando red caddy_net..."
               docker network create caddy_net
             }
 
-            # Rebuild y levantar
-            docker compose up -d --build
+            # Rebuild y levantar (primer deploy tarda 5-10 min)
+            echo "--- docker compose build ---"
+            docker compose build --no-cache 2>&1 | tail -5
 
-            # Verificar salud vía el dominio (a través del Caddy del host)
-            sleep 15
+            echo "--- docker compose up ---"
+            docker compose up -d 2>&1 | tail -5
+
+            # Esperar a que los servicios estén saludables (via Caddy)
+            echo "--- health check ---"
             DOMAIN=tickitflow.edrs.xyz
-            for svc in auth incidents problems changes cmdb kb notifications; do
-              if curl -sf "https://$DOMAIN/api/$svc/health" > /dev/null 2>&1; then
-                echo "OK: $svc"
-              else
-                echo "FALLANDO: $svc"
-                docker compose logs --tail 10 $svc
-                exit 1
+            MAX_WAIT=120
+            elapsed=0
+            while [ $elapsed -lt $MAX_WAIT ]; do
+              all_ok=true
+              for svc in auth incidents problems changes cmdb kb notifications; do
+                if ! curl -sf "https://$DOMAIN/api/$svc/health" > /dev/null 2>&1; then
+                  all_ok=false
+                  break
+                fi
+              done
+              if [ "$all_ok" = true ]; then
+                echo "Todos los servicios saludables (${elapsed}s)"
+                echo "=== DEPLOY EXITOSO ==="
+                exit 0
               fi
+              echo "Esperando... ${elapsed}s (fallando: $svc)"
+              sleep 10
+              elapsed=$((elapsed + 10))
             done
-            echo "=== Deploy exitoso ==="
+
+            echo "=== TIMEOUT: servicios no saludables tras ${MAX_WAIT}s ==="
+            docker compose ps
+            docker compose logs --tail 20
+            exit 1
