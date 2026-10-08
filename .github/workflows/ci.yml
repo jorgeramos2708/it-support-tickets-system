@@ -137,21 +137,26 @@ jobs:
           port: ${{ secrets.DEPLOY_PORT || '2222' }}
           command_timeout: 20m
           script: |
-            set -e
+            set -ex
             echo "=== TickITFlow deploy ==="
 
             cd ${{ secrets.DEPLOY_PATH || '/opt/it-support-tickets-system' }}
-            echo "Directorio: $(pwd)"
+            pwd
 
             git fetch origin main
             git reset --hard origin/main
             git clean -fd -e .env -e certs/
-            echo "Git: $(git log --oneline -1)"
+            git log --oneline -1
 
             docker network inspect caddy_net > /dev/null 2>&1 || {
-              echo "Creando red caddy_net..."
               docker network create caddy_net
             }
+
+            echo "--- docker compose version ---"
+            docker compose version
+
+            echo "--- docker compose config (validar) ---"
+            docker compose config 2>&1 | head -30
 
             echo "--- docker compose build ---"
             docker compose build 2>&1 | tail -5
