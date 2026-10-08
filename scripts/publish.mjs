@@ -44,7 +44,8 @@ if (login.status !== 0) {
 for (const { service, context } of IMAGES) {
   const tag = `${registry}/tickitflow/${service}:${VERSION}`;
   console.log(`[publish] ${tag}`);
-  execSync(`docker build --provenance=false --sbom=false -t ${tag} ${context}`, { stdio: "inherit" });
+  // Legacy builder: Docker v2 manifest (sin OCI attestations) — máxima compatibilidad con Zot
+  execSync(`DOCKER_BUILDKIT=0 docker build -t ${tag} ${context}`, { stdio: "inherit" });
   execSync(`docker push ${tag}`, { stdio: "inherit" });
 }
 
