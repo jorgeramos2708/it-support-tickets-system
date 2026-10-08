@@ -58,7 +58,9 @@ jobs:
           node-version: "22"
       - name: Levantar el stack completo (gateway HTTP para CI)
         shell: bash
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build
+        run: |
+          docker network create caddy_net 2>/dev/null || true
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build
       - name: Verificar stack
         shell: bash
         run: |
