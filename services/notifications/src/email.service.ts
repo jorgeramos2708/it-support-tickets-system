@@ -1,6 +1,9 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, OnModuleInit } from "@nestjs/common";
 import * as nodemailer from "nodemailer";
 import type { Transporter } from "nodemailer";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { SettingEntity, smtpSettingsFromRows, type SmtpSettings } from "./setting.entity";
 
 interface EmailNotification {
   routingKey: string;
@@ -9,44 +12,63 @@ interface EmailNotification {
   audience: string;
 }
 
-/** Envía emails para notificaciones críticas vía SMTP (opcional). */
+/**
+ * Envía emails para notificaciones críticas vía SMTP.
+ * La configuración vive en la tabla settings (editable desde la UI),
+ * con fallback a variables de entorno.
+ */
 @Injectable()
-export class EmailService {
+export class EmailService implements OnModuleInit {
   private transporter: Transporter | null = null;
-  private readonly enabled: boolean;
-  private readonly from: string;
-  private readonly to: string[];
+  private current: SmtpSettings | null = null;
 
-  constructor() {
-    this.enabled = Boolean(process.env.SMTP_HOST);
-    this.from = process.env.SMTP_FROM ?? "tickitflow@edrs.xyz";
-    this.to = (process.env.NOTIFY_EMAIL_TO ?? "")
-      .split(",")
-      .map((e) => e.trim())
-      .filter(Boolean);
+  constructor(
+    @InjectRepository(SettingEntity)
+    private readonly settingsRepo: Repository<SettingEntity>,
+  ) {}
 
-    if (this.enabled) {
-      this.transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT ?? 587),
-        secure: Number(process.env.SMTP_PORT ?? 587) === 465,
-        auth: process.env.SMTP_USER
-          ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
-          : undefined,
-      });
-      console.log(
-        `[email] SMTP activo: ${process.env.SMTP_HOST}:${process.env.SMTP_PORT ?? 587} → ${this.to.length} destinatarios`,
-      );
+  async onModuleInit(): Promise<void> {
+    await this.reload();
+  }
+
+  /** Lee la configuración de la tabla settings y reconstruye el transporter. */
+  async reload(): Promise<void> {
+    try {
+      const rows = await this.settingsRepo.find();
+      this.current = smtpSettingsFromRows(rows);
+    } catch {
+      // Si la tabla no existe aún (primera migración), usar env vars
+      this.current = null;
+    }
+
+    if (this.current?.enabled && this.current.host) {
+      try {
+        this.transporter = nodemailer.createTransport({
+          host: this.current.host,
+          port: this.current.port,
+          secure: this.current.secure || this.current.port === 465,
+          auth: this.current.user
+            ? { user: this.current.user, pass: this.current.pass }
+            : undefined,
+        });
+        console.log(
+          `[email] SMTP activo: ${this.current.host}:${this.current.port} → ${this.current.recipients.length} destinatarios`,
+        );
+      } catch (err) {
+        console.error("[email] transporter falló:", (err as Error).message);
+        this.transporter = null;
+      }
     } else {
-      console.log("[email] SMTP no configurado — emails desactivados");
+      this.transporter = null;
+      console.log("[email] SMTP no configurado o desactivado");
     }
   }
 
-  /** Envía un email si el evento es crítico y SMTP está configurado. */
+  /** Envía un email si el evento es crítico y SMTP está activo. */
   async notify(event: EmailNotification): Promise<void> {
-    if (!this.enabled || !this.transporter || this.to.length === 0) return;
+    if (!this.transporter || !this.current?.enabled) return;
+    if (this.current.recipients.length === 0) return;
 
-    // Solo eventos críticos o de tickets (no spam)
     const criticalKeys = [
       "ticket.created",
       "problem.created",
@@ -57,23 +79,44 @@ export class EmailService {
     if (!criticalKeys.includes(event.routingKey)) return;
 
     const subject = `[TickITFlow] ${event.summary}`;
-    const body = this.renderEmail(event);
-
     try {
       await this.transporter.sendMail({
-        from: this.from,
-        to: this.to.join(", "),
+        from: this.current.from,
+        to: this.current.recipients.join(", "),
         subject,
-        text: body,
+        text: this.renderText(event),
         html: this.renderHtml(event),
       });
-      console.log(`[email] enviado: "${subject}" → ${this.to.join(", ")}`);
+      console.log(`[email] enviado: "${subject}"`);
     } catch (err) {
       console.error("[email] fallo al enviar:", (err as Error).message);
     }
   }
 
-  private renderEmail(event: EmailNotification): string {
+  /** Envía un email de prueba con la configuración actual. */
+  async sendTest(smtp: SmtpSettings): Promise<boolean> {
+    try {
+      const testTransporter = nodemailer.createTransport({
+        host: smtp.host,
+        port: smtp.port,
+        secure: smtp.secure || smtp.port === 465,
+        auth: smtp.user ? { user: smtp.user, pass: smtp.pass } : undefined,
+      });
+      await testTransporter.sendMail({
+        from: smtp.from,
+        to: smtp.recipients.join(", "),
+        subject: "[TickITFlow] Email de prueba",
+        text: "Si recibes este mensaje, la configuración SMTP funciona correctamente.",
+        html: `<p style="font-family: system-ui; color: #15181e;">Si recibes este mensaje, la configuración SMTP funciona correctamente.</p>`,
+      });
+      return true;
+    } catch (err) {
+      console.error("[email] test falló:", (err as Error).message);
+      return false;
+    }
+  }
+
+  private renderText(event: EmailNotification): string {
     return [
       `TickITFlow — Notificación`,
       ``,

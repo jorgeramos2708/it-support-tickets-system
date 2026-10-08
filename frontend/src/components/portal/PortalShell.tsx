@@ -6,6 +6,7 @@ import { Button } from "../ui/Button";
 import { cn } from "../../lib/cn";
 import { useAuth } from "../../lib/auth";
 import { NotificationsBell } from "../shell/Notifications";
+import { ThemeToggle } from "../shell/ThemeToggle";
 
 function PortalNavLink({
   to,
@@ -75,6 +76,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
             {live ? "Datos en vivo" : "Datos demo"}
           </span>
           <span className="hidden h-5 w-px bg-rule sm:block" aria-hidden />
+          <ThemeToggle />
           <NotificationsBell />
           <span className="flex items-center gap-2">
             <span

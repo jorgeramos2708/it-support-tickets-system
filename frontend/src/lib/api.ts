@@ -324,6 +324,37 @@ export const api = {
       token,
     ),
 
+  getSmtpSettings: (token: string) =>
+    request<{ smtp: { host: string; port: number; user: string; pass: string | null; from: string; secure: boolean; enabled: boolean; recipients: string[] } }>(
+      "/notifications/settings/smtp",
+      token,
+    ),
+
+  updateSmtpSettings: (
+    token: string,
+    settings: {
+      host?: string;
+      port?: number;
+      user?: string;
+      pass?: string;
+      from?: string;
+      secure?: boolean;
+      enabled?: boolean;
+      recipients?: string[];
+    },
+  ) =>
+    request("/notifications/settings/smtp", token, {
+      method: "PUT",
+      body: JSON.stringify(settings),
+    }),
+
+  testSmtp: (token: string) =>
+    request<{ sent: boolean; message: string }>(
+      "/notifications/settings/smtp/test",
+      token,
+      { method: "POST" },
+    ),
+
   listMetrics: (token: string, days = 14) =>
     request<ApiMetric[]>(
       `/incidents/metrics/daily?days=${days}`,

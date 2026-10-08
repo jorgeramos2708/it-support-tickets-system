@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   LogOut,
   Search,
+  Settings,
 } from "lucide-react";
 import { LogoLockup } from "../../brand/Logo";
 import { Button } from "../ui/Button";
@@ -17,6 +18,7 @@ import { useAuth } from "../../lib/auth";
 import { useStore } from "../../lib/store";
 import { OPEN_STATUSES } from "../../lib/types";
 import { NotificationsBell } from "./Notifications";
+import { ThemeToggle } from "./ThemeToggle";
 
 const ICONS = {
   dashboard: LayoutDashboard,
@@ -27,6 +29,7 @@ const ICONS = {
   cmdb: Database,
   kb: BookOpen,
   reportes: BarChart3,
+  config: Settings,
 } as const;
 
 type RailIcon = keyof typeof ICONS;
@@ -88,6 +91,7 @@ export function TopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
           {live ? "Datos en vivo" : "Datos demo"}
         </span>
         <span className="hidden h-5 w-px bg-rule lg:block" aria-hidden />
+        <ThemeToggle />
         <NotificationsBell />
         <span className="flex items-center gap-2">
           <span
@@ -211,6 +215,9 @@ export function PracticeRail() {
             </li>
             <li>
               <RailLink to="/reportes" label="Reportes" icon="reportes" />
+            </li>
+            <li>
+              <RailLink to="/configuracion" label="Configuración" icon="config" />
             </li>
           </ul>
 

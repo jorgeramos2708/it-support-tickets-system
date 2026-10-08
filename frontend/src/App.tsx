@@ -11,6 +11,7 @@ import { ProblemDetail, ProblemsView } from "./views/ProblemsView";
 import { NewChange } from "./views/NewChange";
 import { NewProblem } from "./views/NewProblem";
 import { ReportesView } from "./views/ReportesView";
+import { ConfiguracionView } from "./views/ConfiguracionView";
 import { Dashboard } from "./views/Dashboard";
 import { NewTicket } from "./views/NewTicket";
 import { EmptyQueue, QueueView } from "./views/QueueView";
@@ -115,6 +116,7 @@ function Shell() {
             <Route path="/nuevo/problema" element={<NewProblem />} />
             <Route path="/nuevo/cambio" element={<NewChange />} />
             <Route path="/reportes" element={<ReportesView />} />
+            <Route path="/configuracion" element={<ConfiguracionView />} />
             <Route path="/problemas" element={<ProblemsView />} />
             <Route path="/problemas/:id" element={<ProblemDetail />} />
             <Route path="/cambios" element={<ChangesView />} />

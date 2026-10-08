@@ -7,9 +7,11 @@ import { Repository } from "typeorm";
 import * as amqp from "amqplib";
 import { NotificationEntity } from "./notification.entity";
 import { NotificationsController, notificationSubject } from "./notifications.controller";
+import { SettingsController } from "./settings.controller";
 import { JwtGuard } from "./jwt.guard";
 import { deriveAudience, deriveSummary } from "./audience";
 import { EmailService } from "./email.service";
+import { SettingEntity } from "./setting.entity";
 import { PromMetricsController, HttpMetricsInterceptor } from "./prom.metrics.controller";
 
 const EXCHANGE = "itil.events";
@@ -96,7 +98,7 @@ export class BusConsumer implements OnModuleInit {
       url:
         process.env.DATABASE_URL ??
         "postgres://tickit:tickit@localhost:5432/notifications",
-      entities: [NotificationEntity],
+      entities: [NotificationEntity, SettingEntity],
       synchronize: false,
       migrations: [__dirname + "/migrations/*.{js,ts}"],
       migrationsRun: true,
@@ -106,7 +108,7 @@ export class BusConsumer implements OnModuleInit {
       secret: process.env.JWT_SECRET ?? "tickitflow-demo-secret",
     }),
   ],
-  controllers: [PromMetricsController, NotificationsController],
+  controllers: [PromMetricsController, NotificationsController, SettingsController],
   providers: [{ provide: APP_INTERCEPTOR, useClass: HttpMetricsInterceptor }, BusConsumer, JwtGuard, EmailService],
 })
 export class AppModule {}

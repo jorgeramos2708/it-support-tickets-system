@@ -92,6 +92,30 @@ button {
   font-weight: 500;
 }
 
+/* ═══ Modo oscuro: el informe anual bajo luz de guardia ═══
+   La misma tinta, el mismo filete — traducidos a papel nocturno. */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-paper: #111318;
+  --color-raised: #181b21;
+  --color-ink: #e8eaed;
+  --color-ink-2: #b0b5bd;
+  --color-ink-3: #808796;
+  --color-rule: #2a2e35;
+  --color-rule-2: #3a3f47;
+  --color-signal: #e4433a;
+  --color-signal-deep: #c1332b;
+  --color-cobalt: #5b8def;
+  --color-good: #2ea56a;
+  --color-amber: #e0761b;
+  --color-violet: #9d5ff2;
+}
+
+[data-theme="dark"] ::selection {
+  background-color: var(--color-ink);
+  color: var(--color-paper);
+}
+
 @layer base {
   body {
     background-color: var(--color-paper);
