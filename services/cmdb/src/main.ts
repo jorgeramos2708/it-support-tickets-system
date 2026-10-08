@@ -6,6 +6,18 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
   const port = Number(process.env.PORT ?? 4007);
+  if (process.env.SWAGGER !== "false") {
+    const { DocumentBuilder, SwaggerModule } = await import("@nestjs/swagger");
+    const config = new DocumentBuilder()
+      .setTitle("TickITFlow CMDB")
+      .setDescription("API del microservicio cmdb de TickITFlow")
+      .setVersion("0.1")
+      .addBearerAuth()
+      .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup("api/docs", app, document);
+    console.log(`[cmdb-service] Swagger en :${port}/api/docs`);
+  }
   await app.listen(port);
   console.log(`[cmdb-service] escuchando en :${port}`);
 }

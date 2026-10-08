@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from "@nestjs/common";
@@ -45,8 +46,13 @@ export class ProblemsController {
   ) {}
 
   @Get("problems")
-  async list(): Promise<ProblemDto[]> {
-    const rows = await this.problems.find({ order: { createdAt: "DESC" } });
+  async list(
+    @Query("limit") limit?: string,
+    @Query("offset") offset?: string,
+  ): Promise<ProblemDto[]> {
+    const take = Math.min(Number(limit ?? 100) || 100, 200);
+    const skip = Math.max(Number(offset ?? 0) || 0, 0);
+    const rows = await this.problems.find({ order: { createdAt: "DESC" }, take, skip });
     return rows.map(toDto);
   }
 

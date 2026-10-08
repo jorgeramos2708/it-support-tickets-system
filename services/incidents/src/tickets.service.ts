@@ -120,10 +120,16 @@ export class TicketsService {
     });
   }
 
-  async list(practice?: Practice): Promise<TicketDto[]> {
+  async list(
+    practice?: Practice,
+    take = 100,
+    skip = 0,
+  ): Promise<TicketDto[]> {
     const rows = await this.tickets.find({
       where: practice ? { practice } : {},
       order: { createdAt: "DESC" },
+      take,
+      skip,
     });
     const all = await this.events.find();
     return rows.map((t) =>

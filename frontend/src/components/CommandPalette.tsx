@@ -52,9 +52,10 @@ export function CommandPalette({
     navigate(to);
   };
 
-  const recent = [...tickets]
+  // Búsqueda por texto libre sobre toda la cola — cmdk filtra por el `value` de cada item
+  const searchableTickets = [...tickets]
     .sort((a, b) => b.updatedAt - a.updatedAt)
-    .slice(0, 8);
+    .slice(0, 50);
 
   return (
     <Command.Dialog
@@ -88,8 +89,8 @@ export function CommandPalette({
           ))}
         </Command.Group>
 
-        <Command.Group heading="Tickets recientes">
-          {recent.map((t) => {
+        <Command.Group heading="Tickets">
+          {searchableTickets.map((t) => {
             const sla = slaOf(t, now);
             return (
               <Command.Item

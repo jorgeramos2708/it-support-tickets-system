@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
+import { Download } from "lucide-react";
 import { Module } from "../components/ui/Module";
 import { PriorityChip, StatusBadge } from "../components/ui/Chips";
+import { Button } from "../components/ui/Button";
 import { cn } from "../lib/cn";
+import { exportCsv } from "../lib/csv";
 import { api } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { dailySeries, type DaySeries } from "../lib/metrics";
@@ -211,6 +214,39 @@ export function ReportesView() {
             </span>
           </p>
         </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8"
+          onClick={() => {
+            exportCsv(
+              "tickitflow-reportes",
+              tickets.map((t) => ({
+                id: t.id,
+                practica: t.practice,
+                asunto: t.subject,
+                estado: t.status,
+                prioridad: t.priority,
+                solicitante: t.requester,
+                departamento: t.dept,
+                asignado: t.assignee ?? "",
+                creado: new Date(t.createdAt).toISOString(),
+                actualizado: new Date(t.updatedAt).toISOString(),
+                resuelto: t.resolvedAt ? new Date(t.resolvedAt).toISOString() : "",
+                sla_nivel: slaOf(t, now).level,
+                sla_restante: Math.round(slaOf(t, now).remainingMin),
+              })),
+              [
+                "id", "practica", "asunto", "estado", "prioridad",
+                "solicitante", "departamento", "asignado",
+                "creado", "actualizado", "resuelto", "sla_nivel", "sla_restante",
+              ],
+            );
+          }}
+        >
+          <Download size={14} strokeWidth={1.75} aria-hidden />
+          Exportar CSV
+        </Button>
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-12">

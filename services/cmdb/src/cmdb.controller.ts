@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from "@nestjs/common";
+import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { JwtGuard } from "./jwt.guard";
@@ -22,8 +22,13 @@ export class CmdbController {
   ) {}
 
   @Get("cis")
-  async list(): Promise<CiDto[]> {
-    const rows = await this.cis.find({ order: { id: "ASC" } });
+  async list(
+    @Query("limit") limit?: string,
+    @Query("offset") offset?: string,
+  ): Promise<CiDto[]> {
+    const take = Math.min(Number(limit ?? 200) || 200, 500);
+    const skip = Math.max(Number(offset ?? 0) || 0, 0);
+    const rows = await this.cis.find({ order: { id: "ASC" }, take, skip });
     return rows.map(toDto);
   }
 

@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from "@nestjs/common";
@@ -73,8 +74,13 @@ export class ChangesController {
   ) {}
 
   @Get("changes")
-  async list(): Promise<ChangeDto[]> {
-    const rows = await this.changes.find({ order: { createdAt: "DESC" } });
+  async list(
+    @Query("limit") limit?: string,
+    @Query("offset") offset?: string,
+  ): Promise<ChangeDto[]> {
+    const take = Math.min(Number(limit ?? 100) || 100, 200);
+    const skip = Math.max(Number(offset ?? 0) || 0, 0);
+    const rows = await this.changes.find({ order: { createdAt: "DESC" }, take, skip });
     return rows.map(toDto);
   }
 

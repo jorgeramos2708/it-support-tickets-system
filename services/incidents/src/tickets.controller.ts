@@ -29,8 +29,14 @@ export class TicketsController {
   constructor(private readonly tickets: TicketsService) {}
 
   @Get("tickets")
-  async list(@Query("practice") practice?: Practice): Promise<TicketDto[]> {
-    return this.tickets.list(practice);
+  async list(
+    @Query("practice") practice?: Practice,
+    @Query("limit") limit?: string,
+    @Query("offset") offset?: string,
+  ): Promise<TicketDto[]> {
+    const take = Math.min(Number(limit ?? 100) || 100, 200);
+    const skip = Math.max(Number(offset ?? 0) || 0, 0);
+    return this.tickets.list(practice, take, skip);
   }
 
   @Get("tickets/:code")

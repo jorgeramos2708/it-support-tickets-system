@@ -2,7 +2,10 @@ import {
   Body,
   Controller,
   Get,
+  Param,
+  Patch,
   Post,
+  Put,
   Req,
   UnauthorizedException,
   UseGuards,
@@ -32,6 +35,61 @@ export class AuthController {
     const email = (req as unknown as { user?: { email?: string } }).user?.email;
     if (!email) throw new UnauthorizedException();
     return this.auth.me(email);
+  }
+
+  @Get("users")
+  @UseGuards(JwtGuard)
+  async listUsers() {
+    return this.auth.listUsers();
+  }
+
+  @Post("users")
+  @UseGuards(JwtGuard)
+  async createUser(
+    @Body() body: { email: string; name: string; role: string; password: string },
+    @Req() req: Request,
+  ) {
+    const actorRole =
+      (req as unknown as { user?: { role?: string } }).user?.role ?? "";
+    if (actorRole !== "admin") {
+      throw new UnauthorizedException("Solo un administrador puede crear usuarios");
+    }
+    return this.auth.createUser(body);
+  }
+
+  @Patch("users/:email")
+  @UseGuards(JwtGuard)
+  async updateUser(
+    @Param("email") email: string,
+    @Body() body: { name?: string; role?: string },
+    @Req() req: Request,
+  ) {
+    const actorRole =
+      (req as unknown as { user?: { role?: string } }).user?.role ?? "";
+    if (actorRole !== "admin") {
+      throw new UnauthorizedException("Solo un administrador puede editar usuarios");
+    }
+    return this.auth.updateUser(email, body);
+  }
+
+  @Put("users/:email/password")
+  @UseGuards(JwtGuard)
+  async changePassword(
+    @Param("email") email: string,
+    @Body() body: { currentPassword: string; newPassword: string },
+    @Req() req: Request,
+  ) {
+    const actorEmail =
+      (req as unknown as { user?: { email?: string } }).user?.email ?? "";
+    // Un usuario solo cambia su propia contraseña; un admin puede cambiar cualquiera
+    if (actorEmail !== email) {
+      const actorRole =
+        (req as unknown as { user?: { role?: string } }).user?.role ?? "";
+      if (actorRole !== "admin") {
+        throw new UnauthorizedException("Solo puedes cambiar tu propia contraseña");
+      }
+    }
+    return this.auth.changePassword(email, body.currentPassword, body.newPassword);
   }
 
   @Get("health")

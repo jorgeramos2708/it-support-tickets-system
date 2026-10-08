@@ -1,4 +1,10 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -35,5 +41,74 @@ export class AuthService {
     const user = await this.users.findOne({ where: { email } });
     if (!user) throw new UnauthorizedException();
     return this.toPublic(user);
+  }
+
+  async listUsers(): Promise<PublicUser[]> {
+    const rows = await this.users.find({ order: { id: "ASC" } });
+    return rows.map((u) => this.toPublic(u));
+  }
+
+  async createUser(dto: {
+    email: string;
+    name: string;
+    role: string;
+    password: string;
+  }): Promise<PublicUser> {
+    if (!dto.email?.trim() || !dto.password?.trim() || !dto.name?.trim()) {
+      throw new BadRequestException("Email, nombre y contraseña son obligatorios");
+    }
+    const existing = await this.users.findOne({ where: { email: dto.email } });
+    if (existing) {
+      throw new ConflictException(`Ya existe un usuario con el correo ${dto.email}`);
+    }
+    const validRoles = ["agente", "usuario", "admin"];
+    if (!validRoles.includes(dto.role)) {
+      throw new BadRequestException(`Rol inválido: usa uno de ${validRoles.join(", ")}`);
+    }
+    const user = await this.users.save(
+      this.users.create({
+        email: dto.email.trim(),
+        name: dto.name.trim(),
+        role: dto.role,
+        passwordHash: bcrypt.hashSync(dto.password, 10),
+      }),
+    );
+    return this.toPublic(user);
+  }
+
+  async updateUser(
+    email: string,
+    dto: { name?: string; role?: string },
+  ): Promise<PublicUser> {
+    const user = await this.users.findOne({ where: { email } });
+    if (!user) throw new NotFoundException(`Usuario ${email} no encontrado`);
+    if (dto.name?.trim()) user.name = dto.name.trim();
+    if (dto.role) {
+      const validRoles = ["agente", "usuario", "admin"];
+      if (!validRoles.includes(dto.role)) {
+        throw new BadRequestException(`Rol inválido: usa uno de ${validRoles.join(", ")}`);
+      }
+      user.role = dto.role;
+    }
+    await this.users.save(user);
+    return this.toPublic(user);
+  }
+
+  async changePassword(
+    email: string,
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<{ ok: boolean }> {
+    const user = await this.users.findOne({ where: { email } });
+    if (!user) throw new NotFoundException(`Usuario ${email} no encontrado`);
+    if (!bcrypt.compareSync(currentPassword, user.passwordHash)) {
+      throw new UnauthorizedException("La contraseña actual no es correcta");
+    }
+    if (!newPassword || newPassword.length < 8) {
+      throw new BadRequestException("La nueva contraseña debe tener al menos 8 caracteres");
+    }
+    user.passwordHash = bcrypt.hashSync(newPassword, 10);
+    await this.users.save(user);
+    return { ok: true };
   }
 }

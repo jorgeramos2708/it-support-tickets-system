@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { Paperclip, X } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 import { PriorityChip } from "../../components/ui/Chips";
 import { Field, Segmented, TextArea, TextInput } from "../../components/ui/Field";
@@ -64,8 +65,23 @@ function PortalForm({
   const [impact, setImpact] = useState<Impact>(item ? item.impact : "medio");
   const [urgency, setUrgency] = useState<Urgency>("media");
   const [subjectError, setSubjectError] = useState(false);
+  const [attachments, setAttachments] = useState<
+    Array<{ name: string; sizeKb: number }>
+  >([]);
 
   const priority = priorityOf(impact, urgency);
+
+  const handleFiles = (e: ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    const next = [...attachments];
+    for (const f of files) {
+      if (next.length >= 5) break;
+      next.push({ name: f.name, sizeKb: Math.max(1, Math.round(f.size / 1024)) });
+    }
+    setAttachments(next);
+    e.target.value = "";
+  };
 
   const submit = async () => {
     if (!subject.trim()) {
@@ -79,7 +95,7 @@ function PortalForm({
       requester: PORTAL_USER.name,
       dept: PORTAL_USER.dept,
       priority,
-      attachments: [],
+      attachments,
     });
     navigate(`/portal/ticket/${ticket.id}`, { state: { creado: true } });
   };
@@ -173,6 +189,48 @@ function PortalForm({
             />
           </div>
         </div>
+
+        <Field label="Adjuntos" htmlFor="p-adjuntos" hint="Hasta 5 archivos (capturas, PDFs). En modo demo solo se registra el nombre.">
+          <div className="flex items-center gap-2">
+            <label
+              htmlFor="p-adjuntos"
+              className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-[3px] border border-rule bg-raised px-3 text-sm text-ink-2 transition-colors duration-150 hover:border-ink"
+            >
+              <Paperclip size={14} strokeWidth={1.75} aria-hidden />
+              Adjuntar archivos
+            </label>
+            <input
+              id="p-adjuntos"
+              type="file"
+              multiple
+              className="hidden"
+              onChange={handleFiles}
+            />
+            {attachments.length > 0 ? (
+              <span className="flex flex-wrap gap-1.5">
+                {attachments.map((a, i) => (
+                  <span
+                    key={`${a.name}-${i}`}
+                    className="inline-flex items-center gap-1 rounded-[3px] border border-rule bg-raised px-2 py-1 font-mono text-[11px] text-ink-2"
+                  >
+                    {a.name}
+                    <span className="text-ink-3">({a.sizeKb} KB)</span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setAttachments((prev) => prev.filter((_, j) => j !== i))
+                      }
+                      className="cursor-pointer text-ink-3 transition-colors duration-150 hover:text-signal"
+                      aria-label={`Quitar ${a.name}`}
+                    >
+                      <X size={11} strokeWidth={2} aria-hidden />
+                    </button>
+                  </span>
+                ))}
+              </span>
+            ) : null}
+          </div>
+        </Field>
 
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-[3px] border border-rule bg-raised px-5 py-4">
           <div className="flex items-center gap-3">
