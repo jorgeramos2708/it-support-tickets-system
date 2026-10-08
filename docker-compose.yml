@@ -210,7 +210,13 @@ services:
     environment:
       DATABASE_URL: postgres://tickit:${POSTGRES_PASSWORD:-tickit}@notifications-db:5432/notifications
       JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret}
-      RABBITMQ_URL: amqp://tickit:tickit@rabbitmq:5672
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-tickit}:${RABBITMQ_PASS:-tickit}@rabbitmq:5672
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-tickitflow@edrs.xyz}
+      NOTIFY_EMAIL_TO: ${NOTIFY_EMAIL_TO:-}
       PORT: "4009"
     depends_on:
       notifications-db:

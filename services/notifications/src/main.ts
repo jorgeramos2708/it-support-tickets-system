@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
+import { logger } from "./logger";
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
@@ -19,7 +20,7 @@ async function bootstrap(): Promise<void> {
     console.log(`[notifications-service] Swagger en :${port}/api/docs`);
   }
   await app.listen(port);
-  console.log(`[notification-service] escuchando en :${port}`);
+  logger.info({ port }, "notification-service escuchando");
 }
 
 void bootstrap();

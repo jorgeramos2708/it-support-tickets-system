@@ -89,6 +89,8 @@ interface StoreValue {
   me: string;
   hydrating: boolean;
   live: boolean;
+  hasMoreTickets: boolean;
+  loadMoreTickets: () => Promise<void>;
   pulses: Record<string, number>;
   getTicket: (id: string) => Ticket | undefined;
   createTicket: (input: CreateTicketInput) => Promise<Ticket>;
@@ -132,6 +134,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [now, setNow] = useState(() => Date.now());
   const [pulses, setPulses] = useState<Record<string, number>>({});
   const [hydrating, setHydrating] = useState(live);
+  const [hasMoreTickets, setHasMoreTickets] = useState(false);
   const levelsRef = useRef<Record<string, string>>({});
 
   const pulse = useCallback((id: string) => {
@@ -190,12 +193,35 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setChanges(changeDtos.map(apiToChange));
       setCis(ciDtos.map(apiToCi));
       setArticles(articleDtos.map(apiToArticle));
+      // Si llegaron 100, probablemente hay más (paginación)
+      setHasMoreTickets(ticketDtos.length >= 100);
     } catch (err) {
       console.error("[store] hidratación falló:", err);
     } finally {
       setHydrating(false);
     }
   }, [live, authToken]);
+
+  /** Carga más tickets (paginación con infinite scroll). */
+  const loadMoreTickets = useCallback(async () => {
+    if (!live || !authToken || !hasMoreTickets) return;
+    try {
+      const offset = tickets.length;
+      const more = await api.listTickets(authToken, 100, offset);
+      if (more.length < 100) setHasMoreTickets(false);
+      if (more.length > 0) {
+        setTickets((prev) => {
+          const existing = new Set(prev.map((t) => t.id));
+          const newTickets = more
+            .map(apiToTicket)
+            .filter((t) => !existing.has(t.id));
+          return [...prev, ...newTickets];
+        });
+      }
+    } catch (err) {
+      console.error("[store] loadMore falló:", err);
+    }
+  }, [live, authToken, hasMoreTickets, tickets.length]);
 
   useEffect(() => {
     if (live) {
@@ -606,6 +632,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     me,
     hydrating,
     live,
+    hasMoreTickets,
+    loadMoreTickets,
     pulses,
     getTicket,
     createTicket,

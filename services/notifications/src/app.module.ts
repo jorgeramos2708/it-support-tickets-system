@@ -9,6 +9,7 @@ import { NotificationEntity } from "./notification.entity";
 import { NotificationsController, notificationSubject } from "./notifications.controller";
 import { JwtGuard } from "./jwt.guard";
 import { deriveAudience, deriveSummary } from "./audience";
+import { EmailService } from "./email.service";
 import { PromMetricsController, HttpMetricsInterceptor } from "./prom.metrics.controller";
 
 const EXCHANGE = "itil.events";
@@ -19,6 +20,7 @@ export class BusConsumer implements OnModuleInit {
   constructor(
     @InjectRepository(NotificationEntity)
     private readonly notifications: Repository<NotificationEntity>,
+    private readonly emailService: EmailService,
   ) {}
 
   async onModuleInit(): Promise<void> {
@@ -61,6 +63,14 @@ export class BusConsumer implements OnModuleInit {
                 audience: saved.audience,
                 occurredAt: saved.occurredAt.toISOString(),
               });
+
+              // Enviar email si el evento es crítico
+              await this.emailService.notify({
+                routingKey: saved.routingKey,
+                code: saved.code,
+                summary: saved.summary,
+                audience: saved.audience,
+              });
             } catch (err) {
               console.error("[bus] mensaje no procesable:", (err as Error).message);
             } finally {
@@ -97,6 +107,6 @@ export class BusConsumer implements OnModuleInit {
     }),
   ],
   controllers: [PromMetricsController, NotificationsController],
-  providers: [{ provide: APP_INTERCEPTOR, useClass: HttpMetricsInterceptor }, BusConsumer, JwtGuard],
+  providers: [{ provide: APP_INTERCEPTOR, useClass: HttpMetricsInterceptor }, BusConsumer, JwtGuard, EmailService],
 })
 export class AppModule {}
