@@ -44,8 +44,13 @@ if (login.status !== 0) {
 for (const { service, context } of IMAGES) {
   const tag = `${registry}/tickitflow/${service}:${VERSION}`;
   console.log(`[publish] ${tag}`);
-  // --output type=docker fuerza manifest Docker v2 (no OCI) que Zot acepta
-  execSync(`docker buildx build --provenance=false --sbom=false --output type=docker -t ${tag} ${context}`, { stdio: "inherit" });
+  execSync(`docker build -t ${tag} ${context}`, { stdio: "inherit" });
+  // Round trip: save → load normaliza TODOS los media types a Docker v2.
+  // BuildKit produce capas OCI que Zot rechaza; docker save exporta Docker v2 puro.
+  execSync(`docker save ${tag} -o /tmp/img.tar`, { stdio: "inherit" });
+  execSync(`docker rmi ${tag} 2>/dev/null || true`);
+  execSync(`docker load -i /tmp/img.tar`, { stdio: "inherit" });
+  execSync(`rm -f /tmp/img.tar`);
   execSync(`docker push ${tag}`, { stdio: "inherit" });
 }
 
