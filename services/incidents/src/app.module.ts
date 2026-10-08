@@ -18,6 +18,7 @@ import { TicketsService } from "./tickets.service";
 import { MetricsController } from "./metrics.controller";
 import { MetricsService } from "./metrics.service";
 import { AttachmentsController } from "./attachments.controller";
+import { PromMetricsController, HttpMetricsInterceptor } from "./prom.metrics.controller";
 import { JwtGuard } from "./jwt.guard";
 import { startAuditConsumer } from "./bus";
 
