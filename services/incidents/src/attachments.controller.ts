@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Get, Param, Post, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { BadRequestException, Controller, Get, Param, Post, Req, Res, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import type { Request, Response } from "express";
 import { JwtGuard } from "./jwt.guard";
@@ -6,6 +6,13 @@ import * as Minio from "minio";
 
 const BUCKET = "tickitflow-attachments";
 const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
+
+interface UploadedFilePayload {
+  originalname: string;
+  buffer: Buffer;
+  size: number;
+  mimetype: string;
+}
 
 @Controller("attachments")
 @UseGuards(JwtGuard)
@@ -26,7 +33,7 @@ export class AttachmentsController {
   @UseInterceptors(FileInterceptor("file", { limits: { fileSize: MAX_SIZE } }))
   async upload(
     @Param("ticketCode") ticketCode: string,
-    @UploadedFile() file?: Express.Multer.File,
+    @UploadedFile() file?: UploadedFilePayload,
     @Req() req?: Request,
   ) {
     if (!file) throw new BadRequestException("Archivo requerido");

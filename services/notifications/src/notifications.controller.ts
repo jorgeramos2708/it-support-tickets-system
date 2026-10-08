@@ -2,7 +2,7 @@ import { Controller, Get, Query, Req, UnauthorizedException, UseGuards } from "@
 import type { Request } from "express";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Subject, filter } from "rxjs";
+import { Subject, filter, map } from "rxjs";
 import { JwtService } from "@nestjs/jwt";
 import { JwtGuard } from "./jwt.guard";
 import {
@@ -81,6 +81,3 @@ export class NotificationsController {
     );
   }
 }
-
-// Import necesario para el map del stream
-import { map } from "rxjs/operators";
