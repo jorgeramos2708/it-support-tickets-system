@@ -21,6 +21,7 @@ import {
 } from "./setting.entity";
 import { EmailService } from "./email.service";
 import { UpdateSmtpDto } from "./dtos";
+import { encryptSetting } from "./settings-crypto";
 
 /** Solo admin puede ver/editar la configuración. */
 function requireAdmin(req: Request): void {
@@ -64,9 +65,10 @@ export class SettingsController {
     if (body.enabled !== undefined) upserts.push({ key: "smtp.enabled", value: String(body.enabled) });
     if (body.recipients !== undefined) upserts.push({ key: "notify.emails", value: body.recipients.join(",") });
 
-    // Solo actualizar password si se envía un valor real (no "••••••••")
+    // Solo actualizar password si se envía un valor real (no "••••••••");
+    // se cifra en reposo (AES-256-GCM)
     if (body.pass !== undefined && body.pass !== "••••••••" && body.pass !== "") {
-      upserts.push({ key: "smtp.pass", value: body.pass });
+      upserts.push({ key: "smtp.pass", value: encryptSetting(body.pass) });
     }
 
     for (const { key, value } of upserts) {

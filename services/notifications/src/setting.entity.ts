@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { decryptSetting } from "./settings-crypto";
 
 @Entity("settings")
 @Unique("UQ_key", ["key"])
@@ -64,7 +65,7 @@ export function smtpSettingsFromRows(rows: SettingEntity[]): SmtpSettings {
     host: get("smtp.host", env.host),
     port: Number(get("smtp.port", String(env.port))) || 587,
     user: get("smtp.user", env.user),
-    pass: get("smtp.pass", env.pass),
+    pass: decryptSetting(get("smtp.pass", env.pass)),
     from: get("smtp.from", env.from),
     secure: get("smtp.secure", String(env.secure)) === "true",
     enabled: get("smtp.enabled", String(env.enabled)) === "true",

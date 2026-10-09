@@ -4,6 +4,7 @@ import type { Transporter } from "nodemailer";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { SettingEntity, smtpSettingsFromRows, type SmtpSettings } from "./setting.entity";
+import { encryptSetting, isEncrypted } from "./settings-crypto";
 
 interface EmailNotification {
   routingKey: string;
@@ -31,10 +32,26 @@ export class EmailService implements OnModuleInit {
     await this.reload();
   }
 
+  /**
+   * Migración perezosa: si smtp.pass quedó en plaintext (pre-cifrado),
+   * se re-guarda cifrado con AES-256-GCM.
+   */
+  private async migrateLegacyPass(rows: SettingEntity[]): Promise<void> {
+    const passRow = rows.find((r) => r.key === "smtp.pass");
+    if (passRow && passRow.value && !isEncrypted(passRow.value)) {
+      await this.settingsRepo.upsert(
+        { key: "smtp.pass", value: encryptSetting(passRow.value), updatedAt: new Date() },
+        ["key"],
+      );
+      console.log("[email] smtp.pass migrado a cifrado en reposo");
+    }
+  }
+
   /** Lee la configuración de la tabla settings y reconstruye el transporter. */
   async reload(): Promise<void> {
     try {
       const rows = await this.settingsRepo.find();
+      await this.migrateLegacyPass(rows);
       this.current = smtpSettingsFromRows(rows);
     } catch {
       // Si la tabla no existe aún (primera migración), usar env vars
