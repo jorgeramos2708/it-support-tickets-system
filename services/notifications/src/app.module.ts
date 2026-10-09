@@ -103,7 +103,7 @@ export class BusConsumer implements OnModuleInit {
       migrations: [__dirname + "/migrations/*.{js,ts}"],
       migrationsRun: true,
     }),
-    TypeOrmModule.forFeature([NotificationEntity]),
+    TypeOrmModule.forFeature([NotificationEntity, SettingEntity]),
     JwtModule.register({
       secret: process.env.JWT_SECRET ?? "tickitflow-demo-secret",
     }),
