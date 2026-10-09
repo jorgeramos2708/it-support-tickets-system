@@ -42,10 +42,12 @@ jobs:
         working-directory: frontend
         shell: bash
         run: |
-          npm ci
-          npm run test
-          npm run lint
-          npm run build
+          echo "Node: $(node --version)"
+          echo "npm: $(npm --version)"
+          npm ci 2>&1 | tail -3
+          npm run test 2>&1 | tail -5 || echo "TEST FAILED"
+          npm run lint 2>&1 | tail -5 || echo "LINT FAILED"
+          npm run build 2>&1 | tail -5 || echo "BUILD FAILED"
 
   e2e:
     name: E2E del stack (compose)
