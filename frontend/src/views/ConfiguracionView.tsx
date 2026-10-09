@@ -86,10 +86,9 @@ export function ConfiguracionView() {
       });
       setMessage("Configuración guardada");
       setIsError(false);
-    } catch (err) {
+    } catch {
       setMessage("Error al guardar la configuración");
       setIsError(true);
-      console.error(err);
     } finally {
       setSaving(false);
     }
