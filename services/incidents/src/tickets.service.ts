@@ -141,7 +141,6 @@ export class TicketsService {
     const all = await this.events.find({
       where: { ticketId: In(rows.map((r) => r.id)) },
     });
-    const all = await this.events.find();
     return rows.map((t) =>
       toDto(
         t,
@@ -208,8 +207,7 @@ export class TicketsService {
       return ticketsRepo.findOne({ where: { id: created.id } });
     });
 
-    const withCode = saved ?? ({} as TicketEntity);
-    if (!withCode.id) {
+    if (!saved) {
       throw new BadRequestException("Fallo al crear el ticket");
     }
 

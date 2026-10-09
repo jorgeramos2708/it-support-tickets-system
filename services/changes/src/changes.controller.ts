@@ -13,9 +13,9 @@ import { NotFoundException,
 } from "@nestjs/common";
 import type { Request } from "express";
 import { InjectRepository } from "@nestjs/typeorm";
-import { NotFoundException, Repository } from "typeorm";
-import { NotFoundException, JwtGuard } from "./jwt.guard";
-import { NotFoundException,
+import { Repository } from "typeorm";
+import { JwtGuard } from "./jwt.guard";
+import {
   ChangeEntity,
   toDto,
   type ChangeApproval,
@@ -23,7 +23,7 @@ import { NotFoundException,
   type ChangeStatus,
   type ChangeType,
 } from "./change.entity";
-import { NotFoundException, publishEvent } from "./bus";
+import { publishEvent } from "./bus";
 
 /** Las prácticas de consola (problemas, cambios) son de agentes y admins. */
 function requireOperator(req: Request): void {
