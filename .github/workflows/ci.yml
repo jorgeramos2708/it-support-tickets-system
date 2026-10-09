@@ -181,8 +181,21 @@ jobs:
               COMPOSE_IMAGE="tickitflow-$svc"
               if docker image inspect "$COMPOSE_IMAGE" > /dev/null 2>&1; then
                 docker tag "$COMPOSE_IMAGE" "registry.edrs.xyz/tickitflow/$svc:latest"
-                docker push "registry.edrs.xyz/tickitflow/$svc:latest" 2>&1 | tail -1
-                echo "OK: $svc"
+                ok=0
+                for attempt in 1 2 3; do
+                  if docker push "registry.edrs.xyz/tickitflow/$svc:latest" > /dev/null 2>&1; then
+                    ok=1
+                    echo "OK: $svc (intento $attempt)"
+                    break
+                  fi
+                  echo "push de $svc fallo (intento $attempt), reintentando en 5s..."
+                  sleep 5
+                done
+                if [ "$ok" != "1" ]; then
+                  echo "FALLO: push de $svc tras 3 intentos:"
+                  docker push "registry.edrs.xyz/tickitflow/$svc:latest" 2>&1 | tail -3
+                  exit 1
+                fi
               else
                 echo "SKIP: $svc"
               fi
