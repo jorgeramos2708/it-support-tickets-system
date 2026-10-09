@@ -1,8 +1,6 @@
-import { APP_GUARD } from "@nestjs/core";
+import { APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core";
 import { ThrottlerModule, ThrottlerGuard } from "@nestjs/throttler";
-import { APP_INTERCEPTOR } from "@nestjs/core";
 import { getJwtSecret } from "./jwt-secret";
-import { APP_INTERCEPTOR } from "@nestjs/core";
 import { Injectable, Module, OnModuleInit } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { JwtModule } from "@nestjs/jwt";
