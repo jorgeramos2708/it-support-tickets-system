@@ -101,7 +101,7 @@ export function ConfiguracionView() {
       const res = await api.testSmtp(token);
       setMessage(res.message);
       setIsError(!res.sent);
-    } catch (err) {
+    } catch {
       setMessage("Fallo al enviar el email de prueba");
       setIsError(true);
     }
