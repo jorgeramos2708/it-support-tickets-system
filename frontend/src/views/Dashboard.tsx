@@ -46,12 +46,14 @@ function KpiCell({
   delta,
   positiveIsGood,
   deltaUnit,
+  live = false,
 }: {
   label: string;
   value: string;
   delta: number;
   positiveIsGood: boolean;
   deltaUnit: "n" | "m" | "pp";
+  live?: boolean;
 }) {
   const good = positiveIsGood ? delta >= 0 : delta <= 0;
   const up = delta >= 0;
@@ -68,19 +70,24 @@ function KpiCell({
         <span className="font-display text-[28px] leading-none font-semibold tracking-tight tabular-nums">
           {value}
         </span>
-        <span
-          className={cn(
-            "flex items-center gap-0.5 font-mono text-[11px] tabular-nums",
-            good ? "text-good" : "text-signal",
-          )}
-        >
-          {up ? (
-            <ArrowUp size={10} strokeWidth={2} aria-hidden />
-          ) : (
-            <ArrowDown size={10} strokeWidth={2} aria-hidden />
-          )}
-          {unit}
-        </span>
+            <span
+              className={cn(
+                "flex items-center gap-0.5 font-mono text-[11px] tabular-nums",
+                good ? "text-good" : "text-signal",
+              )}
+            >
+              {up ? (
+                <ArrowUp size={10} strokeWidth={2} aria-hidden />
+              ) : (
+                <ArrowDown size={10} strokeWidth={2} aria-hidden />
+              )}
+              {unit}
+            </span>
+            {!live ? (
+              <span className="text-[10px] text-ink-3/60" title="Deltas de demostración — no reales en modo demo">
+                demo
+              </span>
+            ) : null}
       </p>
     </div>
   );
@@ -158,7 +165,7 @@ function VolumeChart() {
 }
 
 export function Dashboard() {
-  const { tickets, now, me, hydrating } = useStore();
+  const { tickets, now, me, hydrating, live } = useStore();
   const navigate = useNavigate();
 
   const open = useMemo(
@@ -245,6 +252,7 @@ export function Dashboard() {
       >
         <>
           <KpiCell
+            live={live}
             label="Abiertos"
             value={String(open.length)}
             delta={KPI_DELTAS.abiertos}
@@ -252,6 +260,7 @@ export function Dashboard() {
             deltaUnit="n"
           />
           <KpiCell
+            live={live}
             label="En riesgo de SLA"
             value={String(critical.length)}
             delta={KPI_DELTAS.riesgo}
@@ -259,6 +268,7 @@ export function Dashboard() {
             deltaUnit="n"
           />
           <KpiCell
+            live={live}
             label="MTTR"
             value={mttr === null ? "—" : fmtDuration(mttr)}
             delta={KPI_DELTAS.mttr}
@@ -266,6 +276,7 @@ export function Dashboard() {
             deltaUnit="m"
           />
           <KpiCell
+            live={live}
             label="Cumplimiento SLA"
             value={compliance === null ? "—" : `${compliance.toFixed(1)}%`}
             delta={KPI_DELTAS.cumplimiento}

@@ -39,29 +39,51 @@ export function NotificationsBell() {
   // SSE: stream en tiempo real (token por query param)
   useEffect(() => {
     if (!live || !token) return;
-    const source = new EventSource(
-      `/api/notifications/notifications/stream?token=${encodeURIComponent(token)}`,
-    );
-    source.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data) as ApiNotification;
-        setLastEvent(data);
-        // Actualizar la lista con la nueva notificación
-        setItems((prev) => {
-          if (prev.some((n) => n.id === data.id)) return prev;
-          return [data, ...prev].slice(0, 20);
-        });
-      } catch {
-        // Ignorar mensajes no parseables
+    let source: EventSource | null = null;
+    let pollTimer: ReturnType<typeof setInterval> | null = null;
+
+    const startPolling = () => {
+      if (pollTimer) return;
+      load();
+      pollTimer = setInterval(load, 15_000);
+    };
+
+    const stopAll = () => {
+      if (source) {
+        source.close();
+        source = null;
+      }
+      if (pollTimer) {
+        clearInterval(pollTimer);
+        pollTimer = null;
       }
     };
-    source.onerror = () => {
-      // SSE falló — activar polling como respaldo
-      source.close();
-      const timer = setInterval(load, 15_000);
-      return () => clearInterval(timer);
-    };
-    return () => source.close();
+
+    try {
+      source = new EventSource(
+        `/api/notifications/notifications/stream?token=${encodeURIComponent(token)}`,
+      );
+      source.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data) as ApiNotification;
+          setLastEvent(data);
+          setItems((prev) => {
+            if (prev.some((n) => n.id === data.id)) return prev;
+            return [data, ...prev].slice(0, 20);
+          });
+        } catch {
+          // Ignorar mensajes no parseables
+        }
+      };
+      source.onerror = () => {
+        stopAll();
+        startPolling();
+      };
+    } catch {
+      startPolling();
+    }
+
+    return stopAll;
   }, [live, token, load]);
 
   // Cuando llega una notificación nueva vía SSE, actualizar el reloj de la lista

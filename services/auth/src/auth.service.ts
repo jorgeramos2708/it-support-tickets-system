@@ -25,7 +25,7 @@ export class AuthService {
 
   async login(email: string, password: string): Promise<{ token: string; user: PublicUser }> {
     const user = await this.users.findOne({ where: { email } });
-    if (!user || !bcrypt.compareSync(password, user.passwordHash)) {
+    if (!user || !await bcrypt.compare(password, user.passwordHash)) {
       throw new UnauthorizedException("Credenciales no válidas");
     }
     const token = await this.jwt.signAsync({
@@ -70,7 +70,7 @@ export class AuthService {
         email: dto.email.trim(),
         name: dto.name.trim(),
         role: dto.role,
-        passwordHash: bcrypt.hashSync(dto.password, 10),
+        passwordHash: await bcrypt.hash(dto.password, 12),
       }),
     );
     return this.toPublic(user);
@@ -101,13 +101,13 @@ export class AuthService {
   ): Promise<{ ok: boolean }> {
     const user = await this.users.findOne({ where: { email } });
     if (!user) throw new NotFoundException(`Usuario ${email} no encontrado`);
-    if (!bcrypt.compareSync(currentPassword, user.passwordHash)) {
+    if (!await bcrypt.compare(currentPassword, user.passwordHash)) {
       throw new UnauthorizedException("La contraseña actual no es correcta");
     }
     if (!newPassword || newPassword.length < 8) {
       throw new BadRequestException("La nueva contraseña debe tener al menos 8 caracteres");
     }
-    user.passwordHash = bcrypt.hashSync(newPassword, 10);
+    user.passwordHash = await bcrypt.hash(newPassword, 12);
     await this.users.save(user);
     return { ok: true };
   }

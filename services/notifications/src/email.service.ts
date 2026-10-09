@@ -116,6 +116,16 @@ export class EmailService implements OnModuleInit {
     }
   }
 
+  /** Escapa HTML para prevenir inyección en emails (phishing desde tickets). */
+  private esc(text: string): string {
+    return text
+      .replace(/&/g, String.fromCharCode(38, 97, 109, 112, 59))
+      .replace(/</g, String.fromCharCode(38, 108, 116, 59))
+      .replace(/>/g, String.fromCharCode(38, 103, 116, 59))
+      .replace(/"/g, String.fromCharCode(38, 113, 117, 111, 116, 59))
+      .replace(/'/g, String.fromCharCode(38, 35, 48, 51, 57, 59));
+  }
+
   private renderText(event: EmailNotification): string {
     return [
       `TickITFlow — Notificación`,
@@ -139,11 +149,11 @@ export class EmailService implements OnModuleInit {
       <span style="color: #da291c; font-weight: 600; font-size: 15px; margin-left: 6px;">· Notificación</span>
     </div>
     <div style="padding: 20px; background: #fbfbf9;">
-      <p style="margin: 0 0 12px; font-size: 14px; color: #3d434d;">${event.summary}</p>
+      <p style="margin: 0 0 12px; font-size: 14px; color: #3d434d;">${this.esc(event.summary)}</p>
       <table style="font-size: 13px; color: #3d434d; border-spacing: 0 4px;">
-        <tr><td style="color: #666d78; padding-right: 12px; white-space: nowrap;">Evento</td><td>${event.routingKey}</td></tr>
-        <tr><td style="color: #666d78; padding-right: 12px;">Ticket</td><td style="font-family: monospace;">${event.code ?? "—"}</td></tr>
-        <tr><td style="color: #666d78; padding-right: 12px;">Audiencia</td><td>${event.audience}</td></tr>
+        <tr><td style="color: #666d78; padding-right: 12px; white-space: nowrap;">Evento</td><td>${this.esc(event.routingKey)}</td></tr>
+        <tr><td style="color: #666d78; padding-right: 12px;">Ticket</td><td style="font-family: monospace;">${this.esc(event.code ?? "—")}</td></tr>
+        <tr><td style="color: #666d78; padding-right: 12px;">Audiencia</td><td>${this.esc(event.audience)}</td></tr>
       </table>
       <a href="https://tickitflow.edrs.xyz" style="display: inline-block; margin-top: 16px; background: #da291c; color: #fbfbf9; padding: 8px 16px; border-radius: 3px; text-decoration: none; font-size: 13px; font-weight: 500;">Ver en la consola</a>
     </div>

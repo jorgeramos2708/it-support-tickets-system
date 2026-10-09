@@ -1,8 +1,8 @@
-import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { JwtGuard } from "./jwt.guard";
-import { CiEntity, toDto, type CiDto } from "./ci.entity";
+import { NotFoundException, Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
+import { NotFoundException, InjectRepository } from "@nestjs/typeorm";
+import { NotFoundException, Repository } from "typeorm";
+import { NotFoundException, JwtGuard } from "./jwt.guard";
+import { NotFoundException, CiEntity, toDto, type CiDto } from "./ci.entity";
 
 /** Salud del servicio — pública, para monitoreo del stack. */
 @Controller("health")

@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ForbiddenException,
+  In,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
@@ -135,6 +136,12 @@ export class TicketsService {
       take,
       skip,
     });
+    if (rows.length === 0) return [];
+
+    // Cargar solo los eventos de los tickets de esta página (In, no full table)
+    const all = await this.events.find({
+      where: { ticketId: In(rows.map((r) => r.id)) },
+    });
     const all = await this.events.find();
     return rows.map((t) =>
       toDto(
@@ -172,32 +179,40 @@ export class TicketsService {
     }
     const now = new Date();
     const prefix = dto.practice === "incidente" ? "INC" : "REQ";
-    // Un usuario final siempre registra a su propio nombre; el solicitante
-    // declarado en el cuerpo solo se respeta para operadores.
     const requester =
       actorRole === "usuario" ? actor : (dto.requester ?? actor);
-    // El evento "creado" también respeta el token: un usuario final
-    // nunca puede firmar con el nombre de otra persona.
     const createdEventActor = requester;
-    const saved = await this.tickets.save(
-      this.tickets.create({
-        code: "PENDIENTE",
-        practice: dto.practice,
-        subject: dto.subject.trim(),
-        description: dto.description ?? "",
-        requester,
-        dept: dto.dept ?? "Sin departamento",
-        priority: dto.priority ?? "P3",
-        status: "nuevo" as TicketStatus,
-        assignee: null,
-        createdAt: now,
-        updatedAt: now,
-        resolvedAt: null,
-        attachments: dto.attachments ?? [],
-      }),
-    );
-    saved.code = `${prefix}-${2400 + saved.id}`;
-    await this.tickets.save(saved);
+
+    // Usar transaction para evitar race condition en code generation
+    const saved = await this.tickets.manager.transaction(async (em) => {
+      const ticketsRepo = em.getRepository(this.tickets.target);
+      const created = await ticketsRepo.save(
+        ticketsRepo.create({
+          code: `TMP-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          practice: dto.practice,
+          subject: dto.subject.trim(),
+          description: dto.description ?? "",
+          requester,
+          dept: dto.dept ?? "Sin departamento",
+          priority: dto.priority ?? "P3",
+          status: "nuevo" as TicketStatus,
+          assignee: null,
+          createdAt: now,
+          updatedAt: now,
+          resolvedAt: null,
+          attachments: dto.attachments ?? [],
+        }),
+      );
+      // Generar código atómico: UPDATE ... SET code = prefix-id WHERE id
+      const finalCode = `${prefix}-${2400 + created.id}`;
+      await ticketsRepo.update(created.id, { code: finalCode });
+      return ticketsRepo.findOne({ where: { id: created.id } });
+    });
+
+    const withCode = saved ?? ({} as TicketEntity);
+    if (!withCode.id) {
+      throw new BadRequestException("Fallo al crear el ticket");
+    }
 
     await this.addEvent(saved.id, {
       at: now,

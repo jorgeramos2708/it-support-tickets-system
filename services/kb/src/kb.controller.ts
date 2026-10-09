@@ -35,7 +35,7 @@ export class KbController {
   @Get("articles/:code")
   async byCode(@Param("code") code: string): Promise<ArticleDto> {
     const article = await this.articles.findOne({ where: { code } });
-    if (!article) throw new Error("Artículo no encontrado");
+    if (!article) throw new NotFoundException("Artículo no encontrado");
     article.views += 1;
     await this.articles.save(article);
     return toDto(article);
@@ -47,7 +47,7 @@ export class KbController {
     @Body() body: { helpful?: boolean },
   ): Promise<ArticleDto> {
     const article = await this.articles.findOne({ where: { code } });
-    if (!article) throw new Error("Artículo no encontrado");
+    if (!article) throw new NotFoundException("Artículo no encontrado");
     if (body.helpful) article.helpful += 1;
     await this.articles.save(article);
     return toDto(article);
