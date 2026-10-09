@@ -12,7 +12,7 @@ import { NotFoundException,
   UseGuards,
 } from "@nestjs/common";
 import type { Request } from "express";
-import { NotFoundException, InjectRepository } from "@nestjs/typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 import { NotFoundException, Repository } from "typeorm";
 import { NotFoundException, JwtGuard } from "./jwt.guard";
 import { NotFoundException, ProblemEntity, toDto, type ProblemDto, type ProblemStatus } from "./problem.entity";
