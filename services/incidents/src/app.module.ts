@@ -1,3 +1,4 @@
+import { getJwtSecret } from "./jwt-secret";
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import { Injectable, Module, OnModuleInit } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -184,7 +185,7 @@ export class TicketSeeder implements OnModuleInit {
       TypeOrmModule.forFeature([TicketEntity, TicketEventEntity, DailyMetricEntity]),
       ScheduleModule.forRoot(),
     JwtModule.register({
-      secret: process.env.JWT_SECRET ?? "tickitflow-demo-secret",
+      secret: getJwtSecret(),
     }),
   ],
   controllers: [PromMetricsController, TicketsController, HealthController, MetricsController, AttachmentsController],

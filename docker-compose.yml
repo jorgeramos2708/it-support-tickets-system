@@ -17,7 +17,7 @@ services:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-tickit}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-tickit}
     ports:
-      - "15672:15672"
+      - "127.0.0.1:15672:15672"
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 5s
@@ -100,7 +100,7 @@ services:
     environment:
       DATABASE_URL: postgres://tickit:${POSTGRES_PASSWORD:-tickit}@problems-db:5432/problems
       JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret}
-      RABBITMQ_URL: amqp://tickit:tickit@rabbitmq:5672
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-tickit}:${RABBITMQ_PASS:-tickit}@rabbitmq:5672
       PORT: "4005"
     depends_on:
       problems-db:
@@ -129,7 +129,7 @@ services:
     environment:
       DATABASE_URL: postgres://tickit:${POSTGRES_PASSWORD:-tickit}@changes-db:5432/changes
       JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret}
-      RABBITMQ_URL: amqp://tickit:tickit@rabbitmq:5672
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-tickit}:${RABBITMQ_PASS:-tickit}@rabbitmq:5672
       PORT: "4006"
     depends_on:
       changes-db:
@@ -232,7 +232,7 @@ services:
   prometheus:
     image: prom/prometheus:v3.1.0
     ports:
-      - "9090:9090"
+      - "127.0.0.1:9090:9090"
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
@@ -253,7 +253,7 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASS:-tickit}
       GF_AUTH_ANONYMOUS_ENABLED: "false"
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     volumes:
       - grafana-data:/var/lib/grafana
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro

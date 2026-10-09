@@ -90,6 +90,16 @@ export function TicketDetail() {
   const sla = slaOf(ticket, now);
   const nextStates = allowedTransitions(ticket);
 
+  const confirmAndExecute = (to: TicketStatus, label: string) => {
+    const isTerminal = to === "cerrado";
+    if (!window.confirm(
+      isTerminal
+        ? `¿Cerrar el ticket ${ticket.id}? Esta acción es permanente y no se puede revertir.`
+        : `¿Marcar como ${to === "resuelto" ? "resuelto" : label}?`
+    )) return;
+    transition(ticket.id, to);
+  };
+
   const submitNote = () => {
     const text = note.trim();
     if (!text) return;
@@ -136,13 +146,13 @@ export function TicketDetail() {
               <Button
                 key={s}
                 variant={s === "resuelto" ? "primary" : "outline"}
-                onClick={() => transition(ticket.id, s)}
+                onClick={() => confirmAndExecute(s, STATUS_LABEL[s])}
               >
                 {s === "resuelto" ? "Resolver" : STATUS_LABEL[s]}
               </Button>
             ))}
           {nextStates.includes("cerrado") ? (
-            <Button variant="ghost" onClick={() => transition(ticket.id, "cerrado")}>
+            <Button variant="ghost" onClick={() => confirmAndExecute("cerrado", "Cerrar")}>
               Cerrar
             </Button>
           ) : null}

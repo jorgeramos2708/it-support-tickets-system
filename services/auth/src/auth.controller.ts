@@ -1,3 +1,4 @@
+import { Throttle, SkipThrottle } from "@nestjs/throttler";
 import {
   Body,
   Controller,
@@ -19,6 +20,7 @@ export class AuthController {
   constructor(private readonly auth: AuthService) {}
 
   @Post("login")
+  @Throttle({ login: { limit: 5, ttl: 900_000 } })
   async login(
     @Body() body: { email?: string; password?: string },
   ): Promise<{ token: string; user: { email: string; name: string; role: string } }> {
@@ -39,7 +41,12 @@ export class AuthController {
 
   @Get("users")
   @UseGuards(JwtGuard)
-  async listUsers() {
+  async listUsers(@Req() req: Request) {
+    const role =
+      (req as unknown as { user?: { role?: string } }).user?.role ?? "";
+    if (role !== "admin") {
+      throw new UnauthorizedException("Solo un administrador puede listar usuarios");
+    }
     return this.auth.listUsers();
   }
 

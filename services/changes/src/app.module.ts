@@ -1,3 +1,4 @@
+import { getJwtSecret } from "./jwt-secret";
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import { Injectable, Module, OnModuleInit } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -167,7 +168,7 @@ export class ChangeSeeder implements OnModuleInit {
     }),
     TypeOrmModule.forFeature([ChangeEntity]),
     JwtModule.register({
-      secret: process.env.JWT_SECRET ?? "tickitflow-demo-secret",
+      secret: getJwtSecret(),
     }),
   ],
   controllers: [PromMetricsController, HealthController, ChangesController],

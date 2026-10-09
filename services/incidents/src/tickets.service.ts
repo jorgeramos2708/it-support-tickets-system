@@ -124,9 +124,13 @@ export class TicketsService {
     practice?: Practice,
     take = 100,
     skip = 0,
+    requesterFilter?: string,
   ): Promise<TicketDto[]> {
+    const where: Record<string, unknown> = {};
+    if (practice) where.practice = practice;
+    if (requesterFilter) where.requester = requesterFilter;
     const rows = await this.tickets.find({
-      where: practice ? { practice } : {},
+      where,
       order: { createdAt: "DESC" },
       take,
       skip,

@@ -1,3 +1,4 @@
+import { getJwtSecret } from "./jwt-secret";
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import { Injectable, Module, OnModuleInit } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -105,7 +106,7 @@ export class BusConsumer implements OnModuleInit {
     }),
     TypeOrmModule.forFeature([NotificationEntity, SettingEntity]),
     JwtModule.register({
-      secret: process.env.JWT_SECRET ?? "tickitflow-demo-secret",
+      secret: getJwtSecret(),
     }),
   ],
   controllers: [PromMetricsController, NotificationsController, SettingsController],

@@ -1,3 +1,7 @@
+import { APP_GUARD } from "@nestjs/core";
+import { ThrottlerModule, ThrottlerGuard } from "@nestjs/throttler";
+import { APP_INTERCEPTOR } from "@nestjs/core";
+import { getJwtSecret } from "./jwt-secret";
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import { Injectable, Module, OnModuleInit } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -19,6 +23,10 @@ export class UserSeeder implements OnModuleInit {
   ) {}
 
   async onModuleInit(): Promise<void> {
+    if (process.env.NODE_ENV === "production" && process.env.SEED_DEMO !== "true") {
+      console.log("[auth-service] seed de demo desactivado en producción");
+      return;
+    }
     const count = await this.users.count();
     if (count > 0) return;
     const hash = bcrypt.hashSync("demo1234", 10);
@@ -48,6 +56,10 @@ export class UserSeeder implements OnModuleInit {
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot([
+      { name: "login", ttl: 900_000, limit: 5 },
+      { name: "default", ttl: 60_000, limit: 60 },
+    ]),
     TypeOrmModule.forRoot({
       type: "postgres",
       url: process.env.DATABASE_URL ?? "postgres://tickit:tickit@localhost:5432/auth",
@@ -58,11 +70,11 @@ export class UserSeeder implements OnModuleInit {
     }),
     TypeOrmModule.forFeature([User]),
     JwtModule.register({
-      secret: process.env.JWT_SECRET ?? "tickitflow-demo-secret",
+      secret: getJwtSecret(),
       signOptions: { expiresIn: "8h" },
     }),
   ],
   controllers: [PromMetricsController, AuthController],
-  providers: [{ provide: APP_INTERCEPTOR, useClass: HttpMetricsInterceptor }, AuthService, UserSeeder, JwtGuard],
+  providers: [{ provide: APP_INTERCEPTOR, useClass: HttpMetricsInterceptor }, { provide: APP_GUARD, useClass: ThrottlerGuard }, AuthService, UserSeeder, JwtGuard],
 })
 export class AppModule {}
