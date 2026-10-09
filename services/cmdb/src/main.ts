@@ -1,10 +1,14 @@
 import "reflect-metadata";
+import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { logger } from "./logger";
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
+  app.useGlobalPipes(
+    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: false }),
+  );
   app.enableCors({
     origin: process.env.CORS_ORIGIN?.split(",").map((o) => o.trim()) ?? false,
     credentials: true,

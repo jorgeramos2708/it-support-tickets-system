@@ -163,7 +163,7 @@ export class TicketsService {
     dto: {
       practice: Practice;
       subject: string;
-      description: string;
+      description?: string;
       requester: string;
       dept: string;
       priority: Priority;

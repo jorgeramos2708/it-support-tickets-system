@@ -12,7 +12,8 @@ import {
 import type { Request } from "express";
 import { JwtGuard } from "./jwt.guard";
 import { TicketsService, type TicketDto } from "./tickets.service";
-import type { Practice, Priority, TicketStatus } from "./ticket.entity";
+import type { Practice } from "./ticket.entity";
+import { CreateTicketDto, PatchTicketDto } from "./dtos";
 
 /** Salud del servicio — pública, la usa el probe de modo del frontend. */
 @Controller("health")
@@ -50,16 +51,7 @@ export class TicketsController {
 
   @Post("tickets")
   async create(
-    @Body()
-    body: {
-      practice: Practice;
-      subject: string;
-      description: string;
-      requester: string;
-      dept: string;
-      priority: Priority;
-      attachments?: Array<{ name: string; sizeKb: number }>;
-    },
+    @Body() body: CreateTicketDto,
     @Req() req: Request,
   ): Promise<TicketDto> {
     const tokenUser = (req as unknown as { user?: { name?: string; role?: string } })
@@ -71,14 +63,7 @@ export class TicketsController {
   @Patch("tickets/:code")
   async patch(
     @Param("code") code: string,
-    @Body()
-    body: {
-      status?: TicketStatus;
-      assignee?: string;
-      priority?: Priority;
-      note?: string;
-      actor?: string;
-    },
+    @Body() body: PatchTicketDto,
     @Req() req: Request,
   ): Promise<TicketDto> {
     const tokenUser = (req as unknown as { user?: { name?: string; role?: string } })

@@ -17,6 +17,7 @@ import { Repository } from "typeorm";
 import { JwtGuard } from "./jwt.guard";
 import { ProblemEntity, toDto, type ProblemDto, type ProblemStatus } from "./problem.entity";
 import { publishEvent } from "./bus";
+import { CreateProblemDto, PatchProblemDto } from "./dtos";
 
 /** Las prácticas de consola (problemas, cambios) son de agentes y admins. */
 function requireOperator(req: Request): void {
@@ -59,20 +60,13 @@ export class ProblemsController {
   @Get("problems/:code")
   async byCode(@Param("code") code: string): Promise<ProblemDto> {
     const problem = await this.problems.findOne({ where: { code } });
-    if (!problem) throw new Error("Problema no encontrado");
+    if (!problem) throw new NotFoundException("Problema no encontrado");
     return toDto(problem);
   }
 
   @Post("problems")
   async create(
-    @Body()
-    body: {
-      title: string;
-      description: string;
-      linkedIncidentCodes?: string[];
-      workaround?: boolean;
-      actor?: string;
-    },
+    @Body() body: CreateProblemDto,
     @Req() req: Request,
   ): Promise<ProblemDto> {
     requireOperator(req);
@@ -117,17 +111,12 @@ export class ProblemsController {
   @Patch("problems/:code")
   async patch(
     @Param("code") code: string,
-    @Body()
-    body: {
-      status?: ProblemStatus;
-      causeRaiz?: string;
-      actor?: string;
-    },
+    @Body() body: PatchProblemDto,
     @Req() req: Request,
   ): Promise<ProblemDto> {
     requireOperator(req);
     const problem = await this.problems.findOne({ where: { code } });
-    if (!problem) throw new Error("Problema no encontrado");
+    if (!problem) throw new NotFoundException("Problema no encontrado");
     const actor =
       body.actor ??
       (req as unknown as { user?: { name?: string } }).user?.name ??

@@ -14,6 +14,12 @@ import {
 import type { Request } from "express";
 import { AuthService } from "./auth.service";
 import { JwtGuard } from "./jwt.guard";
+import {
+  ChangePasswordDto,
+  CreateUserDto,
+  LoginDto,
+  UpdateUserDto,
+} from "./dtos";
 
 @Controller()
 export class AuthController {
@@ -22,7 +28,7 @@ export class AuthController {
   @Post("login")
   @Throttle({ login: { limit: 5, ttl: 900_000 } })
   async login(
-    @Body() body: { email?: string; password?: string },
+    @Body() body: LoginDto,
   ): Promise<{ token: string; user: { email: string; name: string; role: string } }> {
     const { email, password } = body ?? {};
     if (!email || !password) {
@@ -53,7 +59,7 @@ export class AuthController {
   @Post("users")
   @UseGuards(JwtGuard)
   async createUser(
-    @Body() body: { email: string; name: string; role: string; password: string },
+    @Body() body: CreateUserDto,
     @Req() req: Request,
   ) {
     const actorRole =
@@ -68,7 +74,7 @@ export class AuthController {
   @UseGuards(JwtGuard)
   async updateUser(
     @Param("email") email: string,
-    @Body() body: { name?: string; role?: string },
+    @Body() body: UpdateUserDto,
     @Req() req: Request,
   ) {
     const actorRole =
@@ -83,7 +89,7 @@ export class AuthController {
   @UseGuards(JwtGuard)
   async changePassword(
     @Param("email") email: string,
-    @Body() body: { currentPassword: string; newPassword: string },
+    @Body() body: ChangePasswordDto,
     @Req() req: Request,
   ) {
     const actorEmail =

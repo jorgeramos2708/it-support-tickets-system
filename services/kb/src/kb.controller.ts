@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { JwtGuard } from "./jwt.guard";
 import { ArticleEntity, toDto, type ArticleDto } from "./article.entity";
+import { MarkHelpfulDto } from "./dtos";
 
 /** Salud del servicio — pública, para monitoreo del stack. */
 @Controller("health")
@@ -44,7 +45,7 @@ export class KbController {
   @Patch("articles/:code")
   async markHelpful(
     @Param("code") code: string,
-    @Body() body: { helpful?: boolean },
+    @Body() body: MarkHelpfulDto,
   ): Promise<ArticleDto> {
     const article = await this.articles.findOne({ where: { code } });
     if (!article) throw new NotFoundException("Artículo no encontrado");

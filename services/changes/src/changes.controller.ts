@@ -24,6 +24,7 @@ import {
   type ChangeType,
 } from "./change.entity";
 import { publishEvent } from "./bus";
+import { CreateChangeDto, PatchChangeDto } from "./dtos";
 
 /** Las prácticas de consola (problemas, cambios) son de agentes y admins. */
 function requireOperator(req: Request): void {
@@ -87,23 +88,13 @@ export class ChangesController {
   @Get("changes/:code")
   async byCode(@Param("code") code: string): Promise<ChangeDto> {
     const change = await this.changes.findOne({ where: { code } });
-    if (!change) throw new Error("Cambio no encontrado");
+    if (!change) throw new NotFoundException("Cambio no encontrado");
     return toDto(change);
   }
 
   @Post("changes")
   async create(
-    @Body()
-    body: {
-      title: string;
-      type: ChangeType;
-      risk: "bajo" | "medio" | "alto";
-      ventana: string;
-      description: string;
-      solicita: string;
-      ciIds?: string[];
-      actor?: string;
-    },
+    @Body() body: CreateChangeDto,
     @Req() req: Request,
   ): Promise<ChangeDto> {
     requireOperator(req);
@@ -155,17 +146,12 @@ export class ChangesController {
   @Patch("changes/:code")
   async patch(
     @Param("code") code: string,
-    @Body()
-    body: {
-      decision?: { role: string; approve: boolean };
-      status?: ChangeStatus;
-      actor?: string;
-    },
+    @Body() body: PatchChangeDto,
     @Req() req: Request,
   ): Promise<ChangeDto> {
     requireOperator(req);
     const change = await this.changes.findOne({ where: { code } });
-    if (!change) throw new Error("Cambio no encontrado");
+    if (!change) throw new NotFoundException("Cambio no encontrado");
     const actor =
       body.actor ??
       (req as unknown as { user?: { name?: string } }).user?.name ??

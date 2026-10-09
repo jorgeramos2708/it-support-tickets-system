@@ -78,3 +78,5 @@ Thumbs.db
 
 # Variables de entorno con credenciales reales
 /.env
+
+services/*/package-lock.json

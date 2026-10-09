@@ -70,6 +70,8 @@ function KpiCell({
         <span className="font-display text-[28px] leading-none font-semibold tracking-tight tabular-nums">
           {value}
         </span>
+        {!live ? (
+          <>
             <span
               className={cn(
                 "flex items-center gap-0.5 font-mono text-[11px] tabular-nums",
@@ -83,11 +85,14 @@ function KpiCell({
               )}
               {unit}
             </span>
-            {!live ? (
-              <span className="text-[10px] text-ink-3/60" title="Deltas de demostración — no reales en modo demo">
-                demo
-              </span>
-            ) : null}
+            <span
+              className="text-[10px] text-ink-3/60"
+              title="Deltas de demostración — no reales en modo demo"
+            >
+              demo
+            </span>
+          </>
+        ) : null}
       </p>
     </div>
   );
@@ -117,16 +122,47 @@ function Module({
   );
 }
 
-function VolumeChart() {
-  const max = Math.max(...VOLUME_7D.map((d) => d.count));
+const DAY_FMT = new Intl.DateTimeFormat("es-MX", { weekday: "short" });
+
+/** En live se deriva del store; en demo usa la serie sintética. */
+function volumeData(
+  live: boolean,
+  tickets: { createdAt: number }[],
+): Array<{ day: string; count: number }> {
+  if (!live) return VOLUME_7D;
+  const days: Array<{ day: string; count: number }> = [];
+  const nowMs = Date.now();
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(nowMs - i * 86_400_000);
+    const start = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+    const end = start + 86_400_000;
+    const count = tickets.filter((t) => t.createdAt >= start && t.createdAt < end).length;
+    const label = DAY_FMT.format(d);
+    days.push({ day: label.charAt(0).toUpperCase() + label.slice(1), count });
+  }
+  return days;
+}
+
+function VolumeChart({
+  data,
+  live,
+}: {
+  data: Array<{ day: string; count: number }>;
+  live: boolean;
+}) {
+  const max = Math.max(...data.map((d) => d.count), 1);
   return (
     <svg
       viewBox="0 0 168 64"
       className="mt-2 w-full"
       role="img"
-      aria-label="Tickets registrados por día, últimos 7 días (datos de demostración)"
+      aria-label={
+        live
+          ? "Tickets registrados por día, últimos 7 días"
+          : "Tickets registrados por día, últimos 7 días (datos de demostración)"
+      }
     >
-      {VOLUME_7D.map((d, i) => {
+      {data.map((d, i) => {
         const h = (d.count / max) * 36;
         const x = i * 24;
         return (
@@ -206,6 +242,8 @@ export function Dashboard() {
         .slice(0, 5),
     [open, me, now],
   );
+
+  const volume = useMemo(() => volumeData(live, tickets), [live, tickets]);
 
   const activity = useMemo(() => {
     const all: { at: number; id: string; text: string }[] = [];
@@ -374,10 +412,15 @@ export function Dashboard() {
 
         <Module title="Volumen 7 días" className="lg:col-span-3">
           <div className="px-4 py-3">
-            <VolumeChart />
-            <p className="mt-3 font-mono text-[11px] text-ink-3">
-              {VOLUME_7D.reduce((acc, d) => acc + d.count, 0)} registrados esta
+            <VolumeChart data={volume} live={live} />
+            <p className="mt-3 flex items-center gap-1.5 font-mono text-[11px] text-ink-3">
+              {volume.reduce((acc, d) => acc + d.count, 0)} registrados esta
               semana
+              {!live ? (
+                <span className="text-[10px] text-ink-3/60" title="Serie de demostración — no real en modo demo">
+                  demo
+                </span>
+              ) : null}
             </p>
           </div>
         </Module>

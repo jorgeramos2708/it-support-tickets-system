@@ -20,6 +20,7 @@ import {
   smtpSettingsFromRows,
 } from "./setting.entity";
 import { EmailService } from "./email.service";
+import { UpdateSmtpDto } from "./dtos";
 
 /** Solo admin puede ver/editar la configuración. */
 function requireAdmin(req: Request): void {
@@ -49,7 +50,7 @@ export class SettingsController {
 
   @Put("smtp")
   async updateSmtp(
-    @Body() body: Partial<SmtpSettings>,
+    @Body() body: UpdateSmtpDto,
     @Req() req: Request,
   ) {
     requireAdmin(req);

@@ -35,7 +35,7 @@ export class CmdbController {
   @Get("cis/:code")
   async byCode(@Param("code") code: string): Promise<CiDto> {
     const ci = await this.cis.findOne({ where: { code } });
-    if (!ci) throw new Error("CI no encontrado");
+    if (!ci) throw new NotFoundException("CI no encontrado");
     return toDto(ci);
   }
 }
