@@ -43,6 +43,8 @@ services:
   auth:
     build: ./services/auth
     environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      SEED_DEMO: ${SEED_DEMO:-true}
       DATABASE_URL: postgres://tickit:${POSTGRES_PASSWORD:-tickit}@auth-db:5432/auth
       JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret-not-for-production-32chars}
       PORT: "4001"
