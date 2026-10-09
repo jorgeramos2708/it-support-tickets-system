@@ -1,26 +1,31 @@
 ---
-version: 1
+version: 2
 slug: "frontend-portal"
 primary_target: "frontend-portal"
 related_targets: []
 ---
 
-# Surface brief — Portal de autoservicio TickITFlow
+# Surface brief - Portal de autoservicio TickITFlow
 
 ## Alcance y modo de visitante
-Portal de autoservicio para usuarios finales (M. Aguilar · Finanzas en demo): catálogo de servicios, reporte de incidentes, seguimiento de mis tickets y ayuda (KB). Modo: **Operate** con registro cercano al de **Read** en artículos y detalle de ticket.
+Portal de autoservicio para usuarios finales: catálogo de servicios, reporte de incidentes, seguimiento de mis tickets y ayuda (KB). Modo: **Operate** con registro cercano al de **Read** en artículos y detalle de ticket.
 
 ## Audiencia, trabajo, acción, prueba
 Empleados no técnicos que necesitan algo de TI o algo se rompió. Tarea: pedir del catálogo o reportar un problema en ≤2 minutos sin vocabulario ITIL (la palabra "incidente" no aparece; el sistema lo registra como tal). Éxito: solicitud con número visible, prioridad transparente y objetivo de atención en lenguaje humano. Prueba: los tickets creados en el portal aparecen en la consola de agentes con el solicitante correcto.
 
-## Mundo visual
-Hereda el mundo establecido (DESIGN.md de la raíz, semilla 431a9fb1): papel, tinta, filetes, Rojo Cartel como única acción rellena ("Reportar problema"), selección por inversión, mono solo para dato. Diferencias de superficie: sin rail (navegación horizontal en topbar), contenedor ≤980px, catálogo como lista fileteada por categorías (no tarjetas icon+heading+text), formularios con pregunta humana "¿A quién afecta?" en lugar de matriz ITIL visible, timeline de avances con copia en segunda persona.
+## Direction contract
 
-## Momento memorable
-El banner de confirmación con el número de ticket en mono y la promesa de aviso por correo — el "tu solicitud existe" instantáneo.
+THESIS: El portal hereda la sala de guardia sin la maquinaria del agente — mismo mundo ámbar oscuro/claro, sin rail, sin terminología ITIL. Rechaza el catálogo de tarjetas con iconos: listas por categoría con filetes.
 
-## Estados y límites
-Dentro: catálogo (8 ítems, 3 categorías), solicitud de catálogo, reporte de incidente, mis tickets (historial del usuario demo), detalle de ticket con comentario público, ayuda KB reutilizada con basePath propio. Fuera: login real (fase de integración), adjuntos, encuestas. Datos sintéticos etiquetados ("Datos demo" + footer).
+OWN-WORLD: Los tokens del mundo nuevo (bg/panel/borde/ámbar/Nunito/prioridades semáforo), dual tema día/noche; contenedor ≤980px, navegación horizontal en topbar, catálogo como lista por categorías, formularios con pregunta humana ("¿A quién afecta?"), timeline en segunda persona.
+
+STORY: El empleado pide o reporta sin fricción y el banner de confirmación con el número de ticket y la promesa de aviso por correo le dice "tu solicitud existe" al instante.
+
+FIRST VIEWPORT: Topbar horizontal con marca y tema; hero breve del catálogo por categorías; CTA "Reportar problema" en ámbar; estados vacíos y de carga con skeleton shimmer.
+
+FORM: Dirección fijada por el usuario (rebrand global del mundo nuevo); code-led.
+
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance.
 
 ## Decisiones abiertas
-Registro real de usuarios del portal contra auth-service; notificaciones por correo (notification-service, fase posterior); encuesta de satisfacción al cerrar.
+Registro real de usuarios del portal contra auth-service; notificaciones por correo; encuesta de satisfacción al cerrar.

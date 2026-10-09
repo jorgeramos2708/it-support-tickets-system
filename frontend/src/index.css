@@ -1,35 +1,78 @@
 @import "tailwindcss";
 
 @theme {
-  /* Paleta del mundo: papel, tinta, filete, color de estado */
-  --color-paper: #fbfbf9;
+  /* ═══ Mundo nuevo: Sala de Guardia — dual día/noche ═══
+     Base = día (papel cálido hermano del mundo ámbar)
+     [data-theme="dark"] = noche (spec del usuario) */
+
+  /* Superficies (elevación: se aclaran al subir) */
+  --color-paper: #f6f6f2;
   --color-raised: #ffffff;
-  --color-ink: #15181e;
+  --color-panel-2: #f0f0ea;
+  --color-row-hover: #f0f0ea;
+  --color-row-selected: #f5efdf;
+  --color-chip: #ecece6;
+
+  /* Tinta */
+  --color-ink: #17181c;
   --color-ink-2: #3d434d;
-  --color-ink-3: #666d78;
-  --color-rule: #dcded9;
-  --color-rule-2: #c3c6bf;
-  --color-signal: #da291c;
+  --color-ink-3: #626977;
+
+  /* Estructura */
+  --color-rule: #e6e6df;
+  --color-rule-2: #c9cbc3;
+
+  /* Acento ámbar — único acento del mundo */
+  --color-amber: #b45309; /* texto/links (AA sobre claro) */
+  --color-amber-hi: #92400e; /* hover de texto ámbar */
+  --color-amber-fill: #f5a524; /* relleno de acción primaria (ambos temas) */
+  --color-amber-fill-ink: #17181c; /* texto sobre el relleno */
+
+  /* Estado */
+  --color-signal: #d92c20; /* vencido / danger */
   --color-signal-deep: #b22116;
-  --color-cobalt: #1d4ed8;
   --color-good: #0e8345;
-  --color-amber: #b45309;
+
+  /* Prioridades semáforo: P1 rojo · P2 naranja · P3 amarillo · P4 verde */
+  --color-p1: #dc2626;
+  --color-p1-ink: #ffffff;
+  --color-p2: #c2410c;
+  --color-p2-ink: #ffffff;
+  --color-p3: #ca8a04;
+  --color-p3-ink: #17181c;
+  --color-p4: #0e8345;
+  --color-p4-ink: #ffffff;
+
+  /* Matices de práctica ITIL */
+  --color-cobalt: #1d4ed8;
   --color-violet: #7c3aed;
 
-  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: "Inter Tight Variable", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  /* Tipografía */
+  --font-sans: "Nunito Sans Variable", "Nunito Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Nunito Variable", "Nunito", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
 
   --text-2xs: 0.6875rem;
   --text-2xs--line-height: 1rem;
 
-  --animate-pulse-row: pulse-row 220ms cubic-bezier(0.16, 1, 0.3, 1) 1;
-  --animate-rise: rise 160ms cubic-bezier(0.16, 1, 0.3, 1) 1;
+  /* Elevación y glow */
+  --shadow-1: 0 1px 2px rgba(23, 24, 28, 0.07);
+  --shadow-2: 0 6px 16px rgba(23, 24, 28, 0.09);
+  --shadow-3: 0 14px 32px rgba(23, 24, 28, 0.16);
+  --shadow-glow: 0 0 0 1px rgba(245, 165, 36, 0.4), 0 8px 24px rgba(245, 165, 36, 0.22);
+
+  /* Motion */
+  --ease-guardia: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-pulse-row: pulse-row 1.2s ease-out 1;
+  --animate-rise: rise 450ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-swap: swap 300ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-pulse-dot: pulse-dot 1.8s ease-out infinite;
+  --animate-shimmer: shimmer 1.3s linear infinite;
 }
 
 @keyframes pulse-row {
   from {
-    background-color: color-mix(in srgb, var(--color-signal) 10%, transparent);
+    background-color: color-mix(in srgb, var(--color-amber-fill) 25%, transparent);
   }
   to {
     background-color: transparent;
@@ -39,7 +82,7 @@
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -47,10 +90,80 @@
   }
 }
 
+@keyframes swap {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pulse-dot {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-signal) 55%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 10px color-mix(in srgb, var(--color-signal) 0%, transparent);
+  }
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* ═══ Noche: la sala de guardia del spec ═══ */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-paper: #17181c;
+  --color-raised: #202228;
+  --color-panel-2: #1c1d22;
+  --color-row-hover: #262830;
+  --color-row-selected: #2a2b33;
+  --color-chip: #32343e;
+
+  --color-ink: #ececf1;
+  --color-ink-2: #c9ccda;
+  --color-ink-3: #a8abba;
+
+  --color-rule: #2e3038;
+  --color-rule-2: #3b3d49;
+
+  --color-amber: #f5a524;
+  --color-amber-hi: #ffd27a;
+  --color-amber-fill: #f5a524;
+  --color-amber-fill-ink: #17181c;
+
+  --color-signal: #ff8f85;
+  --color-signal-deep: #ffb0a9;
+  --color-good: #7ddfa5;
+
+  --color-p1: #ff8f85;
+  --color-p1-ink: #17181c;
+  --color-p2: #ff9d5c;
+  --color-p2-ink: #17181c;
+  --color-p3: #facc15;
+  --color-p3-ink: #17181c;
+  --color-p4: #7ddfa5;
+  --color-p4-ink: #17181c;
+
+  --color-cobalt: #7fa6f0;
+  --color-violet: #a97df5;
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 6px 16px rgba(0, 0, 0, 0.35);
+  --shadow-3: 0 14px 32px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 0 1px rgba(245, 165, 36, 0.5), 0 8px 24px rgba(245, 165, 36, 0.18);
+}
+
 /* Superficies del navegador, tematizadas desde la paleta */
 ::selection {
-  background-color: var(--color-ink);
-  color: var(--color-paper);
+  background-color: var(--color-amber-fill);
+  color: var(--color-amber-fill-ink);
 }
 
 html {
@@ -58,7 +171,7 @@ html {
 }
 
 body {
-  caret-color: var(--color-signal);
+  caret-color: var(--color-amber);
 }
 
 * {
@@ -67,7 +180,7 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-ink);
+  outline: 2px solid var(--color-amber-fill);
   outline-offset: 2px;
 }
 
@@ -88,32 +201,38 @@ button {
   font-size: var(--text-2xs);
   line-height: 1rem;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-weight: 500;
+  letter-spacing: 0.12em;
+  font-weight: 700;
 }
 
-/* ═══ Modo oscuro: el informe anual bajo luz de guardia ═══
-   La misma tinta, el mismo filete — traducidos a papel nocturno. */
-[data-theme="dark"] {
-  color-scheme: dark;
-  --color-paper: #111318;
-  --color-raised: #181b21;
-  --color-ink: #e8eaed;
-  --color-ink-2: #b0b5bd;
-  --color-ink-3: #808796;
-  --color-rule: #2a2e35;
-  --color-rule-2: #3a3f47;
-  --color-signal: #e4433a;
-  --color-signal-deep: #c1332b;
-  --color-cobalt: #5b8def;
-  --color-good: #2ea56a;
-  --color-amber: #e0761b;
-  --color-violet: #9d5ff2;
+/** Retardo escalonado de entrada: style="--i:n" */
+@utility stagger {
+  animation-delay: calc(var(--i, 0) * 50ms);
 }
 
-[data-theme="dark"] ::selection {
-  background-color: var(--color-ink);
-  color: var(--color-paper);
+/** Esqueleto de carga mientras llegan los datos */
+@utility skeleton {
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    var(--color-chip) 25%,
+    var(--color-rule) 50%,
+    var(--color-chip) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.3s linear infinite;
+}
+
+/** Enlace con subrayado que crece al hover */
+@utility link-grow {
+  text-decoration: none;
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 2px no-repeat;
+  transition:
+    background-size 250ms var(--ease-guardia),
+    color 200ms;
+}
+@utility link-grow-hover {
+  background-size: 100% 2px;
 }
 
 @layer base {
@@ -143,10 +262,8 @@ button {
   overflow: hidden;
   background: var(--color-raised);
   border: 1px solid var(--color-rule);
-  border-radius: 4px;
-  box-shadow:
-    0 24px 48px -12px rgba(21, 24, 30, 0.22),
-    0 2px 8px rgba(21, 24, 30, 0.08);
+  border-radius: 16px;
+  box-shadow: var(--shadow-3);
 }
 
 [cmdk-input] {
@@ -158,11 +275,11 @@ button {
   background: transparent;
   border: none;
   border-bottom: 1px solid var(--color-rule);
-  caret-color: var(--color-signal);
+  caret-color: var(--color-amber);
 }
 
 [cmdk-input]::placeholder {
-  color: var(--color-ink-3, #666d78);
+  color: var(--color-ink-3);
 }
 
 [cmdk-list] {
@@ -176,8 +293,8 @@ button {
   font-size: var(--text-2xs);
   line-height: 1rem;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-weight: 500;
+  letter-spacing: 0.12em;
+  font-weight: 700;
   color: var(--color-ink-3);
 }
 
@@ -189,13 +306,15 @@ button {
   font-size: 13.5px;
   color: var(--color-ink-2);
   cursor: pointer;
-  transition: background-color 120ms cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 8px;
+  margin: 0 0.5rem;
+  transition: background-color 120ms var(--ease-guardia);
 }
 
 [cmdk-item][data-selected="true"] {
-  background: var(--color-paper);
+  background: var(--color-row-selected);
   color: var(--color-ink);
-  box-shadow: inset 2px 0 0 var(--color-ink);
+  box-shadow: inset 4px 0 0 var(--color-amber-fill);
 }
 
 [cmdk-hint] {
@@ -210,4 +329,15 @@ button {
   font-size: 13px;
   text-align: center;
   color: var(--color-ink-3);
+}
+
+/* ═══ Accesibilidad: motion solo si el usuario lo acepta ═══ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

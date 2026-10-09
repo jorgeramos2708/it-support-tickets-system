@@ -63,7 +63,7 @@ export function NewTicket() {
         <span className="text-ink-3">Nuevo</span>
       </nav>
 
-      <h1 className="mt-3 font-display text-[26px] leading-tight font-semibold tracking-tight">
+      <h1 className="mt-3 font-display text-[34px] leading-[1.1] font-extrabold tracking-tight">
         Nuevo ticket
       </h1>
 
@@ -173,7 +173,7 @@ export function NewTicket() {
           </div>
         </fieldset>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-[3px] border border-rule bg-raised px-5 py-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-rule bg-raised px-5 py-4">
           <div className="flex items-center gap-3">
             <span className="label text-ink-3">Prioridad calculada</span>
             <PriorityChip priority={priority} full className="text-[13px]" />

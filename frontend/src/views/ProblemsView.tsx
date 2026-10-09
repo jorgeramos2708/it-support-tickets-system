@@ -33,7 +33,7 @@ export function ProblemsView() {
     <div className="mx-auto max-w-[1200px] animate-rise">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-[26px] leading-tight font-semibold tracking-tight">
+          <h1 className="font-display text-[34px] leading-[1.1] font-extrabold tracking-tight">
             Problemas
           </h1>
           <p className="mt-1 text-[13px] text-ink-3">
@@ -51,7 +51,7 @@ export function ProblemsView() {
         </Button>
       </div>
 
-      <div className="mt-5 overflow-hidden rounded-[3px] border border-rule">
+      <div className="mt-5 overflow-hidden rounded-xl border border-rule">
         <table className="w-full border-collapse text-left">
           <thead>
             <tr className="border-b border-rule bg-raised/60">
@@ -173,7 +173,7 @@ export function ProblemDetail() {
 
       <div className="mt-3 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="max-w-3xl font-display text-[22px] leading-snug font-semibold tracking-tight">
+          <h1 className="max-w-3xl font-display text-[30px] leading-[1.2] font-extrabold tracking-tight">
             {problem.title}
           </h1>
           <div className="mt-2 flex flex-wrap items-center gap-4">
@@ -183,7 +183,7 @@ export function ProblemDetail() {
               muted={problem.status === "cerrado"}
             />
             {problem.workaround ? (
-              <span className="rounded-[3px] border border-rule-2 px-1.5 py-0.5 text-[11px] text-ink-2">
+              <span className="rounded-xl border border-rule-2 px-1.5 py-0.5 text-[11px] text-ink-2">
                 Con workaround temporal
               </span>
             ) : null}
@@ -240,11 +240,11 @@ export function ProblemDetail() {
               ) : null}
             </div>
             {problem.causeRaiz && !editingRca ? (
-              <p className="mt-2 max-w-[68ch] rounded-[3px] border border-rule bg-raised px-4 py-3 text-[14px] leading-relaxed text-ink-2">
+              <p className="mt-2 max-w-[68ch] rounded-xl border border-rule bg-raised px-4 py-3 text-[14px] leading-relaxed text-ink-2">
                 {problem.causeRaiz}
               </p>
             ) : (
-              <div className="mt-2 max-w-[68ch] rounded-[3px] border border-rule bg-raised p-3">
+              <div className="mt-2 max-w-[68ch] rounded-xl border border-rule bg-raised p-3">
                 <TextArea
                   value={rca}
                   onChange={(e) => setRca(e.target.value)}
@@ -284,7 +284,7 @@ export function ProblemDetail() {
                   <li key={t.id}>
                     <Link
                       to={`/ticket/${t.id}`}
-                      className="flex items-center gap-3 rounded-[3px] border border-rule px-4 py-2.5 transition-colors duration-150 first:mt-0 mt-2 hover:bg-raised"
+                      className="flex items-center gap-3 rounded-xl border border-rule px-4 py-2.5 transition-colors duration-150 first:mt-0 mt-2 hover:bg-raised"
                     >
                       <span className="font-mono text-[12px] tabular-nums text-ink-3">
                         {t.id}
@@ -320,7 +320,7 @@ export function ProblemDetail() {
             </dl>
           </Module>
           {problem.status === "investigacion" ? (
-            <p className="flex items-start gap-2 rounded-[3px] border border-rule bg-raised px-4 py-3 text-[13px] text-ink-2">
+            <p className="flex items-start gap-2 rounded-xl border border-rule bg-raised px-4 py-3 text-[13px] text-ink-2">
               <span aria-hidden className="mt-1.5 size-1.5 shrink-0 rounded-full bg-amber" />
               Un problema en investigación no se cierra sin causa raíz
               documentada — registra la evidencia antes de resolver.

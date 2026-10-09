@@ -7,7 +7,7 @@ import type {
 import { cn } from "../../lib/cn";
 
 const control =
-  "h-9 w-full rounded-[3px] border border-rule bg-raised px-3 text-sm text-ink transition-colors duration-150 placeholder:text-ink-3 focus:border-ink focus:outline-none";
+  "h-9 w-full rounded-xl border border-rule bg-raised px-3 text-sm text-ink transition-colors duration-150 placeholder:text-ink-3 focus:border-amber focus:outline-none";
 
 export function Field({
   label,
@@ -73,7 +73,7 @@ export function Segmented<T extends string>({
     <div
       role="radiogroup"
       aria-label={name}
-      className="inline-flex overflow-hidden rounded-[3px] border border-rule"
+      className="inline-flex overflow-hidden rounded-xl border border-rule"
     >
       {options.map((opt) => (
         <button
@@ -85,8 +85,8 @@ export function Segmented<T extends string>({
           className={cn(
             "h-9 min-w-20 cursor-pointer border-r border-rule px-4 text-sm transition-colors duration-150 last:border-r-0",
             value === opt.value
-              ? "bg-ink font-medium text-paper"
-              : "bg-raised text-ink-2 hover:bg-rule/40",
+              ? "bg-amber-fill font-bold text-amber-fill-ink"
+              : "bg-raised text-ink-2 hover:bg-row-hover",
           )}
         >
           {opt.label}

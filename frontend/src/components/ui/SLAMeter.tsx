@@ -3,8 +3,8 @@ import { SLA_LEVEL_BG, SLA_LEVEL_TEXT, fmtDuration, fmtRemaining, slaOf } from "
 import type { Ticket } from "../../lib/types";
 
 /**
- * El medidor SLA: filete de 3px con relleno por avance y cuenta regresiva
- * en mono tabular. Es el elemento más ruidoso de la fila.
+ * El medidor SLA: pista redondeada con relleno por avance y cuenta regresiva
+ * en mono tabular. Vencido añade el punto pulsante de 8px.
  */
 export function SLAMeter({
   ticket,
@@ -17,23 +17,27 @@ export function SLAMeter({
 }) {
   const sla = slaOf(ticket, now);
   const done = ticket.status === "resuelto" || ticket.status === "cerrado";
+  const late = !done && sla.remainingMin < 0;
 
   if (variant === "large") {
     return (
       <div className="space-y-2">
-        <div className="h-1.5 w-full rounded-[1px] bg-rule">
+        <div className="h-1.5 w-full rounded-full bg-rule">
           <div
-            className={cn("h-full rounded-[1px]", SLA_LEVEL_BG[sla.level])}
+            className={cn("h-full rounded-full", SLA_LEVEL_BG[sla.level])}
             style={{ width: `${Math.round(sla.progress * 100)}%` }}
           />
         </div>
         <div className="flex items-baseline justify-between">
           <span
             className={cn(
-              "font-mono text-[15px] tabular-nums",
+              "flex items-center gap-2 font-mono text-[15px] tabular-nums",
               SLA_LEVEL_TEXT[sla.level],
             )}
           >
+            {late ? (
+              <span aria-hidden className="size-2 shrink-0 self-center rounded-full bg-signal animate-pulse-dot" />
+            ) : null}
             {done
               ? sla.remainingMin >= 0
                 ? `Resuelto en ${fmtDuration(sla.elapsedMin)}`
@@ -50,18 +54,21 @@ export function SLAMeter({
 
   return (
     <div className="flex items-center gap-2">
-      <div className="h-[3px] w-14 rounded-[1px] bg-rule">
+      <div className="h-[3px] w-14 rounded-full bg-rule">
         <div
-          className={cn("h-full rounded-[1px]", SLA_LEVEL_BG[sla.level])}
+          className={cn("h-full rounded-full", SLA_LEVEL_BG[sla.level])}
           style={{ width: `${Math.round(sla.progress * 100)}%` }}
         />
       </div>
       <span
         className={cn(
-          "w-[76px] font-mono text-[12px] tabular-nums",
+          "flex w-[76px] items-center gap-1.5 font-mono text-[12px] tabular-nums",
           SLA_LEVEL_TEXT[sla.level],
         )}
       >
+        {late ? (
+          <span aria-hidden className="size-2 shrink-0 rounded-full bg-signal animate-pulse-dot" />
+        ) : null}
         {done
           ? sla.remainingMin >= 0
             ? "Cumplido"

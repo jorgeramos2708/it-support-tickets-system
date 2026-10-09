@@ -1,194 +1,118 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-06T00:00:00Z",
-  "title": "Design System: TickITFlow",
+  "generatedAt": "2026-10-09T00:00:00Z",
+  "title": "Design System: TickITFlow — Sala de Guardia",
+  "themes": {
+    "dark": {
+      "displayName": "Noche (default)",
+      "bg": "#17181c",
+      "panel": "#202228",
+      "panel2": "#1c1d22",
+      "rowHover": "#262830",
+      "rowSelected": "#2a2b33",
+      "chip": "#32343e",
+      "border": "#2e3038",
+      "borderStrong": "#3b3d49",
+      "text": "#ececf1",
+      "text2": "#c9ccda",
+      "muted": "#a8abba",
+      "accentFill": "#f5a524",
+      "accentText": "#f5a524",
+      "accentHi": "#ffd27a",
+      "danger": "#ff8f85",
+      "ok": "#7ddfa5",
+      "p1": "#ff8f85",
+      "p2": "#ff9d5c",
+      "p3": "#facc15",
+      "p4": "#7ddfa5",
+      "cobalt": "#7fa6f0",
+      "violet": "#a97df5"
+    },
+    "light": {
+      "displayName": "Día",
+      "bg": "#f6f6f2",
+      "panel": "#ffffff",
+      "panel2": "#f0f0ea",
+      "rowHover": "#f0f0ea",
+      "rowSelected": "#f5efdf",
+      "chip": "#ecece6",
+      "border": "#e6e6df",
+      "borderStrong": "#c9cbc3",
+      "text": "#17181c",
+      "text2": "#3d434d",
+      "muted": "#626977",
+      "accentFill": "#f5a524",
+      "accentText": "#b45309",
+      "accentHi": "#92400e",
+      "danger": "#d92c20",
+      "ok": "#0e8345",
+      "p1": "#dc2626",
+      "p2": "#c2410c",
+      "p3": "#ca8a04",
+      "p4": "#0e8345",
+      "cobalt": "#1d4ed8",
+      "violet": "#7c3aed"
+    }
+  },
+  "fonts": {
+    "display": "Nunito Variable (800) — page 34 / panel 30 / KPI 32",
+    "body": "Nunito Sans Variable (400–700) — 13–14",
+    "label": "Nunito Sans 700 11px +0.12em uppercase",
+    "mono": "IBM Plex Mono 500 — data only, tabular-nums"
+  },
   "extensions": {
     "colorMeta": {
-      "rojo-carta": {
+      "ambar-fill": {
         "role": "primary",
-        "displayName": "Rojo Cartel",
-        "canonical": "oklch(0.585 0.208 27)",
-        "tonalRamp": ["oklch(15% 0.09 27)", "oklch(26% 0.14 27)", "oklch(37% 0.18 27)", "oklch(48% 0.20 27)", "oklch(58.5% 0.208 27)", "oklch(70% 0.17 27)", "oklch(82% 0.10 27)", "oklch(94% 0.03 27)"]
+        "displayName": "Ámbar de Acción",
+        "canonical": "#f5a524",
+        "usage": "Botón primario (texto #17181c), barra de selección inset 4px, foco visible, único acento"
       },
-      "tinta": {
-        "role": "neutral",
-        "displayName": "Tinta de Informe",
-        "canonical": "oklch(0.20 0.015 265)",
-        "tonalRamp": ["oklch(12% 0.008 265)", "oklch(20% 0.015 265)", "oklch(30% 0.015 265)", "oklch(42% 0.014 265)", "oklch(55% 0.012 265)", "oklch(68% 0.010 265)", "oklch(82% 0.007 265)", "oklch(95% 0.003 265)"]
+      "p1-rojo": {
+        "role": "status-priority",
+        "displayName": "P1 Rojo",
+        "canonical": "#ff8f85 (noche) / #dc2626 (día)"
       },
-      "papel": {
-        "role": "neutral",
-        "displayName": "Papel Editorial",
-        "canonical": "oklch(0.985 0.003 90)",
-        "tonalRamp": ["oklch(55% 0.004 90)", "oklch(65% 0.004 90)", "oklch(75% 0.003 90)", "oklch(84% 0.003 90)", "oklch(90% 0.003 90)", "oklch(94.5% 0.003 90)", "oklch(97% 0.003 90)", "oklch(98.5% 0.003 90)"]
+      "p2-naranja": {
+        "role": "status-priority",
+        "displayName": "P2 Naranja",
+        "canonical": "#ff9d5c (noche) / #c2410c (día)"
       },
-      "cobalto-requerimiento": {
-        "role": "secondary",
-        "displayName": "Cobalto de Requerimiento",
-        "canonical": "oklch(0.50 0.21 262)",
-        "tonalRamp": ["oklch(15% 0.10 262)", "oklch(25% 0.15 262)", "oklch(35% 0.19 262)", "oklch(43% 0.205 262)", "oklch(50% 0.21 262)", "oklch(63% 0.17 262)", "oklch(76% 0.11 262)", "oklch(94% 0.03 262)"]
+      "p3-amarillo": {
+        "role": "status-priority",
+        "displayName": "P3 Amarillo",
+        "canonical": "#facc15 (noche) / #ca8a04 (día)"
       },
-      "verde-cumplimiento": {
-        "role": "tertiary",
-        "displayName": "Verde de Cumplimiento",
-        "canonical": "oklch(0.52 0.13 155)",
-        "tonalRamp": ["oklch(15% 0.06 155)", "oklch(25% 0.09 155)", "oklch(35% 0.12 155)", "oklch(44% 0.13 155)", "oklch(52% 0.13 155)", "oklch(64% 0.10 155)", "oklch(78% 0.07 155)", "oklch(94% 0.02 155)"]
+      "p4-verde": {
+        "role": "status-priority",
+        "displayName": "P4 Verde",
+        "canonical": "#7ddfa5 (noche) / #0e8345 (día)"
       },
-      "ambar-riesgo": {
-        "role": "tertiary",
-        "displayName": "Ámbar de Riesgo",
-        "canonical": "oklch(0.55 0.14 55)",
-        "tonalRamp": ["oklch(15% 0.07 55)", "oklch(25% 0.10 55)", "oklch(35% 0.13 55)", "oklch(45% 0.14 55)", "oklch(55% 0.14 55)", "oklch(67% 0.11 55)", "oklch(80% 0.07 55)", "oklch(94% 0.02 55)"]
+      "danger": {
+        "role": "status",
+        "displayName": "Vencido",
+        "canonical": "#ff8f85 (noche) / #d92c20 (día)"
       },
-      "violeta-cambio": {
-        "role": "tertiary",
-        "displayName": "Violeta de Cambio",
-        "canonical": "oklch(0.53 0.22 295)",
-        "tonalRamp": ["oklch(15% 0.11 295)", "oklch(25% 0.16 295)", "oklch(35% 0.20 295)", "oklch(44% 0.22 295)", "oklch(53% 0.22 295)", "oklch(65% 0.17 295)", "oklch(78% 0.11 295)", "oklch(94% 0.03 295)"]
-      },
-      "filete": {
-        "role": "neutral",
-        "displayName": "Filete",
-        "canonical": "oklch(0.88 0.006 90)",
-        "tonalRamp": ["oklch(30% 0.005 90)", "oklch(45% 0.005 90)", "oklch(58% 0.005 90)", "oklch(70% 0.005 90)", "oklch(80% 0.006 90)", "oklch(88% 0.006 90)", "oklch(94% 0.004 90)", "oklch(98% 0.003 90)"]
+      "ok": {
+        "role": "status",
+        "displayName": "En tiempo",
+        "canonical": "#7ddfa5 (noche) / #0e8345 (día)"
       }
     },
-    "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Títulos de vista y asuntos de ticket (Inter Tight Variable 600)." },
-      "label": { "displayName": "Etiqueta de dato", "purpose": "Columnas, KPIs y propiedades: 11px versalitas +0.08em. Etiqueta dentro de componentes, jamás eyebrow decorativo." },
-      "dato": { "displayName": "Voz mono", "purpose": "Dato medible: IDs, cuentas regresivas, conteos, deltas, kbd. Tabular por defecto." }
+    "motionMeta": {
+      "ease": "cubic-bezier(.2,.8,.2,1)",
+      "rise": { "duration": "450ms", "stagger": "50ms", "capIndex": 12 },
+      "swap": { "duration": "300ms", "trigger": "key={ticket.id} del panel" },
+      "pulse-dot": { "duration": "1.8s", "target": "dot 8px de SLA vencido" },
+      "flash": { "duration": "1.2s", "target": "fila actualizada (pulses)" },
+      "countUp": { "duration": "600ms", "easing": "ease-out cúbico", "reducedMotion": "set directo" },
+      "prefersReducedMotion": "0.01ms global"
     },
-    "shadows": [
-      {
-        "name": "paleta-flotante",
-        "value": "0 24px 48px -12px rgba(21, 24, 30, 0.22), 0 2px 8px rgba(21, 24, 30, 0.08)",
-        "purpose": "Sombra de superficies que genuinamente flotan: el diálogo de la paleta de comandos y el panel de notificaciones. Todo lo demás se estructura con filetes de 1px."
-      }
-    ],
-    "motion": [
-      {
-        "name": "transicion-color",
-        "value": "150ms colorchange (transition-colors duration-150)",
-        "purpose": "Transiciones de color en hover/focus de controles."
-      },
-      {
-        "name": "pulso-fila",
-        "value": "pulse-row 220ms cubic-bezier(0.16, 1, 0.3, 1) 1",
-        "purpose": "El momento autoral: un ticket que cambia de estado o cruza un umbral SLA pulsa una vez con un velo de Rojo Cartel al 10%."
-      },
-      {
-        "name": "aparecer-vista",
-        "value": "rise 160ms cubic-bezier(0.16, 1, 0.3, 1) 1",
-        "purpose": "Entrada de vista al navegar: 4px de ascenso con ease-out exponencial desde el estado visible."
-      }
-    ],
-    "breakpoints": [
-      { "name": "sm", "value": "640px" },
-      { "name": "md", "value": "768px" },
-      { "name": "lg", "value": "1024px" },
-      { "name": "xl", "value": "1280px" }
-    ]
-  },
-  "components": [
-    {
-      "name": "Botón primario",
-      "kind": "button",
-      "refersTo": "button-primary",
-      "description": "La única acción rellena en rojo de la pantalla: registrar o la acción crítica de la vista.",
-      "html": "<button class=\"ds-btn-primary\">Nuevo incidente</button>",
-      "css": ".ds-btn-primary { background: #da291c; color: #fbfbf9; height: 36px; padding: 0 16px; border: none; border-radius: 3px; font-size: 14px; font-weight: 500; font-family: inherit; cursor: pointer; transition: background-color 150ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-btn-primary:hover { background: #b22116; } .ds-btn-primary:focus-visible { outline: 2px solid #15181e; outline-offset: 2px; } .ds-btn-primary:disabled { opacity: 0.4; pointer-events: none; }"
-    },
-    {
-      "name": "Botón contorno",
-      "kind": "button",
-      "refersTo": "button-outline",
-      "description": "Acción secundaria con filete; hover endurece el borde a tinta.",
-      "html": "<button class=\"ds-btn-outline\">En progreso</button>",
-      "css": ".ds-btn-outline { background: #ffffff; color: #15181e; height: 36px; padding: 0 16px; border: 1px solid #c3c6bf; border-radius: 3px; font-size: 14px; font-weight: 500; font-family: inherit; cursor: pointer; transition: border-color 150ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-btn-outline:hover { border-color: #15181e; } .ds-btn-outline:focus-visible { outline: 2px solid #15181e; outline-offset: 2px; }"
-    },
-    {
-      "name": "Campo de texto",
-      "kind": "input",
-      "refersTo": "input",
-      "description": "Input sobre papel elevado con filete; foco endurece el borde; caret rojo.",
-      "html": "<input class=\"ds-input\" placeholder=\"Buscar por ID, asunto o solicitante\" />",
-      "css": ".ds-input { height: 36px; width: 100%; background: #ffffff; border: 1px solid #dcded9; border-radius: 3px; padding: 0 12px; font-size: 14px; color: #15181e; caret-color: #da291c; font-family: inherit; } .ds-input::placeholder { color: #666d78; } .ds-input:hover { border-color: #c3c6bf; } .ds-input:focus { border-color: #15181e; outline: none; }"
-    },
-    {
-      "name": "Chip de prioridad P1",
-      "kind": "chip",
-      "refersTo": "chip-prioridad-p1",
-      "description": "El rango se lleva en relleno: P1 en Rojo Cartel, P2 en tinta, P3/P4 en contorno. Mono tabular.",
-      "html": "<span class=\"ds-chip-p1\">P1</span>",
-      "css": ".ds-chip-p1 { display: inline-flex; align-items: center; padding: 2px 6px; border-radius: 3px; background: #da291c; color: #fbfbf9; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }"
-    },
-    {
-      "name": "Medidor SLA",
-      "kind": "custom",
-      "description": "El componente firma: pista de 3px con relleno por avance y cuenta regresiva mono — lo más ruidoso de la fila.",
-      "html": "<span class=\"ds-sla-meter\"><span class=\"ds-sla-track\"><span class=\"ds-sla-fill ds-sla-warn\" style=\"width: 84%\"></span></span><span class=\"ds-sla-count ds-sla-warn-text\">48m</span></span>",
-      "css": ".ds-sla-meter { display: inline-flex; align-items: center; gap: 8px; } .ds-sla-track { display: inline-block; width: 56px; height: 3px; border-radius: 1px; background: #dcded9; overflow: hidden; } .ds-sla-fill { display: block; height: 100%; } .ds-sla-warn { background: #b45309; } .ds-sla-count { font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-variant-numeric: tabular-nums; width: 76px; } .ds-sla-warn-text { color: #b45309; }"
-    },
-    {
-      "name": "Ítem de navegación",
-      "kind": "nav",
-      "description": "Rail de prácticas; el activo se selecciona por inversión, no por color; conteo abierto en mono.",
-      "html": "<a class=\"ds-nav-item ds-nav-active\" href=\"#\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"></circle><line x1=\"12\" y1=\"8\" x2=\"12\" y2=\"12\"></line><line x1=\"12\" y1=\"16\" x2=\"12.01\" y2=\"16\"></line></svg>Incidentes<span class=\"ds-nav-count\">12</span></a>",
-      "css": ".ds-nav-item { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 3px; font-size: 13px; color: #3d434d; text-decoration: none; transition: background-color 150ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-nav-item:hover { background: rgba(21, 24, 30, 0.05); } .ds-nav-active { background: #15181e; color: #fbfbf9; font-weight: 500; } .ds-nav-count { margin-left: auto; font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-variant-numeric: tabular-nums; color: #666d78; } .ds-nav-active .ds-nav-count { color: rgba(251, 251, 249, 0.8); }"
-    },
-    {
-      "name": "Tecla de atajo",
-      "kind": "chip",
-      "description": "Atajo de teclado en mono dentro de un contorno fino.",
-      "html": "<kbd class=\"ds-kbd\">⌘K</kbd>",
-      "css": ".ds-kbd { display: inline-block; padding: 2px 6px; border: 1px solid #dcded9; border-radius: 3px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #666d78; }"
-    },
-    {
-      "name": "Módulo",
-      "kind": "card",
-      "refersTo": "modulo",
-      "description": "Contenedor de hairline con cabecera versalitas: la unidad de densidad del dashboard.",
-      "html": "<section class=\"ds-module\"><header class=\"ds-module-head\">Mis asignados</header><div class=\"ds-module-body\">…</div></section>",
-      "css": ".ds-module { border: 1px solid #dcded9; border-radius: 3px; background: #fbfbf9; overflow: hidden; } .ds-module-head { padding: 10px 16px; border-bottom: 1px solid #dcded9; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: #3d434d; } .ds-module-body { padding: 16px; font-size: 13px; color: #15181e; }"
+    "contrastVerified": {
+      "dark-text-on-bg": "15.1:1",
+      "dark-muted-on-panel": "7.3:1",
+      "primary-button": "8.7:1",
+      "light-text-on-bg": "16.4:1"
     }
-  ],
-  "narrative": {
-    "northStar": "El Informe Anual",
-    "overview": "La consola de TickITFlow es el último informe anual de IBM convertido en herramienta de trabajo: papel, tinta, filetes de 1px y un solo rojo de cartel. Un agente de TI vive aquí ocho horas al día, así que la elegancia no viene de la decoración sino de la densidad resuelta — retícula estricta, numerales tabulares, jerarquía por peso tipográfico y color usado exclusivamente como estado. Rechazos confirmados: el admin oscuro con acento neón del SaaS por defecto, las tarjetas flotantes con sombras suaves, los gradientes, el glass y cualquier animación que retrase al operador. La profundidad la llevan los filetes hairline; la selección es inversión (tinta sobre papel, no color); el único relleno cromático permanente de una pantalla es la acción primaria. El motion tiene un solo momento autoral — el pulso de fila cuando un ticket cambia de estado o cruza un umbral SLA — y el resto son transiciones de color de 150ms.",
-    "keyCharacteristics": [
-      "Fondo claro papel (#fbfbf9) con filetes 1px como única estructura de profundidad",
-      "Color = estado (verde/ámbar/rojo) + un matiz por práctica ITIL, solo en badges",
-      "Jerarquía por peso y caja, nunca por inflar tamaños",
-      "Voz mono (IBM Plex Mono) exclusiva para dato medible: IDs, cuentas regresivas, marcas",
-      "Teclado primero: ⌘K, j/k, ⏎, acordes g d / g i / g r / g p / g c / g m / g k / g e, tecla /",
-      "Superficies del navegador tematizadas: selección invertida, caret rojo, scrollbar fino",
-      "Series de tiempo: barras tinta plena vs tinta al 35% sobre base hairline, escala y procedencia en mono"
-    ],
-    "rules": [
-      { "name": "La Regla del Color de Estado", "body": "El color cromático solo existe para significar: estado del ticket, nivel SLA, matiz de práctica o acción primaria. Si un elemento es rojo, ámbar o verde sin significado de estado, es un defecto.", "section": "colors" },
-      { "name": "La Regla de la Tinta Primero", "body": "Los enlaces son tinta con subrayado (offset 3px, grosor 1px), no color. La selección es inversión tinta-sobre-papel, nunca un tinte.", "section": "colors" },
-      { "name": "La Regla del Peso sobre el Tamaño", "body": "En tablas densas, el rango se expresa con peso y relleno, nunca inflando el tamaño del texto.", "section": "typography" },
-      { "name": "La Regla de la Voz Mono", "body": "IBM Plex Mono solo para lo medible: IDs, temporizadores, conteos, deltas, kbd. Una palabra o frase en mono que no sea dato es un desvío de voz.", "section": "typography" },
-      { "name": "La Regla del Filete", "body": "La sombra vive solo en lo que genuinamente flota (paleta ⌘K, panel de notificaciones). Si una superficie nueva parece necesitar profundidad, primero se prueba con un filete.", "section": "elevation" },
-      { "name": "La Regla de las Series", "body": "Las gráficas temporales usan tinta plena vs tinta al 35% para distinguir series — la misma tinta, dos pesos; nunca colores nuevos. La escala y la procedencia del dato se declaran en mono.", "section": "components" }
-    ],
-    "dos": [
-      "Do usar el color cromático solo con significado de estado, práctica o acción primaria.",
-      "Do jerarquizar tablas densas con peso tipográfico y relleno, nunca con tamaños inflados.",
-      "Do mantener la voz mono para dato medible (IDs, timers, conteos, deltas, kbd).",
-      "Do tematizar las superficies del navegador (selección invertida, caret rojo, scrollbar fino, focus 2px tinta).",
-      "Do conservar un único momento de motion autoral por interacción (pulso de fila 220ms) y transiciones de color de 150ms en todo lo demás.",
-      "Do etiquetar todo dato de demostración como sintético.",
-      "Do mantener honesta la bifurcación live/demo: con el gateway activo TODO el contenido viene de los microservicios y el chip declara «Datos en vivo» (datos sembrados de demostración, declarados); en demo, «Datos demo»."
-    ],
-    "donts": [
-      "Don't uses gradientes, glass, blur decorativo, glow o halos de color.",
-      "Don't pongas etiquetas eyebrow/kicker sobre los títulos; el encabezado se sostiene solo.",
-      "Don't apliques sombras sin offset real + desenfoque suave fuera de lo que genuinamente flota (paleta ⌘K, panel de notificaciones).",
-      "Don't uses bordes de color laterales mayores a 1px en tarjetas, listas o avisos.",
-      "Don't iconos Unicode ni emoji: los iconos se dibujan (lucide, trazo 1.75) o son SVG autorado.",
-      "Don't spinners de carga: la siguiente vista llega precargada; nada bloquea al operador.",
-      "Don't inventes modo oscuro en v1: el mundo ES papel; su traducción futura es una decisión explícita, no un valor por defecto."
-    ]
   }
 }

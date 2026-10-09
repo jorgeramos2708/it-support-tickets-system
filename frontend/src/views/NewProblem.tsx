@@ -49,7 +49,7 @@ export function NewProblem() {
         <span className="text-ink-3">Nuevo</span>
       </nav>
 
-      <h1 className="mt-3 font-display text-[26px] leading-tight font-semibold tracking-tight">
+      <h1 className="mt-3 font-display text-[34px] leading-[1.1] font-extrabold tracking-tight">
         Nuevo problema
       </h1>
       <p className="mt-1.5 max-w-[62ch] text-[13.5px] text-ink-3">
@@ -122,7 +122,7 @@ export function NewProblem() {
           />
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-[3px] border border-rule bg-raised px-5 py-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-rule bg-raised px-5 py-4">
           <div className="flex items-center gap-3">
             <span className="label text-ink-3">Se registrará</span>
             <span className="font-mono text-[12.5px] text-ink-2">PRB-30XX</span>

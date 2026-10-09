@@ -40,17 +40,17 @@ export function Landing() {
       </header>
 
       <main className="mx-auto max-w-[1100px] px-5 md:px-8">
-        {/* Portada: el informe anual como póster */}
+        {/* Portada: la sala de guardia como póster */}
         <section className="pt-16 pb-14 md:pt-24 md:pb-20">
-          <div className="h-2 w-24 bg-signal" aria-hidden />
-          <h1 className="mt-8 max-w-[16ch] font-display text-[44px] leading-[1.05] font-semibold tracking-[-0.03em] text-ink md:text-[72px]">
-            La mesa de servicio con disciplina de informe anual.
+          <div className="h-2 w-24 rounded-full bg-amber-fill" aria-hidden />
+          <h1 className="mt-8 max-w-[16ch] font-display text-[44px] leading-[1.05] font-extrabold tracking-[-0.01em] text-ink md:text-[72px]">
+            La mesa de servicio ITIL con la cola siempre a la vista.
           </h1>
           <p className="mt-6 max-w-[54ch] text-[16px] leading-relaxed text-ink-2 md:text-[18px]">
             TickITFlow es la consola de agentes y el portal de autoservicio para
             el soporte de TI: prácticas ITIL completas, prioridad calculada por
-            matriz de impacto × urgencia y SLA visible en cada fila — con la
-            calma de un sistema que no te apura a leerlo.
+            matriz de impacto × urgencia y SLA visible en cada fila — con un
+            panel de detalle que no te saca de la cola.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link to="/portal">
@@ -73,10 +73,10 @@ export function Landing() {
             <div className="grid grid-cols-3 flex-1 gap-6">
               {STEPS.map(([n, title, body]) => (
                 <div key={n} className="border-t-2 border-rule pt-4">
-                  <p className="font-mono text-[12px] tabular-nums text-ink">
+                  <p className="font-mono text-[12px] tabular-nums text-amber">
                     {n}
                   </p>
-                  <p className="mt-1.5 text-[15px] font-semibold text-ink">
+                  <p className="mt-1.5 font-display text-[15px] font-bold text-ink">
                     {title}
                   </p>
                   <p className="mt-1 text-[13px] leading-relaxed text-ink-3">
@@ -87,19 +87,19 @@ export function Landing() {
             </div>
             <LogoMark
               size={168}
-              className="hidden shrink-0 text-signal lg:block"
+              className="hidden shrink-0 text-amber-fill lg:block"
             />
           </div>
         </section>
 
-        {/* Prácticas: la tabla del informe, no tarjetas */}
+        {/* Prácticas: la tabla de la guardia, no tarjetas */}
         <section className="border-t border-rule py-14" aria-label="Prácticas ITIL">
-          <h2 className="font-display text-[26px] leading-tight font-semibold tracking-tight">
+          <h2 className="font-display text-[30px] leading-[1.2] font-extrabold tracking-tight">
             Las seis prácticas, sin cajas de bonus
           </h2>
           <p className="mt-2 max-w-[60ch] text-[14.5px] text-ink-3">
-            Todo lo que la consola y el portal hacen, en una sola tabla — como
-            el índice de un informe anual.
+            Todo lo que la consola y el portal hacen, en una sola tabla — el
+            tablero completo del turno.
           </p>
           <ul className="mt-8 border-t border-rule">
             {PRACTICES.map(([name, body], i) => (
@@ -111,7 +111,7 @@ export function Landing() {
                   <span className="font-mono text-[11.5px] tabular-nums text-ink-3">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <span className="text-[16px] font-semibold text-ink">
+                  <span className="font-display text-[16px] font-bold text-ink">
                     {name}
                   </span>
                 </div>
@@ -127,7 +127,7 @@ export function Landing() {
         <section className="border-t border-rule py-14" aria-label="Arquitectura">
           <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
             <div>
-              <h2 className="font-display text-[26px] leading-tight font-semibold tracking-tight">
+              <h2 className="font-display text-[30px] leading-[1.2] font-extrabold tracking-tight">
                 Microservicios, de verdad
               </h2>
               <p className="mt-3 max-w-[52ch] text-[14.5px] leading-relaxed text-ink-2">
@@ -138,7 +138,7 @@ export function Landing() {
               </p>
             </div>
             <div>
-              <h2 className="font-display text-[26px] leading-tight font-semibold tracking-tight">
+              <h2 className="font-display text-[30px] leading-[1.2] font-extrabold tracking-tight">
                 Modo dual, sin engaños
               </h2>
               <p className="mt-3 max-w-[52ch] text-[14.5px] leading-relaxed text-ink-2">

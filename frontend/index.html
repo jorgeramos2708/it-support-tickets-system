@@ -9,9 +9,9 @@
   </head>
   <body>
     <script>
-      // Aplicar tema antes del primer render (evita flash)
-      const t = localStorage.getItem("tickitflow.theme");
-      if (t === "dark") document.documentElement.setAttribute("data-theme", "dark");
+      // Aplicar tema antes del primer render (evita flash): noche por defecto
+      const t = localStorage.getItem("tickitflow.theme") ?? "dark";
+      document.documentElement.setAttribute("data-theme", t);
     </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>

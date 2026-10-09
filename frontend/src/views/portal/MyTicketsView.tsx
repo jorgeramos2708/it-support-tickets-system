@@ -22,7 +22,7 @@ export function MyTicketsView() {
     <div className="animate-rise">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-[24px] leading-tight font-semibold tracking-tight">
+          <h1 className="font-display text-[30px] leading-[1.2] font-extrabold tracking-tight">
             Mis tickets
           </h1>
           <p className="mt-1 text-[13px] text-ink-3">
@@ -39,7 +39,7 @@ export function MyTicketsView() {
           <LoadingBox label="Cargando tus tickets del servidor…" />
         </div>
       ) : mine.length === 0 ? (
-        <div className="mt-6 flex flex-col items-center gap-2 rounded-[3px] border border-dashed border-rule-2 bg-raised px-6 py-14 text-center">
+        <div className="mt-6 flex flex-col items-center gap-2 rounded-xl border border-dashed border-rule-2 bg-raised px-6 py-14 text-center">
           <p className="text-[15px] font-medium text-ink">
             Aún no has registrado nada
           </p>
@@ -49,7 +49,7 @@ export function MyTicketsView() {
           </p>
         </div>
       ) : (
-        <ul className="mt-5 overflow-hidden rounded-[3px] border border-rule">
+        <ul className="mt-5 overflow-hidden rounded-xl border border-rule">
           {mine.map((t) => (
             <li key={t.id}>
               <Link
@@ -106,7 +106,7 @@ export function PortalTicketView() {
 
   if (!ticket || ticket.requester !== PORTAL_USER.name) {
     return (
-      <div className="mx-auto max-w-md rounded-[3px] border border-dashed border-rule-2 bg-raised px-6 py-14 text-center">
+      <div className="mx-auto max-w-md rounded-xl border border-dashed border-rule-2 bg-raised px-6 py-14 text-center">
         <p className="text-[15px] font-medium text-ink">Ticket no disponible</p>
         <p className="mt-1 text-[13px] text-ink-3">
           No encontramos este ticket entre tus solicitudes.
@@ -134,7 +134,7 @@ export function PortalTicketView() {
       {justCreated ? (
         <p
           role="status"
-          className="mb-5 flex items-start gap-2 rounded-[3px] border border-rule bg-raised px-4 py-3 text-[13.5px] text-ink-2"
+          className="mb-5 flex items-start gap-2 rounded-xl border border-rule bg-raised px-4 py-3 text-[13.5px] text-ink-2"
         >
           <span aria-hidden className="mt-1.5 size-1.5 shrink-0 rounded-full bg-good" />
           Tu solicitud quedó registrada con el número{" "}
@@ -156,7 +156,7 @@ export function PortalTicketView() {
         </span>
       </nav>
 
-      <h1 className="mt-3 font-display text-[22px] leading-snug font-semibold tracking-tight">
+      <h1 className="mt-3 font-display text-[24px] leading-[1.2] font-extrabold tracking-tight">
         {ticket.subject}
       </h1>
       <div className="mt-2 flex flex-wrap items-center gap-4">
@@ -172,7 +172,7 @@ export function PortalTicketView() {
       <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-12">
         <section className="sm:col-span-8" aria-label="Avances">
           <h2 className="label text-ink-2">Avances</h2>
-          <div className="mt-3 rounded-[3px] border border-rule bg-raised p-3">
+          <div className="mt-3 rounded-xl border border-rule bg-raised p-3">
             <TextArea
               value={note}
               onChange={(e) => setNote(e.target.value)}
@@ -217,7 +217,7 @@ export function PortalTicketView() {
                   {eventLine(ev)} · {fmtRelative(ev.at, now)}
                 </p>
                 {ev.detail && ev.kind === "nota" ? (
-                  <p className="mt-0.5 max-w-[65ch] rounded-[3px] border border-rule bg-raised px-3 py-2 text-[13.5px] text-ink-2">
+                  <p className="mt-0.5 max-w-[65ch] rounded-xl border border-rule bg-raised px-3 py-2 text-[13.5px] text-ink-2">
                     {ev.detail}
                   </p>
                 ) : null}

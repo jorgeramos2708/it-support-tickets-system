@@ -57,7 +57,7 @@ export function ConfiguracionView() {
 
   if (user?.role !== "admin") {
     return (
-      <div className="mx-auto max-w-md rounded-[3px] border border-rule bg-raised px-6 py-10 text-center">
+      <div className="mx-auto max-w-md rounded-xl border border-rule bg-raised px-6 py-10 text-center">
         <ShieldCheck size={22} strokeWidth={1.5} className="mx-auto text-ink-3" />
         <p className="mt-2 text-[15px] font-medium text-ink">
           Solo administradores pueden gestionar la configuración
@@ -116,14 +116,14 @@ export function ConfiguracionView() {
 
   return (
     <div className="mx-auto max-w-[720px] animate-rise">
-      <h1 className="font-display text-[24px] leading-tight font-semibold tracking-tight">
+      <h1 className="font-display text-[30px] leading-[1.2] font-extrabold tracking-tight">
         Configuración
       </h1>
       <p className="mt-1 text-[13.5px] text-ink-3">
         Servidor de correo para notificaciones críticas de TickITFlow.
       </p>
 
-      <section className="mt-6 rounded-[3px] border border-rule bg-raised">
+      <section className="mt-6 rounded-xl border border-rule bg-raised">
         <header className="flex items-center gap-2 border-b border-rule px-5 py-3">
           <h2 className="label text-ink-2">Servidor SMTP</h2>
           <div className="ml-auto flex items-center gap-3">

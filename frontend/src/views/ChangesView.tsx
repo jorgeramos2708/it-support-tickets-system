@@ -39,7 +39,7 @@ export function ChangesView() {
     <div className="mx-auto max-w-[1200px] animate-rise">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-[26px] leading-tight font-semibold tracking-tight">
+          <h1 className="font-display text-[34px] leading-[1.1] font-extrabold tracking-tight">
             Cambios
           </h1>
           <p className="mt-1 text-[13px] text-ink-3">
@@ -54,7 +54,7 @@ export function ChangesView() {
         </Button>
       </div>
 
-      <div className="mt-5 overflow-hidden rounded-[3px] border border-rule">
+      <div className="mt-5 overflow-hidden rounded-xl border border-rule">
         <table className="w-full border-collapse text-left">
           <thead>
             <tr className="border-b border-rule bg-raised/60">
@@ -88,7 +88,7 @@ export function ChangesView() {
                   <td className="px-3 py-2.5">
                     <span
                       className={cn(
-                        "inline-flex items-center rounded-[3px] px-1.5 py-0.5 text-[11px]",
+                        "inline-flex items-center rounded-xl px-1.5 py-0.5 text-[11px]",
                         CHANGE_TYPE_SKIN[c.type],
                       )}
                     >
@@ -174,13 +174,13 @@ export function ChangeDetail() {
 
       <div className="mt-3 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="max-w-3xl font-display text-[22px] leading-snug font-semibold tracking-tight">
+          <h1 className="max-w-3xl font-display text-[30px] leading-[1.2] font-extrabold tracking-tight">
             {change.title}
           </h1>
           <div className="mt-2 flex flex-wrap items-center gap-4">
             <span
               className={cn(
-                "inline-flex items-center rounded-[3px] px-1.5 py-0.5 text-[11px]",
+                "inline-flex items-center rounded-xl px-1.5 py-0.5 text-[11px]",
                 CHANGE_TYPE_SKIN[change.type],
               )}
             >
@@ -223,7 +223,7 @@ export function ChangeDetail() {
             <h2 className="label text-ink-2">
               Aprobaciones {change.type === "emergencia" ? "ECAB" : "CAB"}
             </h2>
-            <ul className="mt-2 overflow-hidden rounded-[3px] border border-rule">
+            <ul className="mt-2 overflow-hidden rounded-xl border border-rule">
               {change.approvals.map((a) => (
                 <li
                   key={a.role}
@@ -285,7 +285,7 @@ export function ChangeDetail() {
                   <li key={ci.id}>
                     <Link
                       to="/cmdb"
-                      className="inline-flex items-center gap-2 rounded-[3px] border border-rule px-3 py-1.5 text-[13px] text-ink-2 transition-colors duration-150 hover:border-ink hover:text-ink"
+                      className="inline-flex items-center gap-2 rounded-xl border border-rule px-3 py-1.5 text-[13px] text-ink-2 transition-colors duration-150 hover:border-ink hover:text-ink"
                     >
                       <span className="font-mono text-[11.5px] text-ink-3">{ci.id}</span>
                       {ci.name.split(" — ")[0]}
@@ -313,7 +313,7 @@ export function ChangeDetail() {
             </dl>
           </Module>
           {change.type === "emergencia" ? (
-            <p className="flex items-start gap-2 rounded-[3px] border border-rule bg-raised px-4 py-3 text-[13px] text-ink-2">
+            <p className="flex items-start gap-2 rounded-xl border border-rule bg-raised px-4 py-3 text-[13px] text-ink-2">
               <span aria-hidden className="mt-1.5 size-1.5 shrink-0 rounded-full bg-signal" />
               Cambio de emergencia: la aprobación verbal del ECAB debe quedar
               documentada en la solicitud dentro de las siguientes 24 horas.

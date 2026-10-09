@@ -30,8 +30,8 @@ export class ErrorBoundary extends Component<Props, State> {
             <div className="flex justify-center">
               <LogoMark size={40} className="text-signal" />
             </div>
-            <div className="mt-6 rounded-[3px] border border-rule bg-raised px-6 py-6 text-center">
-              <h1 className="font-display text-[20px] leading-tight font-semibold tracking-tight">
+            <div className="mt-6 rounded-xl border border-rule bg-raised px-6 py-6 text-center">
+              <h1 className="font-display text-[20px] leading-tight font-extrabold tracking-tight">
                 Algo se rompió en la interfaz
               </h1>
               <p className="mt-2 text-[13.5px] leading-relaxed text-ink-3">
@@ -43,14 +43,14 @@ export class ErrorBoundary extends Component<Props, State> {
                 <button
                   type="button"
                   onClick={() => window.location.assign("/")}
-                  className="h-9 cursor-pointer rounded-[3px] bg-signal px-4 text-sm font-medium text-paper transition-colors duration-150 hover:bg-signal-deep"
+                  className="h-9 cursor-pointer rounded-xl bg-signal px-4 text-sm font-medium text-paper transition-colors duration-150 hover:bg-signal-deep"
                 >
                   Volver al inicio
                 </button>
                 <button
                   type="button"
                   onClick={() => window.location.reload()}
-                  className="h-9 cursor-pointer rounded-[3px] border border-rule-2 bg-raised px-4 text-sm font-medium text-ink transition-colors duration-150 hover:border-ink"
+                  className="h-9 cursor-pointer rounded-xl border border-rule-2 bg-raised px-4 text-sm font-medium text-ink transition-colors duration-150 hover:border-ink"
                 >
                   Recargar
                 </button>
@@ -60,7 +60,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   <summary className="cursor-pointer text-[12px] text-ink-3">
                     Detalle técnico
                   </summary>
-                  <pre className="mt-2 max-h-32 overflow-auto rounded-[3px] border border-rule bg-paper px-3 py-2 font-mono text-[11px] text-ink-2">
+                  <pre className="mt-2 max-h-32 overflow-auto rounded-xl border border-rule bg-paper px-3 py-2 font-mono text-[11px] text-ink-2">
                     {this.state.error.message}
                   </pre>
                 </details>

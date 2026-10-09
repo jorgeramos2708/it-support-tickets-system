@@ -36,7 +36,7 @@ export function CatalogRequestView() {
   const item = CATALOG_ITEMS.find((i) => i.id === itemId);
   if (!item) {
     return (
-      <div className="mx-auto max-w-md rounded-[3px] border border-dashed border-rule-2 bg-raised px-6 py-14 text-center">
+      <div className="mx-auto max-w-md rounded-xl border border-dashed border-rule-2 bg-raised px-6 py-14 text-center">
         <p className="text-[15px] font-medium text-ink">
           Servicio no encontrado
         </p>
@@ -134,7 +134,7 @@ function PortalForm({
         </span>
       </nav>
 
-      <h1 className="mt-3 font-display text-[24px] leading-tight font-semibold tracking-tight">
+      <h1 className="mt-3 font-display text-[30px] leading-[1.2] font-extrabold tracking-tight">
         {mode === "incidente"
           ? "Reportar un problema"
           : `Solicitar: ${item?.name}`}
@@ -213,7 +213,7 @@ function PortalForm({
           <div className="flex items-center gap-2">
             <label
               htmlFor="p-adjuntos"
-              className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-[3px] border border-rule bg-raised px-3 text-sm text-ink-2 transition-colors duration-150 hover:border-ink"
+              className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-xl border border-rule bg-raised px-3 text-sm text-ink-2 transition-colors duration-150 hover:border-ink"
             >
               <Paperclip size={14} strokeWidth={1.75} aria-hidden />
               Adjuntar archivos
@@ -230,7 +230,7 @@ function PortalForm({
                 {attachments.map((a, i) => (
                   <span
                     key={`${a.name}-${i}`}
-                    className="inline-flex items-center gap-1 rounded-[3px] border border-rule bg-raised px-2 py-1 font-mono text-[11px] text-ink-2"
+                    className="inline-flex items-center gap-1 rounded-xl border border-rule bg-raised px-2 py-1 font-mono text-[11px] text-ink-2"
                   >
                     {a.name}
                     <span className="text-ink-3">({a.sizeKb} KB)</span>
@@ -251,7 +251,7 @@ function PortalForm({
           </div>
         </Field>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-[3px] border border-rule bg-raised px-5 py-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-rule bg-raised px-5 py-4">
           <div className="flex items-center gap-3">
             <span className="label text-ink-3">Prioridad de atención</span>
             <PriorityChip priority={priority} full className="text-[13px]" />

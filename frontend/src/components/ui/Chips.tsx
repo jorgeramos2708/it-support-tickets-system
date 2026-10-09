@@ -14,13 +14,20 @@ import {
 export function PracticeBadge({ practice }: { practice: PracticeAll }) {
   return (
     <span className="inline-flex items-center gap-1.5 text-[12px] text-ink-2">
-      <span aria-hidden className={cn("size-1.5 rounded-[1px]", PRACTICE_BG[practice])} />
+      <span aria-hidden className={cn("size-1.5 rounded-[2px]", PRACTICE_BG[practice])} />
       {PRACTICE_LABEL[practice]}
     </span>
   );
 }
 
-/** Chip de prioridad: el rango se lleva en peso y relleno, P1 es el único crítico en rojo. */
+/** Chip de prioridad semáforo: P1 rojo · P2 naranja · P3 amarillo · P4 verde. */
+const PRIORITY_SKIN: Record<Priority, string> = {
+  P1: "bg-p1 text-p1-ink",
+  P2: "bg-p2 text-p2-ink",
+  P3: "bg-p3 text-p3-ink",
+  P4: "bg-p4 text-p4-ink",
+};
+
 export function PriorityChip({
   priority,
   full = false,
@@ -31,20 +38,13 @@ export function PriorityChip({
   className?: string;
 }) {
   const label = full ? PRIORITY_LABEL[priority] : priority;
-  const skin =
-    priority === "P1"
-      ? "bg-signal text-paper font-semibold"
-      : priority === "P2"
-        ? "bg-ink text-paper font-semibold"
-        : priority === "P3"
-          ? "border border-rule-2 text-ink-2 font-medium"
-          : "border border-rule-2 text-ink-3 font-medium";
   return (
     <span
       title={PRIORITY_LABEL[priority]}
       className={cn(
-        "inline-flex items-center rounded-[3px] px-1.5 py-0.5 font-mono text-[12px] tabular-nums",
-        skin,
+        "inline-flex w-fit items-center justify-center rounded-lg px-2 py-[3px] font-display text-[12px] font-extrabold tabular-nums",
+        PRIORITY_SKIN[priority],
+        full && "px-2.5",
         className,
       )}
     >

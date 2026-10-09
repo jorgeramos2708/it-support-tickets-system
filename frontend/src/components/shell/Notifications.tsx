@@ -109,7 +109,7 @@ export function NotificationsBell() {
         aria-label={`Notificaciones (${items.length})`}
         aria-expanded={open}
         className={cn(
-          "flex size-8 cursor-pointer items-center justify-center rounded-[3px] transition-colors duration-150",
+          "flex size-8 cursor-pointer items-center justify-center rounded-xl transition-colors duration-150",
           open
             ? "bg-ink text-paper"
             : "text-ink-3 hover:bg-ink/5 hover:text-ink",

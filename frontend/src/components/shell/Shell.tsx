@@ -45,7 +45,7 @@ export function TopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
     .join("");
   return (
     <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b border-rule bg-paper px-3 md:gap-4 md:px-5">
-      <Link to="/" aria-label="TickITFlow — inicio" className="rounded-[3px]">
+      <Link to="/" aria-label="TickITFlow — inicio" className="rounded-xl">
         <LogoLockup />
       </Link>
 
@@ -53,11 +53,11 @@ export function TopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
         type="button"
         onClick={onOpenPalette}
         aria-label="Buscar (abre la paleta de comandos)"
-        className="ml-2 hidden h-9 w-80 cursor-pointer items-center gap-2 rounded-[3px] border border-rule bg-raised px-3 text-left text-[13px] text-ink-3 transition-colors duration-150 hover:border-ink md:flex"
+        className="ml-2 hidden h-9 w-80 cursor-pointer items-center gap-2 rounded-xl border border-rule bg-raised px-3 text-left text-[13px] text-ink-3 transition-colors duration-150 hover:border-ink md:flex"
       >
         <Search size={14} strokeWidth={1.75} aria-hidden />
         Buscar tickets, acciones…
-        <kbd className="ml-auto rounded-[3px] border border-rule px-1.5 py-0.5 font-mono text-[11px] text-ink-3">
+        <kbd className="ml-auto rounded-md border border-rule px-1.5 py-0.5 font-mono text-[11px] text-ink-3">
           ⌘K
         </kbd>
       </button>
@@ -66,7 +66,7 @@ export function TopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
         type="button"
         onClick={onOpenPalette}
         aria-label="Buscar (abre la paleta de comandos)"
-        className="flex size-9 cursor-pointer items-center justify-center rounded-[3px] border border-rule bg-raised text-ink-2 transition-colors duration-150 hover:border-ink md:hidden"
+        className="flex size-9 cursor-pointer items-center justify-center rounded-xl border border-rule bg-raised text-ink-2 transition-colors duration-150 hover:border-ink md:hidden"
       >
         <Search size={15} strokeWidth={1.75} aria-hidden />
       </button>
@@ -86,7 +86,7 @@ export function TopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
               ? "Todo el contenido viene en vivo de los microservicios, con datos sembrados de demostración."
               : "Todos los datos de esta consola son sintéticos, para demostración."
           }
-          className="label rounded-[3px] border border-rule px-2 py-1 text-ink-3"
+          className="label rounded-xl border border-rule px-2 py-1 text-ink-3"
         >
           {live ? "Datos en vivo" : "Datos demo"}
         </span>
@@ -96,7 +96,7 @@ export function TopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
         <span className="flex items-center gap-2">
           <span
             aria-hidden
-            className="flex size-7 items-center justify-center rounded-[3px] bg-ink text-[11px] font-semibold text-paper"
+            className="flex size-7 items-center justify-center rounded-xl bg-ink text-[11px] font-semibold text-paper"
           >
             {initials}
           </span>
@@ -108,7 +108,7 @@ export function TopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
             onClick={logout}
             title="Cerrar sesión"
             aria-label="Cerrar sesión"
-            className="flex size-8 cursor-pointer items-center justify-center rounded-[3px] text-ink-3 transition-colors duration-150 hover:bg-ink/5 hover:text-ink"
+            className="flex size-8 cursor-pointer items-center justify-center rounded-xl text-ink-3 transition-colors duration-150 hover:bg-ink/5 hover:text-ink"
           >
             <LogOut size={15} strokeWidth={1.75} aria-hidden />
           </button>
@@ -155,8 +155,10 @@ function RailLink({
       to={to}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "flex items-center gap-2.5 rounded-[3px] px-2 py-2 text-[13px] transition-colors duration-150",
-        active ? "bg-ink font-medium text-paper" : "text-ink-2 hover:bg-ink/5",
+        "flex items-center gap-2.5 rounded-xl px-2 py-2 text-[13px] transition-colors duration-150",
+        active
+          ? "bg-amber-fill font-bold text-amber-fill-ink"
+          : "text-ink-2 hover:bg-row-hover",
       )}
     >
       <Icon size={16} strokeWidth={1.75} aria-hidden />
@@ -165,7 +167,7 @@ function RailLink({
         <span
           className={cn(
             "ml-auto font-mono text-[11px] tabular-nums",
-            active ? "text-paper/80" : "text-ink-3",
+            active ? "text-amber-fill-ink/80" : "text-ink-3",
           )}
         >
           {openCount}

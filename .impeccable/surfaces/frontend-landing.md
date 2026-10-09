@@ -1,26 +1,31 @@
 ---
-version: 1
+version: 2
 slug: "frontend-landing"
 primary_target: "frontend-landing"
 related_targets: []
 ---
 
-# Surface brief — Landing pública TickITFlow
+# Surface brief - Landing pública TickITFlow
 
 ## Alcance y modo de visitante
-Una página de presentación pública en `/landing` para quien llega por primera vez: qué es TickITFlow, cómo funciona y cómo probarlo. Modo: **Persuade** — el visitante decide y actúa; no es una superficie operativa.
+Una página de presentación pública en `/landing` para quien llega por primera vez: qué es TickITFlow, cómo funciona y cómo probarlo. Modo: **Persuade** - el visitante decide y actúa.
 
 ## Audiencia, trabajo, acción
-Decisores y equipos de TI evaluando una mesa de servicio ITIL. Tarea: entender la oferta en un vistazo y probarla. Acción primaria: "Probar la demo" → portal; secundaria: "Soy agente de soporte" → consola. Prueba: nada inventado — solo lo que existe (demo con datos sintéticos, credenciales visibles).
+Decisores y equipos de TI evaluando una mesa de ayuda ITIL. Tarea: entender la oferta en un vistazo y probarla. Acción primaria: "Probar la demo" → portal; secundaria: "Soy agente de soporte" → consola. Prueba: nada inventado - solo lo que existe (demo con datos sintéticos, credenciales visibles).
 
-## Mundo y composición
-Hereda El Informe Anual: la landing es la **portada del informe** — barra roja de cartel, titular display gigante en Inter Tight (72px, tracking −0.03em), los tres pasos del flujo bajo filete de 2px con numeración que ES la secuencia (registrar → priorizar → resolver), las seis prácticas como tabla fileteada (no tarjetas con iconos), la marca a escala de póster, y las dos verdades del sistema (microservicios reales + modo dual honesto) a dos columnas. CTA única rellena en rojo.
+## Direction contract
 
-## Momento memorable
-El titular de portada con la barra roja encima — el informe anual convertido en póster.
+THESIS: La portada del mundo nuevo — la sala de guardia presentada al visitante: fondo oscuro #17181c, un solo ámbar de acción, la marca a escala de póster. Rechaza el hero de tarjetas con iconos y el gradiente SaaS.
 
-## Estados y límites
-Dentro: hero + flujo de 3 pasos + tabla de prácticas + sección de arquitectura + footer. Fuera: pricing, testimonios, métricas de clientes (nada real existe — no se inventa). No consume el store; funciona en modo demo y live por igual (pública, sin gate).
+OWN-WORLD: Tokens del mundo nuevo (dual tema día/noche), Nunito 800 para el titular gigante, los tres pasos del flujo con numeración que ES la secuencia (registrar → priorizar → resolver), las seis prácticas como tabla fileteada (no tarjetas con iconos), las dos verdades del sistema (microservicios reales + modo dual honesto) a dos columnas. CTA única rellena en ámbar con glow al hover.
+
+STORY: El visitante entiende qué es TickITFlow en un viewport, cree que es una mesa de ayuda ITIL real (porque lo es) y prueba la demo.
+
+FIRST VIEWPORT: Hero con titular Nunito 800 gigante sobre #17181c, CTA ámbar "Probar la demo", la barra de marca; después, flujo de 3 pasos, tabla de prácticas, arquitectura, footer.
+
+FORM: Dirección fijada por el usuario (rebrand global); code-led.
+
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance.
 
 ## Decisiones abiertas
 Versión en inglés; meta tags SEO; capturas de producto reales cuando existan datos reales.

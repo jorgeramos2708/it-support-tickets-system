@@ -1,5 +1,6 @@
 import { useMemo, useState, type ReactNode } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { MousePointerClick, X } from "lucide-react";
 import { TicketTable } from "../components/queue/TicketTable";
 import { Button } from "../components/ui/Button";
 import { TextInput } from "../components/ui/Field";
@@ -7,6 +8,7 @@ import { LoadingBox } from "../components/ui/Module";
 import { cn } from "../lib/cn";
 import { slaOf } from "../lib/sla";
 import { useStore } from "../lib/store";
+import { TicketDetail } from "./TicketDetail";
 import {
   OPEN_STATUSES,
   PRACTICE_LABEL,
@@ -47,10 +49,10 @@ function FilterChip({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        "h-7 cursor-pointer rounded-[3px] border px-2.5 text-[12px] transition-colors duration-150",
+        "h-7 cursor-pointer rounded-lg border px-2.5 text-[12px] font-semibold transition-all duration-200 hover:-translate-y-px",
         active
-          ? "border-ink bg-ink text-paper"
-          : "border-rule text-ink-2 hover:border-ink",
+          ? "border-amber-fill bg-amber-fill text-amber-fill-ink"
+          : "border-rule text-ink-2 hover:border-amber",
       )}
     >
       {children}
@@ -62,6 +64,15 @@ export function QueueView() {
   const { practice } = useParams<{ practice: string }>();
   const { tickets, now, hydrating } = useStore();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const selected = searchParams.get("ticket");
+  const select = (id: string | null) => {
+    const next = new URLSearchParams(searchParams);
+    if (id) next.set("ticket", id);
+    else next.delete("ticket");
+    setSearchParams(next, { replace: true });
+  };
 
   const [status, setStatus] = useState<TicketStatus | "todos">("todos");
   const [priority, setPriority] = useState<Priority | "todas">("todas");
@@ -109,10 +120,10 @@ export function QueueView() {
   }
 
   return (
-    <div className="mx-auto max-w-[1200px] animate-rise">
+    <div className="animate-rise">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-[26px] leading-tight font-semibold tracking-tight">
+          <h1 className="font-display text-[34px] leading-[1.1] font-extrabold tracking-tight">
             {PRACTICE_LABEL[valid]}s
           </h1>
           <p className="mt-1 text-[13px] text-ink-3">
@@ -160,31 +171,83 @@ export function QueueView() {
         </div>
       </div>
 
-      <div className="mt-4">
-        {hydrating ? (
-          <LoadingBox label="Cargando la cola del servidor…" />
-        ) : (
-          <TicketTable
-            tickets={filtered}
-            initialSort={[{ id: "sla", desc: false }]}
-            emptyTitle="Sin tickets en esta vista"
-            emptyHint={
-              query
-                ? `Ningún ticket coincide con «${query}». Ajusta la búsqueda o los filtros.`
-                : `Sin ${PRACTICE_LABEL[valid].toLowerCase()}s con estos filtros.`
-            }
-            emptyAction={
-              <Button
-                variant="primary"
-                className="mt-2"
-                onClick={() => navigate(`/nuevo?practice=${valid}`)}
+      {/* Master-detail: lista a la izquierda, panel de detalle pegajoso a la derecha */}
+      <div className="mt-4 grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_440px] xl:grid-cols-[minmax(0,1fr)_480px]">
+        <div className="min-w-0">
+          {hydrating ? (
+            <LoadingBox label="Cargando la cola del servidor…" />
+          ) : (
+            <TicketTable
+              tickets={filtered}
+              initialSort={[{ id: "sla", desc: false }]}
+              selectedId={selected}
+              onSelect={(id) => select(id)}
+              emptyTitle="Sin tickets en esta vista"
+              emptyHint={
+                query
+                  ? `Ningún ticket coincide con «${query}». Ajusta la búsqueda o los filtros.`
+                  : `Sin ${PRACTICE_LABEL[valid].toLowerCase()}s con estos filtros.`
+              }
+              emptyAction={
+                <Button
+                  variant="primary"
+                  className="mt-2"
+                  onClick={() => navigate(`/nuevo?practice=${valid}`)}
+                >
+                  Nuevo {PRACTICE_LABEL[valid].toLowerCase()}
+                </Button>
+              }
+            />
+          )}
+        </div>
+
+        <aside
+          aria-label="Detalle del ticket seleccionado"
+          className={cn(
+            "lg:sticky lg:top-0 lg:-mr-8 lg:-mb-7 lg:h-[calc(100vh-3.5rem)] lg:overflow-y-auto",
+            "lg:border-l lg:border-rule lg:bg-panel-2 lg:px-6 lg:py-6",
+            selected
+              ? "rounded-2xl border border-rule bg-panel-2 p-5 lg:rounded-none lg:border-0 lg:p-0"
+              : "hidden lg:block",
+          )}
+        >
+          {selected ? (
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => select(null)}
+                aria-label="Cerrar el detalle"
+                className="absolute -top-1 right-0 z-10 flex size-7 cursor-pointer items-center justify-center rounded-lg text-ink-3 transition-colors hover:bg-row-hover hover:text-ink"
               >
-                Nuevo {PRACTICE_LABEL[valid].toLowerCase()}
-              </Button>
-            }
-          />
-        )}
+                <X size={15} strokeWidth={2} aria-hidden />
+              </button>
+              <TicketDetail key={selected} code={selected} pane />
+            </div>
+          ) : (
+            <EmptyPane />
+          )}
+        </aside>
       </div>
+    </div>
+  );
+}
+
+function EmptyPane() {
+  return (
+    <div className="flex h-full flex-col items-center justify-center gap-3 px-8 text-center">
+      <MousePointerClick
+        size={26}
+        strokeWidth={1.5}
+        aria-hidden
+        className="text-ink-3/50"
+      />
+      <p className="text-[14px] font-semibold text-ink-2">
+        Ningún ticket seleccionado
+      </p>
+      <p className="max-w-[240px] text-[13px] leading-relaxed text-ink-3">
+        Elige un ticket de la lista y su detalle se abrirá aquí, sin perder la
+        cola de vista.
+      </p>
     </div>
   );
 }
@@ -199,7 +262,7 @@ export function EmptyQueue({
   action?: ReactNode;
 }) {
   return (
-    <div className="mx-auto flex max-w-md flex-col items-center gap-2 rounded-[3px] border border-dashed border-rule-2 bg-raised px-6 py-16 text-center">
+    <div className="mx-auto flex max-w-md flex-col items-center gap-2 rounded-2xl border border-dashed border-rule-2 bg-raised px-6 py-16 text-center">
       <p className="text-[15px] font-medium text-ink">{title}</p>
       <p className="text-[13px] text-ink-3">{hint}</p>
       {action}

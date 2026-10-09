@@ -197,7 +197,7 @@ export function ReportesView() {
     <div className="mx-auto max-w-[1200px] animate-rise">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-[26px] leading-tight font-semibold tracking-tight">
+          <h1 className="font-display text-[34px] leading-[1.1] font-extrabold tracking-tight">
             Reportes
           </h1>
           <p className="mt-1 text-[13px] text-ink-3">

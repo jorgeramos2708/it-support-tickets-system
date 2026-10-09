@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -22,6 +22,9 @@ export interface TicketTableProps {
   emptyHint?: string;
   emptyAction?: ReactNode;
   initialSort?: SortingState;
+  /** Modo master-detail: la fila selecciona en vez de navegar. */
+  selectedId?: string | null;
+  onSelect?: (id: string) => void;
 }
 
 /** Columnas que se ocultan en viewports estrechos para que la tabla componga. */
@@ -37,12 +40,27 @@ export function TicketTable({
   emptyHint = "Ajusta los filtros o registra un ticket nuevo.",
   emptyAction,
   initialSort,
+  selectedId,
+  onSelect,
 }: TicketTableProps) {
   const { now, pulses } = useStore();
   const navigate = useNavigate();
   const [sorting, setSorting] = useState<SortingState>(initialSort ?? []);
   const [focusedId, setFocusedId] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Entrada escalonada solo en la primera carga: después, el feedback
+  // de actualización lo da el flash ámbar (pulses), no el re-vuelo.
+  const [entered, setEntered] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setEntered(true), 800);
+    return () => clearTimeout(t);
+  }, []);
+
+  const openRow = (id: string) => {
+    if (onSelect) onSelect(id);
+    else navigate(`/ticket/${id}`);
+  };
 
   const columns = useMemo<ColumnDef<Ticket>[]>(
     () => [
@@ -67,7 +85,7 @@ export function TicketTable({
         header: "Asunto",
         accessorKey: "subject",
         cell: ({ row }) => (
-          <span className="block max-w-[420px] truncate text-[13.5px] font-medium text-ink">
+          <span className="block max-w-[420px] truncate text-[13.5px] font-semibold text-ink">
             {row.original.subject}
           </span>
         ),
@@ -100,7 +118,7 @@ export function TicketTable({
             <span className="flex items-center gap-1.5 text-[12.5px] text-ink-2">
               <span
                 aria-hidden
-                className="flex size-5 items-center justify-center rounded-[2px] bg-ink/85 font-mono text-[9px] font-medium text-paper"
+                className="flex size-5 items-center justify-center rounded-md bg-ink/85 font-mono text-[9px] font-medium text-paper"
               >
                 {a
                   .split(" ")
@@ -120,7 +138,7 @@ export function TicketTable({
         header: "Actualizado",
         accessorFn: (t) => t.updatedAt,
         cell: ({ row }) => (
-          <span className="text-[12.5px] tabular-nums text-ink-3">
+          <span className="font-mono text-[12.5px] tabular-nums text-ink-3">
             {fmtRelative(row.original.updatedAt, now)}
           </span>
         ),
@@ -154,7 +172,7 @@ export function TicketTable({
     } else if (e.key === "Enter") {
       if (focusedId) {
         e.preventDefault();
-        navigate(`/ticket/${focusedId}`);
+        openRow(focusedId);
       }
     }
   };
@@ -168,9 +186,9 @@ export function TicketTable({
 
   if (rows.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center gap-2 rounded-[3px] border border-dashed border-rule-2 bg-raised px-6 py-16 text-center">
+      <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-rule-2 bg-raised px-6 py-16 text-center">
         <Inbox size={22} strokeWidth={1.5} aria-hidden className="text-ink-3" />
-        <p className="text-[15px] font-medium text-ink">{emptyTitle}</p>
+        <p className="text-[15px] font-semibold text-ink">{emptyTitle}</p>
         <p className="max-w-sm text-[13px] text-ink-3">{emptyHint}</p>
         {emptyAction}
       </div>
@@ -178,12 +196,12 @@ export function TicketTable({
   }
 
   return (
-    <div className="overflow-hidden rounded-[3px] border border-rule">
+    <div className="overflow-hidden rounded-2xl border border-rule bg-raised shadow-1">
       <div ref={containerRef} tabIndex={0} onKeyDown={onKeyDown} className="focus:outline-none">
         <TableShell>
           <thead>
             {table.getHeaderGroups().map((hg) => (
-              <tr key={hg.id} className="border-b border-rule bg-raised/60">
+              <tr key={hg.id} className="border-b border-rule bg-chip/60">
                 {hg.headers.map((header) => (
                   <th
                     key={header.id}
@@ -215,23 +233,35 @@ export function TicketTable({
             ))}
           </thead>
           <tbody>
-            {rows.map((row) => {
+            {rows.map((row, i) => {
               const pulse = pulses[row.original.id] ?? 0;
               const focused = focusedId === row.original.id;
+              const selected = selectedId === row.original.id;
+              const rowStyle = { "--i": Math.min(i, 12) } as CSSProperties;
               return (
                 <tr
                   key={`${row.original.id}-${pulse}`}
+                  aria-selected={onSelect ? selected : undefined}
+                  style={entered ? undefined : rowStyle}
                   className={cn(
-                    "cursor-pointer border-b border-rule last:border-b-0 transition-colors duration-150 hover:bg-raised",
+                    "cursor-pointer border-b border-rule transition-colors duration-200 last:border-b-0 hover:bg-row-hover",
+                    !entered && "animate-rise stagger",
                     pulse > 0 && "animate-pulse-row",
-                    focused && "bg-raised outline-2 -outline-offset-2 outline-ink",
+                    selected && "bg-row-selected",
+                    focused && !selected && "bg-row-selected outline-2 -outline-offset-2 outline-amber-fill",
                   )}
-                  onClick={() => navigate(`/ticket/${row.original.id}`)}
+                  onClick={() => openRow(row.original.id)}
                 >
-                  {row.getVisibleCells().map((cell) => (
+                  {row.getVisibleCells().map((cell, ci) => (
                     <td
                       key={cell.id}
-                      className={cn("px-3 py-2.5", HIDE_ON[cell.column.id])}
+                      className={cn(
+                        "px-3 py-2.5",
+                        HIDE_ON[cell.column.id],
+                        // La barra ámbar de selección vive en la primera celda:
+                        // box-shadow en <tr> no renderiza en table-row.
+                        selected && ci === 0 && "shadow-[inset_4px_0_0_var(--color-amber-fill)]",
+                      )}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
@@ -242,7 +272,7 @@ export function TicketTable({
           </tbody>
         </TableShell>
       </div>
-      <div className="flex items-center justify-between border-t border-rule bg-raised/60 px-3 py-2">
+      <div className="flex items-center justify-between border-t border-rule bg-chip/60 px-3 py-2">
         <span className="font-mono text-[11px] tabular-nums text-ink-3">
           {rows.length} {rows.length === 1 ? "ticket" : "tickets"}
         </span>

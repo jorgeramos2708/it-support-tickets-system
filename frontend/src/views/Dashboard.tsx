@@ -7,6 +7,7 @@ import { LoadingBox } from "../components/ui/Module";
 import { KPI_DELTAS, VOLUME_7D } from "../lib/data";
 import { SLA_LEVEL_TEXT, fmtDuration, fmtRelative, fmtRemaining, slaOf } from "../lib/sla";
 import { useStore } from "../lib/store";
+import { useCountUp } from "../lib/useCountUp";
 import {
   OPEN_STATUSES,
   STATUS_LABEL,
@@ -43,18 +44,23 @@ function eventText(kind: EventKind, to?: string, detail?: string): string {
 function KpiCell({
   label,
   value,
+  count,
   delta,
   positiveIsGood,
   deltaUnit,
   live = false,
+  risk = false,
 }: {
   label: string;
   value: string;
+  count?: number;
   delta: number;
   positiveIsGood: boolean;
   deltaUnit: "n" | "m" | "pp";
   live?: boolean;
+  risk?: boolean;
 }) {
+  const animated = useCountUp(typeof count === "number" ? count : 0);
   const good = positiveIsGood ? delta >= 0 : delta <= 0;
   const up = delta >= 0;
   const unit =
@@ -64,11 +70,18 @@ function KpiCell({
         : `−${fmtDuration(Math.abs(delta))}`
       : `${up ? "+" : "−"}${Math.abs(delta)}${deltaUnit === "pp" ? " pp" : ""}`;
   return (
-    <div className="px-5 py-4 first:pl-1 last:pr-1">
+    <div
+      className={cn(
+        "rounded-[14px] border border-rule bg-raised px-4 py-3.5 shadow-1",
+        "transition-[transform,box-shadow] duration-250 ease-[cubic-bezier(.2,.8,.2,1)]",
+        "hover:-translate-y-[3px] hover:shadow-2",
+        risk && "ring-inset ring-1 ring-amber-fill/50",
+      )}
+    >
       <p className="label text-ink-3">{label}</p>
       <p className="mt-2.5 flex items-baseline gap-2.5">
-        <span className="font-display text-[28px] leading-none font-semibold tracking-tight tabular-nums">
-          {value}
+        <span className="font-display text-[32px] leading-none font-extrabold tracking-tight tabular-nums">
+          {typeof count === "number" ? animated : value}
         </span>
         {!live ? (
           <>
@@ -110,7 +123,7 @@ function Module({
   className?: string;
 }) {
   return (
-    <section className={cn("overflow-hidden rounded-[3px] border border-rule", className)}>
+    <section className={cn("overflow-hidden rounded-xl border border-rule", className)}>
       <header className="flex items-center gap-2 border-b border-rule px-4 py-2.5">
         <h2 className="label text-ink-2">{title}</h2>
         {count ? (
@@ -260,7 +273,7 @@ export function Dashboard() {
     <div className="mx-auto max-w-[1200px] animate-rise">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-[26px] leading-tight font-semibold tracking-tight">
+          <h1 className="font-display text-[34px] leading-[1.1] font-extrabold tracking-tight">
             Estado del servicio
           </h1>
           <p className="mt-1 text-[13px] text-ink-3">
@@ -286,42 +299,43 @@ export function Dashboard() {
 
       <section
         aria-label="Indicadores del servicio"
-        className="mt-6 grid grid-cols-2 divide-y divide-rule border-y border-rule md:grid-cols-4 md:divide-y-0 md:divide-x"
+        className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4"
       >
-        <>
-          <KpiCell
-            live={live}
-            label="Abiertos"
-            value={String(open.length)}
-            delta={KPI_DELTAS.abiertos}
-            positiveIsGood={false}
-            deltaUnit="n"
-          />
-          <KpiCell
-            live={live}
-            label="En riesgo de SLA"
-            value={String(critical.length)}
-            delta={KPI_DELTAS.riesgo}
-            positiveIsGood={false}
-            deltaUnit="n"
-          />
-          <KpiCell
-            live={live}
-            label="MTTR"
-            value={mttr === null ? "—" : fmtDuration(mttr)}
-            delta={KPI_DELTAS.mttr}
-            positiveIsGood={false}
-            deltaUnit="m"
-          />
-          <KpiCell
-            live={live}
-            label="Cumplimiento SLA"
-            value={compliance === null ? "—" : `${compliance.toFixed(1)}%`}
-            delta={KPI_DELTAS.cumplimiento}
-            positiveIsGood
-            deltaUnit="pp"
-          />
-        </>
+        <KpiCell
+          live={live}
+          label="Abiertos"
+          value={String(open.length)}
+          count={open.length}
+          delta={KPI_DELTAS.abiertos}
+          positiveIsGood={false}
+          deltaUnit="n"
+        />
+        <KpiCell
+          live={live}
+          risk
+          label="En riesgo de SLA"
+          value={String(critical.length)}
+          count={critical.length}
+          delta={KPI_DELTAS.riesgo}
+          positiveIsGood={false}
+          deltaUnit="n"
+        />
+        <KpiCell
+          live={live}
+          label="MTTR"
+          value={mttr === null ? "—" : fmtDuration(mttr)}
+          delta={KPI_DELTAS.mttr}
+          positiveIsGood={false}
+          deltaUnit="m"
+        />
+        <KpiCell
+          live={live}
+          label="Cumplimiento SLA"
+          value={compliance === null ? "—" : `${compliance.toFixed(1)}%`}
+          delta={KPI_DELTAS.cumplimiento}
+          positiveIsGood
+          deltaUnit="pp"
+        />
       </section>
 
       <section className="mt-8" aria-label="Cola SLA crítico">

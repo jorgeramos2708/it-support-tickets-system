@@ -15,7 +15,7 @@ export function CatalogView() {
     <div className="animate-rise">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-[26px] leading-tight font-semibold tracking-tight">
+          <h1 className="font-display text-[34px] leading-[1.1] font-extrabold tracking-tight">
             ¿En qué te ayudamos, {PORTAL_USER.name.split(" ")[0].replace(".", "")}?
           </h1>
           <p className="mt-1 max-w-[62ch] text-[13.5px] text-ink-3">
@@ -27,7 +27,7 @@ export function CatalogView() {
 
       <section
         aria-label="Reportar un problema"
-        className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-[3px] border border-rule bg-raised px-6 py-5"
+        className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-rule bg-raised px-6 py-5"
       >
         <div>
           <p className="text-[15px] font-semibold text-ink">
@@ -45,7 +45,7 @@ export function CatalogView() {
       {CATALOG_CATEGORIES.map((category) => (
         <section key={category} className="mt-8" aria-label={category}>
           <h2 className="label text-ink-2">{category}</h2>
-          <ul className="mt-2 overflow-hidden rounded-[3px] border border-rule">
+          <ul className="mt-2 overflow-hidden rounded-xl border border-rule">
             {CATALOG_ITEMS.filter((i) => i.category === category).map((item) => (
               <li
                 key={item.id}
@@ -93,7 +93,7 @@ export function CatalogView() {
             <li key={a.id}>
               <Link
                 to={`/portal/ayuda/${a.id}`}
-                className="flex h-full flex-col justify-between gap-2 rounded-[3px] border border-rule px-4 py-3.5 transition-colors duration-150 hover:border-ink"
+                className="flex h-full flex-col justify-between gap-2 rounded-xl border border-rule px-4 py-3.5 transition-colors duration-150 hover:border-ink"
               >
                 <span className="text-[14px] font-medium text-ink">{a.title}</span>
                 <span className="flex items-center justify-between text-[12px] text-ink-3">

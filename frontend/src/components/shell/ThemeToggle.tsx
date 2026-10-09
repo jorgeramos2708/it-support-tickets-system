@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 
-/** Toggle de tema: papel de día / papel de guardia nocturna. Persiste en localStorage. */
+/** Toggle de tema: noche (sala de guardia, default) / día. Persiste en localStorage. */
 export function ThemeToggle() {
-  const [dark, setDark] = useState(() => localStorage.getItem("tickitflow.theme") === "dark");
+  const [dark, setDark] = useState(
+    () => (localStorage.getItem("tickitflow.theme") ?? "dark") === "dark",
+  );
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
@@ -15,7 +17,7 @@ export function ThemeToggle() {
       type="button"
       onClick={() => setDark((v) => !v)}
       aria-label={dark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
-      className="flex size-8 cursor-pointer items-center justify-center rounded-[3px] text-ink-3 transition-colors duration-150 hover:bg-ink/5 hover:text-ink"
+      className="flex size-8 cursor-pointer items-center justify-center rounded-xl text-ink-3 transition-colors duration-150 hover:bg-ink/5 hover:text-ink"
     >
       {dark ? (
         <Sun size={15} strokeWidth={1.75} aria-hidden />

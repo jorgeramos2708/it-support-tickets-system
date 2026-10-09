@@ -84,8 +84,8 @@ function Shell() {
           <div className="flex justify-center">
             <LogoLockup />
           </div>
-          <div className="mt-6 rounded-[3px] border border-rule bg-raised px-6 py-6 text-center">
-            <h1 className="font-display text-[20px] leading-tight font-semibold tracking-tight">
+          <div className="mt-6 rounded-xl border border-rule bg-raised px-6 py-6 text-center">
+            <h1 className="font-display text-[20px] leading-tight font-extrabold tracking-tight">
               La consola es del equipo de soporte
             </h1>
             <p className="mt-2 text-[13.5px] leading-relaxed text-ink-3">

@@ -24,7 +24,7 @@ function PortalNavLink({
       to={to}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "rounded-[3px] px-3 py-1.5 text-[13px] transition-colors duration-150",
+        "rounded-xl px-3 py-1.5 text-[13px] transition-colors duration-150",
         active
           ? "bg-ink font-medium text-paper"
           : "text-ink-2 hover:bg-ink/5",
@@ -47,7 +47,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col bg-paper">
       <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-3 border-b border-rule bg-paper px-4 md:px-6">
-        <Link to="/portal" aria-label="TickITFlow — portal de autoservicio" className="rounded-[3px]">
+        <Link to="/portal" aria-label="TickITFlow — portal de autoservicio" className="rounded-xl">
           <LogoLockup />
         </Link>
         <nav aria-label="Portal" className="ml-4 hidden items-center gap-1 sm:flex">
@@ -71,7 +71,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
                 ? "Tus tickets vienen en vivo del servidor, con datos sembrados de demostración."
                 : "Todos los datos de este portal son sintéticos, para demostración."
             }
-            className="label hidden rounded-[3px] border border-rule px-2 py-1 text-ink-3 sm:inline-block"
+            className="label hidden rounded-xl border border-rule px-2 py-1 text-ink-3 sm:inline-block"
           >
             {live ? "Datos en vivo" : "Datos demo"}
           </span>
@@ -81,7 +81,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
           <span className="flex items-center gap-2">
             <span
               aria-hidden
-              className="flex size-7 items-center justify-center rounded-[3px] bg-ink text-[11px] font-semibold text-paper"
+              className="flex size-7 items-center justify-center rounded-xl bg-ink text-[11px] font-semibold text-paper"
             >
               {initials}
             </span>
@@ -95,7 +95,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
               onClick={logout}
               title="Cerrar sesión"
               aria-label="Cerrar sesión"
-              className="flex size-8 cursor-pointer items-center justify-center rounded-[3px] text-ink-3 transition-colors duration-150 hover:bg-ink/5 hover:text-ink"
+              className="flex size-8 cursor-pointer items-center justify-center rounded-xl text-ink-3 transition-colors duration-150 hover:bg-ink/5 hover:text-ink"
             >
               <LogOut size={15} strokeWidth={1.75} aria-hidden />
             </button>

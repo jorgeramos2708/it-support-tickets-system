@@ -58,7 +58,7 @@ export function CmdbView() {
     <div className="mx-auto max-w-[1200px] animate-rise">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-[26px] leading-tight font-semibold tracking-tight">
+          <h1 className="font-display text-[34px] leading-[1.1] font-extrabold tracking-tight">
             CMDB
           </h1>
           <p className="mt-1 text-[13px] text-ink-3">
@@ -76,7 +76,7 @@ export function CmdbView() {
             aria-pressed={type === t}
             onClick={() => setType(t)}
             className={cn(
-              "h-7 cursor-pointer rounded-[3px] border px-2.5 text-[12px] transition-colors duration-150",
+              "h-7 cursor-pointer rounded-xl border px-2.5 text-[12px] transition-colors duration-150",
               type === t
                 ? "border-ink bg-ink text-paper"
                 : "border-rule text-ink-2 hover:border-ink",
@@ -95,7 +95,7 @@ export function CmdbView() {
         </div>
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-[3px] border border-rule">
+      <div className="mt-4 overflow-hidden rounded-xl border border-rule">
         <table className="w-full border-collapse text-left">
           <thead>
             <tr className="border-b border-rule bg-raised/60">

@@ -48,7 +48,7 @@ function Propiedad({ label, children }: { label: string; children: ReactNode }) 
 
 function AsideModule({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="overflow-hidden rounded-[3px] border border-rule">
+    <section className="overflow-hidden rounded-xl border border-rule">
       <header className="border-b border-rule px-4 py-2.5">
         <h2 className="label text-ink-2">{title}</h2>
       </header>
@@ -57,8 +57,15 @@ function AsideModule({ title, children }: { title: string; children: ReactNode }
   );
 }
 
-export function TicketDetail() {
-  const { id } = useParams<{ id: string }>();
+export function TicketDetail({
+  code,
+  pane = false,
+}: {
+  code?: string;
+  pane?: boolean;
+} = {}) {
+  const params = useParams<{ id: string }>();
+  const id = code ?? params.id;
   const {
     getTicket,
     now,
@@ -108,7 +115,7 @@ export function TicketDetail() {
   };
 
   return (
-    <div className="mx-auto max-w-[1100px] animate-rise">
+    <div className={pane ? "animate-swap" : "mx-auto max-w-[1100px] animate-rise"}>
       <nav aria-label="Ruta" className="flex items-center gap-2 text-[13px]">
         <Link
           to={`/cola/${ticket.practice}`}
@@ -124,7 +131,12 @@ export function TicketDetail() {
 
       <div className="mt-3 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="max-w-3xl font-display text-[22px] leading-snug font-semibold tracking-tight">
+          <h1
+            className={cn(
+              "max-w-3xl font-display leading-[1.2] font-extrabold tracking-tight",
+              pane ? "text-[24px]" : "text-[30px]",
+            )}
+          >
             {ticket.subject}
           </h1>
           <div className="mt-2 flex flex-wrap items-center gap-4">
@@ -159,8 +171,13 @@ export function TicketDetail() {
         </div>
       </div>
 
-      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-12">
-        <div className="lg:col-span-8">
+      <div
+        className={cn(
+          "mt-6 grid grid-cols-1 gap-6",
+          !pane && "lg:grid-cols-12",
+        )}
+      >
+        <div className={pane ? "" : "lg:col-span-8"}>
           <section aria-label="Descripción">
             <h2 className="label text-ink-2">Descripción</h2>
             <p className="mt-2 max-w-[68ch] text-[14px] leading-relaxed text-ink-2">
@@ -171,7 +188,7 @@ export function TicketDetail() {
           <section className="mt-8" aria-label="Bitácora">
             <h2 className="label text-ink-2">Bitácora</h2>
 
-            <div className="mt-3 rounded-[3px] border border-rule bg-raised p-3">
+            <div className="mt-3 rounded-xl border border-rule bg-raised p-3">
               <TextArea
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
@@ -226,7 +243,7 @@ export function TicketDetail() {
           </section>
         </div>
 
-        <aside className="space-y-6 lg:col-span-4">
+        <aside className={cn("space-y-6", !pane && "lg:col-span-4")}>
           <AsideModule title={open ? "SLA en curso" : "SLA final"}>
             <div className="px-4 py-4">
               <SLAMeter ticket={ticket} now={now} variant="large" />
@@ -277,7 +294,7 @@ export function TicketDetail() {
           {sla.level === "breach" && open ? (
             <p
               role="alert"
-              className="flex items-start gap-2 rounded-[3px] border border-rule bg-raised px-4 py-3 text-[13px] text-ink-2"
+              className="flex items-start gap-2 rounded-xl border border-rule bg-raised px-4 py-3 text-[13px] text-ink-2"
             >
               <span aria-hidden className="mt-1.5 size-1.5 shrink-0 rounded-full bg-signal" />
               El objetivo de resolución está vencido. Escala al responsable de

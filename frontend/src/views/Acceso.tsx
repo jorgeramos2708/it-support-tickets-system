@@ -30,8 +30,8 @@ export function Acceso() {
         <div className="flex justify-center">
           <LogoLockup />
         </div>
-        <div className="mt-6 rounded-[3px] border border-rule bg-raised px-6 py-6">
-          <h1 className="font-display text-[20px] leading-tight font-semibold tracking-tight">
+        <div className="mt-6 rounded-xl border border-rule bg-raised px-6 py-6">
+          <h1 className="font-display text-[20px] leading-tight font-extrabold tracking-tight">
             Acceso a TickITFlow
           </h1>
           <p className="mt-1 text-[13px] text-ink-3">

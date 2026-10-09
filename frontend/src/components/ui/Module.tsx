@@ -15,7 +15,12 @@ export function Module({
   className?: string;
 }) {
   return (
-    <section className={cn("overflow-hidden rounded-[3px] border border-rule", className)}>
+    <section
+      className={cn(
+        "overflow-hidden rounded-2xl border border-rule bg-raised shadow-1",
+        className,
+      )}
+    >
       <header className="flex items-center gap-2 border-b border-rule px-4 py-2.5">
         <h2 className="label text-ink-2">{title}</h2>
         {count ? (
@@ -65,14 +70,27 @@ export function DotStatus({
   );
 }
 
-/** Caja de espera honesta: sin spinners, texto directo sobre filete punteado. */
+/** Carga honesta: esqueleto shimmer, sin spinners. */
 export function LoadingBox({ label }: { label: string }) {
   return (
     <div
-      className="rounded-[3px] border border-dashed border-rule-2 bg-raised px-6 py-12 text-center"
+      className="space-y-2.5 rounded-2xl border border-rule bg-raised px-4 py-6"
       aria-busy="true"
+      aria-label={label}
     >
-      <p className="text-[13.5px] text-ink-3">{label}</p>
+      {[92, 78, 85, 64, 88].map((w, i) => (
+        <div
+          key={i}
+          className="skeleton h-5"
+          style={{ width: `${w}%`, animationDelay: `${i * 120}ms` }}
+        />
+      ))}
+      <span className="sr-only">{label}</span>
     </div>
   );
+}
+
+/** Esqueleto de una sola línea, para espacios compactos. */
+export function SkeletonLine({ className }: { className?: string }) {
+  return <div aria-hidden className={cn("skeleton h-4", className)} />;
 }

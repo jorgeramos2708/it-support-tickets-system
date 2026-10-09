@@ -1,238 +1,212 @@
 ---
 name: TickITFlow
-description: Consola de agentes de tickets TI basada en ITIL — el rigor del informe anual corporativo suizo.
+description: Mesa de servicio ITIL en modo dual día/noche — la sala de guardia: superficie oscura con un único ámbar de acción y prioridades semáforo.
 colors:
-  papel: "#fbfbf9"
-  papel-elevado: "#ffffff"
-  tinta: "#15181e"
-  tinta-secundaria: "#3d434d"
-  tinta-tenue: "#666d78"
-  filete: "#dcded9"
-  filete-fuerte: "#c3c6bf"
-  rojo-carta: "#da291c"
-  rojo-carta-profundo: "#b22116"
+  noche-bg: "#17181c"
+  noche-panel: "#202228"
+  noche-panel-2: "#1c1d22"
+  noche-row-hover: "#262830"
+  noche-row-selected: "#2a2b33"
+  noche-border: "#2e3038"
+  noche-texto: "#ececf1"
+  noche-muted: "#a8abba"
+  noche-chip: "#32343e"
+  dia-bg: "#f6f6f2"
+  dia-panel: "#ffffff"
+  dia-panel-2: "#f0f0ea"
+  dia-border: "#e6e6df"
+  dia-texto: "#17181c"
+  dia-muted: "#626977"
+  ambar-fill: "#f5a524"
+  ambar-fill-ink: "#17181c"
+  ambar-texto-dia: "#b45309"
+  ambar-hi-dia: "#92400e"
+  ambar-hi-noche: "#ffd27a"
+  danger-dia: "#d92c20"
+  danger-noche: "#ff8f85"
+  ok-dia: "#0e8345"
+  ok-noche: "#7ddfa5"
+  p1-dia: "#dc2626"
+  p2-dia: "#c2410c"
+  p3-dia: "#ca8a04"
+  p4-dia: "#0e8345"
+  p1-noche: "#ff8f85"
+  p2-noche: "#ff9d5c"
+  p3-noche: "#facc15"
+  p4-noche: "#7ddfa5"
   cobalto-requerimiento: "#1d4ed8"
-  verde-cumplimiento: "#0e8345"
-  ambar-riesgo: "#b45309"
   violeta-cambio: "#7c3aed"
 typography:
   display:
-    fontFamily: "Inter Tight Variable, Inter Variable, ui-sans-serif, sans-serif"
-    fontSize: "26px"
-    fontWeight: 600
-    lineHeight: 1.15
-    letterSpacing: "-0.02em"
-  title:
-    fontFamily: "Inter Variable, ui-sans-serif, sans-serif"
-    fontSize: "15px"
-    fontWeight: 600
-    lineHeight: 1.4
+    fontFamily: "Nunito Variable, Nunito, ui-sans-serif, sans-serif"
+    fontSize: "34px"
+    fontWeight: 800
+    lineHeight: 1.1
+    letterSpacing: "-0.01em"
+  panel-title:
+    fontFamily: "Nunito Variable, Nunito, sans-serif"
+    fontSize: "30px"
+    fontWeight: 800
+    lineHeight: 1.2
+  kpi:
+    fontFamily: "Nunito Variable, Nunito, sans-serif"
+    fontSize: "32px"
+    fontWeight: 800
+    fontFeature: "tnum"
   body:
-    fontFamily: "Inter Variable, ui-sans-serif, sans-serif"
-    fontSize: "14px"
+    fontFamily: "Nunito Sans Variable, Nunito Sans, ui-sans-serif, sans-serif"
+    fontSize: "13px"
     fontWeight: 400
     lineHeight: 1.6
   label:
-    fontFamily: "Inter Variable, ui-sans-serif, sans-serif"
+    fontFamily: "Nunito Sans Variable, sans-serif"
     fontSize: "11px"
-    fontWeight: 500
-    letterSpacing: "0.08em"
+    fontWeight: 700
+    letterSpacing: "0.12em"
+    textTransform: "uppercase"
   dato:
     fontFamily: "IBM Plex Mono, ui-monospace, monospace"
     fontSize: "12px"
     fontWeight: 500
     fontFeature: "tnum"
 rounded:
-  xs: "1px"
-  sm: "3px"
-  md: "4px"
-  marca: "10px"
-spacing:
-  xs: "8px"
-  sm: "12px"
-  md: "16px"
-  lg: "20px"
-  xl: "28px"
+  chip: "8px"
+  control: "12px"
+  kpi: "14px"
+  card: "16px"
+motion:
+  ease: "cubic-bezier(.2,.8,.2,1)"
+  rise: "450ms + stagger 50ms (cap índice 12)"
+  swap: "300ms"
+  pulse-dot: "1.8s infinite (solo vencido)"
+  flash: "1.2s ease-out (actualización de fila)"
+  shimmer: "1.3s linear (skeletons)"
+  countUp: "600ms ease-out cúbico"
+  reducedMotion: "0.01ms global"
 components:
   button-primary:
-    backgroundColor: "{colors.rojo-carta}"
-    textColor: "{colors.papel}"
-    rounded: "{rounded.sm}"
-    padding: "0 16px"
-    height: "36px"
-  button-secondary:
-    backgroundColor: "{colors.tinta}"
-    textColor: "{colors.papel}"
-    rounded: "{rounded.sm}"
-    padding: "0 16px"
-    height: "36px"
+    backgroundColor: "{colors.ambar-fill}"
+    textColor: "{colors.ambar-fill-ink}"
+    rounded: "{rounded.control}"
+    hover: "translateY(-2px) + glow ámbar"
   button-outline:
-    backgroundColor: "{colors.papel-elevado}"
-    textColor: "{colors.tinta}"
-    rounded: "{rounded.sm}"
-    padding: "0 16px"
-    height: "36px"
-  input:
-    backgroundColor: "{colors.papel-elevado}"
-    textColor: "{colors.tinta}"
-    rounded: "{rounded.sm}"
-    padding: "0 12px"
-    height: "36px"
-  chip-prioridad-p1:
-    backgroundColor: "{colors.rojo-carta}"
-    textColor: "{colors.papel}"
-    rounded: "{rounded.sm}"
-    padding: "2px 6px"
-  modulo:
-    backgroundColor: "{colors.papel}"
-    rounded: "{rounded.sm}"
-    padding: "10px 16px"
+    backgroundColor: "transparent"
+    border: "1px border/3b3d49"
+    hover: "border ámbar + shadow-2"
+  chip-prioridad:
+    backgroundColor: "p1..p4 del semáforo"
+    textColor: "contraste por matiz"
+    rounded: "{rounded.chip}"
+    fontWeight: 800
+  kpi-card:
+    backgroundColor: "{colors.noche-panel}"
+    rounded: "{rounded.kpi}"
+    shadow: "sh-1, hover: sh-2 + translateY(-3px)"
+  detail-pane:
+    width: "440px (480 en xl)"
+    position: "sticky, h=calc(100vh-3.5rem)"
+    backgroundColor: "{colors.noche-panel-2}"
 ---
 
 # Design System: TickITFlow
 
 ## Overview
 
-**Creative North Star: "El Informe Anual"**
+**Creative North Star: "Sala de Guardia"**
 
-La consola de TickITFlow es el último informe anual de IBM convertido en herramienta de trabajo: papel, tinta, filetes de 1px y un solo rojo de cartel. Un agente de TI vive aquí ocho horas al día, así que la elegancia no viene de la decoración sino de la densidad resuelta — retícula estricta, numerales tabulares, jerarquía por peso tipográfico y color usado exclusivamente como estado. Rechazos confirmados: el admin oscuro con acento neón del SaaS por defecto, las tarjetas flotantes con sombras suaves, los gradientes, el glass y cualquier animación que retrase al operador.
-
-La profundidad la llevan los filetes hairline; la selección es inversión (tinta sobre papel, no color); el único relleno cromático permanente de una pantalla es la acción primaria. El motion tiene un solo momento autoral — el pulso de fila cuando un ticket cambia de estado o cruza un umbral SLA — y el resto son transiciones de color de 150ms.
+TickITFlow es una mesa de servicio ITIL que vive en dos luces: la **noche** (default) — superficie oscura #17181c donde la elevación la construyen superficies que se aclaran (#17181c → #202228 → #2a2b33) más un borde de 1px, y el **día** — papel cálido #f6f6f2 con la misma estructura. Un solo ámbar de acción (#f5a524) toca lo importante: el botón primario, la selección, el riesgo; el resto del color es estado. Las prioridades hablan en semáforo: P1 rojo, P2 naranja, P3 amarillo, P4 verde. Nunito 800 es la voz display; Nunito Sans el cuerpo; IBM Plex Mono solo el dato medible. El motion tiene vocabulario propio — rise escalonado, swap del panel, pulso del vencido, flash de la fila que cambia — y todo se apaga bajo prefers-reduced-motion.
 
 **Key Characteristics:**
-- Fondo claro papel (#fbfbf9) con filetes 1px como única estructura de profundidad
-- Color = estado (verde/ámbar/rojo) + un matiz por práctica ITIL, solo en badges
-- Jerarquía por peso y caja, nunca por inflar tamaños
-- Voz mono (IBM Plex Mono) exclusiva para dato medible: IDs, cuentas regresivas, marcas
-- Teclado primero: ⌘K, j/k, ⏎, acordes g d / g i / g r / g p / g c / g m / g k / g e, tecla /
-- Superficies del navegador tematizadas: selección invertida, caret rojo, scrollbar fino
-- Series de tiempo: barras tinta plena vs tinta al 35% sobre base hairline, escala y procedencia en mono
+- Dual día/noche por tokens: mismos componentes, dos luces; toggle persiste, noche es default
+- Ámbar #f5a524 como ÚNICO acento: acción primaria, selección (barra inset de 4px), foco, riesgo KPI (ring inset)
+- Prioridades semáforo en chips rellenos: P1 #dc2626/#ff8f85 · P2 #c2410c/#ff9d5c · P3 #ca8a04/#facc15 · P4 #0e8345/#7ddfa5 (día/noche)
+- Nunito 800 para jerarquía: página 34px, panel 30px, KPI 32px; labels 11px/700/.12em
+- tabular-nums en todo dato: IDs, SLA, KPIs, contadores
+- Master-detail en colas: lista 1fr + panel de detalle sticky 440px con swap; deep-link por ?ticket=
+- Radios 8–16px; sombras sh-1/2/3 solo como elevación real; glow reservado al hover primario y al KPI en riesgo
 
 ## Colors
 
-Un solo color de acción y una tríada de estado, todo lo demás es tinta sobre papel.
+### Noche (default)
+- **bg** #17181c · **panel** #202228 · **panel-2** #1c1d22 (detalle) · **row-hover** #262830 · **row-selected** #2a2b33 · **chip** #32343e
+- **texto** #ececf1 (15.1:1) · **texto-2** #c9ccda · **muted** #a8abba (8.2:1) · **border** #2e3038 · **border-fuerte** #3b3d49
 
-### Primary
-- **Rojo Cartel** (#da291c): la única acción primaria ("Nuevo incidente"), el estado P1 y el incumplimiento SLA. Su rareza es el punto: si algo es rojo, exige acción.
-- **Rojo Cartel Profundo** (#b22116): hover del botón primario.
+### Día
+- **bg** #f6f6f2 · **panel** #ffffff · **panel-2** #f0f0ea · **row-hover** #f0f0ea · **row-selected** #f5efdf · **chip** #ecece6
+- **texto** #17181c (16.4:1) · **muted** #626977 · **border** #e6e6df · **border-fuerte** #c9cbc3
 
-### Secondary
-- **Cobalto de Requerimiento** (#1d4ed8): exclusivamente el matiz de la práctica "Requerimiento" en badges de práctica (punto cuadrado). Nunca como color de enlace o decoración.
+### Acento — Ámbar (el único)
+- **Ámbar de relleno** #f5a524 (ambas luces): botón primario con texto #17181c (8.7:1), barra de selección, foco visible
+- **Ámbar de texto**: día #b45309 (AA sobre claro) / noche #f5a524; hover #92400e / #ffd27a
 
-### Tertiary
-- **Verde de Cumplimiento** (#0e8345): estado resuelto, SLA en tiempo, deltas positivos.
-- **Ámbar de Riesgo** (#b45309): SLA con ≤20% restante, pendiente de usuario, matiz de la práctica "Problema".
-- **Violeta de Cambio** (#7c3aed): matiz de la práctica "Cambio", badges y gráficas.
+### Estado
+- **Vencido/danger**: #d92c20 / #ff8f85 · **En tiempo/ok**: #0e8345 / #7ddfa5
 
-### Neutral
-- **Papel Editorial** (#fbfbf9): el fondo de toda la superficie.
-- **Papel Elevado** (#ffffff): inputs, cabeceras de tabla, chips con borde.
-- **Tinta de Informe** (#15181e): texto principal, relleno de selección invertida, botón secundario.
-- **Tinta Secundaria** (#3d434d): texto de apoyo.
-- **Tinta Tenue** (#666d78): etiquetas y metadatos (≥4.5:1 sobre papel).
-- **Filete** (#dcded9) / **Filete Fuerte** (#c3c6bf): reglas hairline de 1px que estructuran toda la profundidad.
+### Prácticas ITIL (matices en badges y gráficas)
+- Incidente: danger · Requerimiento: cobalto #1d4ed8/#7fa6f0 · Problema: ámbar · Cambio: violeta #7c3aed/#a97df5
 
 ### Named Rules
-**La Regla del Color de Estado.** El color cromático solo existe para significar: estado del ticket, nivel SLA, matiz de práctica o acción primaria. Si un elemento es rojo, ámbar o verde sin significado de estado, es un defecto.
-**La Regla de la Tinta Primero.** Los enlaces son tinta con subrayado (offset 3px, grosor 1px), no color. La selección es inversión tinta-sobre-papel, nunca un tinte.
+**La Regla del Ámbar Único.** El ámbar es acción, selección, foco o riesgo. Si un elemento es ámbar sin significar una de esas cuatro cosas, es un defecto. El semáforo P1–P4 es la única familia cromática con permiso de saturación aparte.
+**La Regla de las Dos Luces.** Cada color existe en pareja día/noche; jamás se hardcodea un valor: se usa el token semántico (paper, raised, ink, rule, signal, good, amber, p1–p4) y la pareja se resuelve por [data-theme].
 
 ## Typography
 
-**Display Font:** Inter Tight Variable (self-hosted, con Inter Variable como fallback)
-**Body Font:** Inter Variable (self-hosted)
-**Label/Mono Font:** IBM Plex Mono (self-hosted) — exclusiva de dato
+**Display:** Nunito Variable (self-hosted @fontsource, 800) — página 34px/1.1, panel 30px/1.2, asunto del pane 24px/1.2, KPI 32px.
+**Body:** Nunito Sans Variable (400–700) — 13–14px/1.6.
+**Label:** Nunito Sans 700, 11px, +0.12em, mayúsculas — columnas, KPIs, propiedades.
+**Dato:** IBM Plex Mono 500, 11–12.5px, tabular — IDs, temporizadores, conteos, kbd.
 
-**Carácter:** una grotesca neutra de origen suizo para toda la interfaz, con su variante Tight como voz display; el carácter del sistema está en el peso, la caja y el tracking, no en la excentricidad tipográfica. IBM Plex Mono aporta la herencia del IT corporativo y solo habla cuando hay dato medible.
-
-### Hierarchy
-- **Display** (600, 22–28px, 1.15, tracking −0.02em): títulos de vista (`Estado del servicio`, `Incidentes`, asunto del ticket).
-- **Headline** (600, 15px, 1.4): encabezados de sección dentro de la página (`SLA crítico`).
-- **Title** (600, 13px): etiquetas legibles en componentes densos.
-- **Body** (400/500, 13–14px, 1.6): descripciones y contenido; medida de lectura ≤68ch.
-- **Label** (500, 11px, +0.08em, versalitas): etiquetas de dato — columnas, KPIs, propiedades. Es etiqueta de dato dentro de componentes, jamás eyebrow decorativo sobre un título.
-- **Dato** (mono 500, 11–12.5px, `tnum`): IDs, cuentas regresivas, conteos, deltas, atajos ⌘K.
-
-### Named Rules
-**La Regla del Peso sobre el Tamaño.** En tablas densas, el rango se expresa con peso (P1 > P2 en relleno; P3/P4 en contorno) y caja, nunca inflando el tamaño del texto.
-**La Regla de la Voz Mono.** IBM Plex Mono solo para lo medible: IDs, temporizadores, conteos, deltas, kbd. Una palabra o frase en mono que no sea dato es un desvío de voz.
+**La Regla del Dato Tabular.** Todo número que se actualiza en vivo lleva tabular-nums: la cuenta regresiva SLA no baila.
+**La Regla del Peso.** La jerarquía la lleva Nunito 800 sobre 700; nunca se infla el tamaño para distinguir.
 
 ## Layout
 
-Barra superior fija (h-14, filete inferior) con marca, búsqueda ⌘K y la acción primaria junto a ella. Rail izquierdo de prácticas (w-56) con selección por inversión y conteos abiertos en mono. Contenido en contenedor ≤1200px con banda KPI de 4 columnas bajo filetes (`border-y` + `divide-x`) y retícula de 12 columnas para módulos (5/4/3). Tabla densa de filas de 44px con filetes 1px y cabecera sticky en invertido tenue.
-
-Responsive: el rail y el buscador extendido requieren ≥md (en móvil la paleta se abre con un botón de lupa); el wordmark colapsa a la marca bajo sm; la tabla oculta Práctica y Actualizado bajo lg y Asignado bajo xl. Breakpoints: sm 640 / md 768 / lg 1024 / xl 1280. Ritmo de espaciado: 8/12/16/20/28px; más aire sobre un encabezado que debajo.
+Consola: topbar h-14 + rail w-56 + main. En colas, grid master-detail `minmax(0,1fr) 440px` (480 en ≥xl): lista con filtros a la izquierda, panel de detalle sticky (top-0, h=calc(100vh-3.5rem), overflow propio, sangrado a borde derecho) a la derecha. Selección inline por ?ticket= (deep-link); ✕ limpia. En <lg el panel baja como tarjeta redondeada 16px, estático. Portal: hereda sin rail, ≤980px. Landing: póster del mundo, titular Nunito 800 gigante.
 
 ## Elevation & Depth
 
-Plano por defecto. La profundidad la construyen los filetes hairline de 1px — tablas, módulos, propiedades, divisores — y la inversión como jerarquía máxima. La sombra del sistema vive solo en las superficies que genuinamente flotan: el diálogo de la paleta de comandos y el panel de notificaciones.
-
-### Shadow Vocabulary
-- **Flotante** (`box-shadow: 0 24px 48px -12px rgba(21,24,30,0.22), 0 2px 8px rgba(21,24,30,0.08)`): superficies que genuinamente flotan — hoy el diálogo de la paleta ⌘K y el panel de notificaciones; offset real + desenfoque suave.
-
-### Named Rules
-**La Regla del Filete.** Ningún otro componente lleva sombra. Si una superficie nueva parece necesitar profundidad, primero se prueba con un filete; la sombra está reservada a lo que genuinamente flota (paleta ⌘K, panel de notificaciones).
+- **sh-1** (tarjetas en reposo) / **sh-2** (hover de tarjetas y botones) / **sh-3** (lo que flota: paleta ⌘K)
+- Noche: las sombras negras casi no se ven — la profundidad real la dan el borde 1px y las superficies que se aclaran
+- **Glow** (0 0 0 1px ámbar/50 + 24px ámbar/18): SOLO hover del botón primario y KPI "En riesgo" (como ring inset)
 
 ## Shapes
 
-Radios mínimos y precisos: controles a 3px, diálogo de paleta y tile del logo a 4px, extremos del medidor SLA a 1px. La marca del logo es un tile cuadrado con radio del 15.6% (10/64) y muesca de troquel semicircular en el borde derecho. Los puntos de estado y práctica son cuadrados de 6px (radio 1px) o círculos de 6px según el componente. Nada de píldoras; nada de círculos completos en botones o chips.
+Chips 8px · botones/inputs/filtros 12px · KPI 14px · tarjetas/módulos/cmdk 16px · dots de estado 6px · dot de vencido 8px. Puntos de práctica: cuadrados 6px de radio 2px.
+
+## Motion
+
+- **rise** 450ms + stagger `--i·50ms` (cap índice 12): entrada de filas y vistas
+- **swap** 300ms translateX(14px): el panel de detalle re-anima con `key={ticket.id}` al cambiar selección
+- **pulse-dot** 1.8s: el punto de 8px junto al texto del SLA vencido — nunca la fila entera
+- **flash** ámbar 1.2s: la fila que cambió por datos nuevos (pulses del store)
+- **shimmer** 1.3s: skeletons de carga (nunca spinners)
+- **countUp** 600ms ease-out cúbico: KPIs al cargar (instantáneo bajo reduced-motion)
+- **hover** translateY(-2/-3px): tarjetas y botones se levantan, no se hunden
+
+`@media (prefers-reduced-motion: reduce)`: todo a 0.01ms, countUp set directo.
 
 ## Components
 
-Carácter general: **preciso y contenido** — controles quietos, filetes que estructuran, el color llega con significado.
-
-### Buttons
-- **Shape:** radio 3px; alto 36px (sm: 32px); padding 0 16px; texto 14px/500.
-- **Primary:** Rojo Cartel con texto papel; hover a Rojo Cartel Profundo. Es el único relleno cromático permanente de la pantalla.
-- **Secondary:** tinta rellena, texto papel (p. ej. "Tomar").
-- **Outline:** papel elevado, borde 1px filete-fuerte, tinta; hover a borde tinta.
-- **Ghost:** sin borde, tinta secundaria; hover a tinta con fondo tinta al 5%.
-- **Focus:** anillo 2px de tinta con offset 2px en todo foco visible; transición de color 150ms.
-
-### Chips
-- **Prioridad:** P1 relleno Rojo Cartel (texto papel); P2 relleno tinta; P3/P4 contorno filete-fuerte. Mono 12px, tabular.
-- **Práctica:** punto cuadrado 6px en el matiz de la práctica + nombre en 12px; nunca fondo de color.
-- **Estado:** punto 6px (nuevo tinta, en progreso tinta 50%, pendiente ámbar, resuelto verde, cerrado filete) + nombre.
-- **Filtro:** botón 28px con borde 1px; seleccionado por inversión (fondo tinta, texto papel).
-
-### Cards / Containers
-- **Módulo:** borde 1px filete, radio 3px, fondo papel; cabecera con etiqueta versalitas + filete inferior; cuerpo con padding 16px. Las filas internas se separan con filetes, no con sombras.
-
-### Inputs / Fields
-- **Style:** fondo papel elevado, borde 1px filete, radio 3px, alto 36px; caret Rojo Cartel.
-- **Focus:** borde tinta; el error devalida con borde Rojo Cartel y mensaje en línea.
-- **Disabled:** opacidad 40%.
-
-### Navigation
-- **Rail:** ítems 13px con iconos de un solo trazo (1.75); activo por inversión (fondo tinta, texto papel); conteos abiertos en mono a la derecha. Los módulos ITIL completos (problemas, cambios, CMDB, base de conocimiento) y los reportes viven en el rail con conteos en mono; lo aún no aplicado se muestra atenuado y etiquetado.
-- **Portal:** la superficie de autoservicio (/portal) hereda el mundo sin rail: navegación horizontal en topbar, contenedor ≤980px, catálogo como listas fileteadas por categoría, formularios en lenguaje humano (sin vocabulario ITIL visible) y consola de agentes con su terminología completa.
-- **Estados de acceso:** la puerta de login y la negación de consola para cuentas de portal comparten la gramática de Acceso — marca centrada, tarjeta hairline sobre papel, un título display 20px, una acción rellena y ninguna excusa decorativa.
-- **Breadcrumbs:** enlaces en tinta con subrayado, separados por "/".
-
-### El Medidor SLA (firma)
-El componente más ruidoso de la fila: pista de 3px (56–64px) en filete con relleno proporcional al tiempo transcurrido — verde en tiempo, ámbar al 80%, Rojo Cartel al vencer — y cuenta regresiva en IBM Plex Mono tabular al lado. En detalle, variante grande de 6px con objetivo explícito. Es el corazón del contrato: el estado del SLA nunca está a más de un vistazo.
-
-### Las Series de Tiempo (firma)
-El lenguaje de las gráficas temporales (tendencias, volumen): barras planas pareadas o simples sobre una línea base hairline, sin ejes ni cuadrícula. Dos valores por día se distinguen por **tinta plena vs tinta al 35%** — la misma tinta, dos pesos; cero colores nuevos. La escala numérica se declara en mono tabular junto a la procedencia del dato («pico N · daily_metrics del servidor» o «derivado de la cola local»). Los días de descanso en series semanales se marcan con tinta al 35%, convención heredada de «Volumen 7 días».
-
-### Command Palette
-Diálogo centrado (580px) con la sombra flotante del sistema; entrada de 52px con filete inferior; ítems 13.5px con seleccionado marcado por barra interior de 2px tinta + fondo papel; encabezados de grupo en label versalitas; pie con atajos en mono.
+- **Buttons:** primario ámbar relleno + glow hover; outline con borde que se vuelve ámbar; elevación -2px al hover, scale .98 al activar
+- **PriorityChip:** relleno semáforo, Nunito 800 12px tabular, radio 8, tooltip con nombre completo
+- **Fila de ticket:** tabla densa con sort; hover row-hover; seleccionada row-selected + barra ámbar inset 4px **en la primera celda** (box-shadow en `<tr>` no renderiza); foco j/k con ring ámbar
+- **SLAMeter:** pista 3px redondeada, relleno ok/ámbar/danger, cuenta regresiva mono tabular; vencido suma el dot pulsante
+- **KPI:** tarjeta 14px, hover -3px + sh-2; "En riesgo" lleva ring inset ámbar; número 32px/800 con countUp
+- **Panel de detalle:** bg panel-2, sticky, swap por key; meta en módulos 16px con Propiedad label+valor
+- **Links:** subrayado que crece 0→100% en 250ms; ámbar de texto por tema
 
 ## Do's and Don'ts
 
-### Do:
-- **Do** usar el color cromático solo con significado de estado, práctica o acción primaria.
-- **Do** jerarquizar tablas densas con peso tipográfico y relleno, nunca con tamaños inflados.
-- **Do** mantener la voz mono para dato medible (IDs, timers, conteos, deltas, kbd).
-- **Do** tematizar las superficies del navegador (selección invertida, caret rojo, scrollbar fino, focus 2px tinta).
-- **Do** conservar un único momento de motion autoral por interacción (pulso de fila 220ms, cubic-bezier(0.16, 1, 0.3, 1)) y transiciones de color de 150ms en todo lo demás.
-- **Do** etiquetar todo dato de demostración como sintético.
-- **Do** mantener honesta la bifurcación live/demo: cuando el gateway responde, TODO el contenido viene de los microservicios en vivo y el chip declara «Datos en vivo» (datos sembrados de demostración, declarados); en modo demo el chip dice «Datos demo».
+### Do
+- **Do** usar el token semántico, nunca el hex: la pareja día/noche se resuelve sola
+- **Do** tabular-nums en todo número vivo; mono solo para dato medible
+- **Do** mantener el glow como lujo escaso: primario y riesgo
+- **Do** declarar demo/live honestamente (chip "Datos demo"/"Datos en vivo")
+- **Do** prefers-reduced-motion: sin excepciones
 
-### Don't:
-- **Don't** uses gradientes, glass, blur decorativo, glow o halos de color.
-- **Don't** pongas etiquetas eyebrow/kicker sobre los títulos; el encabezado se sostiene solo.
-- **Don't** apliques sombras sin offset real + desenfoque suave fuera de lo que genuinamente flota (paleta ⌘K, panel de notificaciones).
-- **Don't** uses bordes de color laterales mayores a 1px en tarjetas, listas o avisos.
-- **Don't** iconos Unicode ni emoji: los iconos se dibujan (lucide, trazo 1.75) o son SVG autorado.
-- **Don't** spinners de carga: la siguiente vista llega precargada; nada bloquea al operador.
-- **Don't** inventes modo oscuro en v1: el mundo ES papel; su traducción futura es una decisión explícita, no un valor por defecto.
+### Don't
+- **Don't** uses gradientes, glass ni blur decorativo
+- **Don't** inventes colores fuera del semáforo, el ámbar, el estado y los matices de práctica
+- **Don't** pongas sombra en `<tr>` — la barra de selección vive en el primer `<td>`
+- **Don't** animes la fila entera para el vencido — el pulso es del dot de 8px
+- **Don't** uses ámbar decorativo: si no es acción/selección/foco/riesgo, es tinta

@@ -33,7 +33,7 @@ export function KbView({ basePath = "/kb" }: { basePath?: string }) {
 
   return (
     <div className="mx-auto max-w-[900px] animate-rise">
-      <h1 className="font-display text-[26px] leading-tight font-semibold tracking-tight">
+      <h1 className="font-display text-[34px] leading-[1.1] font-extrabold tracking-tight">
         Base de conocimiento
       </h1>
       <p className="mt-1 text-[13px] text-ink-3">
@@ -49,7 +49,7 @@ export function KbView({ basePath = "/kb" }: { basePath?: string }) {
             aria-pressed={practice === p}
             onClick={() => setPractice(p)}
             className={cn(
-              "h-7 cursor-pointer rounded-[3px] border px-2.5 text-[12px] transition-colors duration-150",
+              "h-7 cursor-pointer rounded-xl border px-2.5 text-[12px] transition-colors duration-150",
               practice === p
                 ? "border-ink bg-ink text-paper"
                 : "border-rule text-ink-2 hover:border-ink",
@@ -64,12 +64,12 @@ export function KbView({ basePath = "/kb" }: { basePath?: string }) {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar en la base de conocimiento"
             aria-label="Buscar artículos"
-            className="h-9 w-full rounded-[3px] border border-rule bg-raised px-3 text-sm text-ink transition-colors duration-150 placeholder:text-ink-3 focus:border-ink focus:outline-none"
+            className="h-9 w-full rounded-xl border border-rule bg-raised px-3 text-sm text-ink transition-colors duration-150 placeholder:text-ink-3 focus:border-ink focus:outline-none"
           />
         </div>
       </div>
 
-      <ul className="mt-4 overflow-hidden rounded-[3px] border border-rule">
+      <ul className="mt-4 overflow-hidden rounded-xl border border-rule">
         {filtered.map((a) => (
           <li key={a.id}>
             <Link
@@ -122,7 +122,7 @@ export function KbArticleView({ basePath = "/kb" }: { basePath?: string }) {
 
   if (!article) {
     return (
-      <div className="mx-auto flex max-w-md flex-col items-center gap-2 rounded-[3px] border border-dashed border-rule-2 bg-raised px-6 py-16 text-center">
+      <div className="mx-auto flex max-w-md flex-col items-center gap-2 rounded-xl border border-dashed border-rule-2 bg-raised px-6 py-16 text-center">
         <p className="text-[15px] font-medium text-ink">Artículo no encontrado</p>
         <p className="text-[13px] text-ink-3">
           El identificador no corresponde a ningún artículo de la base.
@@ -150,7 +150,7 @@ export function KbArticleView({ basePath = "/kb" }: { basePath?: string }) {
       </nav>
 
       <header className="mt-4">
-        <h1 className="font-display text-[24px] leading-tight font-semibold tracking-tight">
+        <h1 className="font-display text-[30px] leading-[1.2] font-extrabold tracking-tight">
           {article.title}
         </h1>
         <div className="mt-2.5 flex flex-wrap items-center gap-4 text-[13px] text-ink-3">
@@ -180,7 +180,7 @@ export function KbArticleView({ basePath = "/kb" }: { basePath?: string }) {
         ))}
       </div>
 
-      <footer className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-[3px] border border-rule bg-raised px-5 py-4">
+      <footer className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-rule bg-raised px-5 py-4">
         <p className="text-[13px] text-ink-2">
           <span className="font-mono tabular-nums">{article.helpful}</span> de{" "}
           <span className="font-mono tabular-nums">{article.views}</span> personas
