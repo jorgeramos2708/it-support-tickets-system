@@ -44,7 +44,7 @@ services:
     build: ./services/auth
     environment:
       DATABASE_URL: postgres://tickit:${POSTGRES_PASSWORD:-tickit}@auth-db:5432/auth
-      JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret}
+      JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret-not-for-production-32chars}
       PORT: "4001"
     depends_on:
       auth-db:
@@ -70,7 +70,7 @@ services:
     build: ./services/incidents
     environment:
       DATABASE_URL: postgres://tickit:${POSTGRES_PASSWORD:-tickit}@incidents-db:5432/incidents
-      JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret}
+      JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret-not-for-production-32chars}
       RABBITMQ_URL: amqp://${RABBITMQ_USER:-tickit}:${RABBITMQ_PASS:-tickit}@rabbitmq:5672
       PORT: "4003"
     depends_on:
@@ -99,7 +99,7 @@ services:
     build: ./services/problems
     environment:
       DATABASE_URL: postgres://tickit:${POSTGRES_PASSWORD:-tickit}@problems-db:5432/problems
-      JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret}
+      JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret-not-for-production-32chars}
       RABBITMQ_URL: amqp://${RABBITMQ_USER:-tickit}:${RABBITMQ_PASS:-tickit}@rabbitmq:5672
       PORT: "4005"
     depends_on:
@@ -128,7 +128,7 @@ services:
     build: ./services/changes
     environment:
       DATABASE_URL: postgres://tickit:${POSTGRES_PASSWORD:-tickit}@changes-db:5432/changes
-      JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret}
+      JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret-not-for-production-32chars}
       RABBITMQ_URL: amqp://${RABBITMQ_USER:-tickit}:${RABBITMQ_PASS:-tickit}@rabbitmq:5672
       PORT: "4006"
     depends_on:
@@ -157,7 +157,7 @@ services:
     build: ./services/cmdb
     environment:
       DATABASE_URL: postgres://tickit:${POSTGRES_PASSWORD:-tickit}@cmdb-db:5432/cmdb
-      JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret}
+      JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret-not-for-production-32chars}
       PORT: "4007"
     depends_on:
       cmdb-db:
@@ -183,7 +183,7 @@ services:
     build: ./services/kb
     environment:
       DATABASE_URL: postgres://tickit:${POSTGRES_PASSWORD:-tickit}@kb-db:5432/kb
-      JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret}
+      JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret-not-for-production-32chars}
       PORT: "4008"
     depends_on:
       kb-db:
@@ -209,7 +209,7 @@ services:
     build: ./services/notifications
     environment:
       DATABASE_URL: postgres://tickit:${POSTGRES_PASSWORD:-tickit}@notifications-db:5432/notifications
-      JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret}
+      JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret-not-for-production-32chars}
       RABBITMQ_URL: amqp://${RABBITMQ_USER:-tickit}:${RABBITMQ_PASS:-tickit}@rabbitmq:5672
       SMTP_HOST: ${SMTP_HOST:-}
       SMTP_PORT: ${SMTP_PORT:-587}
