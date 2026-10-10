@@ -131,9 +131,10 @@ export function Landing() {
                 Microservicios, de verdad
               </h2>
               <p className="mt-3 max-w-[52ch] text-[14.5px] leading-relaxed text-ink-2">
-                Cada práctica corre en su propio servicio NestJS con su base
-                PostgreSQL, detrás de un gateway Traefik y un bus RabbitMQ que
-                publica cada evento — lo que ves en la consola es lo que
+                Cada dominio corre en su propio servicio NestJS con su base
+                PostgreSQL dedicada — incidentes y requerimientos comparten el
+                servicio de tickets —, detrás de un gateway y un bus RabbitMQ
+                que publica cada evento: lo que ves en la consola es lo que
                 consume el notification-service, en vivo.
               </p>
             </div>

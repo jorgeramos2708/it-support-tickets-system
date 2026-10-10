@@ -251,7 +251,7 @@ export function PracticeRail() {
         </div>
         <div className="border-t border-rule px-4 py-3">
           <p className="font-mono text-[11px] text-ink-3">TickITFlow v0.1</p>
-          <p className="mt-0.5 text-[11px] leading-snug text-ink-3/80">
+          <p className="mt-0.5 text-[11px] leading-snug text-ink-3">
             {live
               ? "Contenido en vivo de los microservicios; datos sembrados de demostración."
               : "Datos sintéticos de demostración."}

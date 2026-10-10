@@ -35,7 +35,7 @@ export function LogoMark({
       <path
         d="M15 36 H29.5 L38 45 L53 22"
         fill="none"
-        stroke="#FBFBF9"
+        className="stroke-paper"
         strokeWidth="7"
         strokeLinecap="square"
         strokeLinejoin="miter"
@@ -50,7 +50,7 @@ export function LogoLockup({ className }: { className?: string }) {
       <LogoMark size={26} className="shrink-0 text-amber-fill" />
       <span className="font-display hidden text-[17px] leading-none font-semibold tracking-tight whitespace-nowrap sm:inline">
         Tick
-        <span className="mx-[2px] inline-flex -translate-y-[1px] items-center rounded-[4px] bg-amber-fill px-[5px] py-[3px] leading-none text-amber-fill-ink">
+        <span className="mx-[2px] inline-flex -translate-y-[1px] items-center rounded-lg bg-amber-fill px-[5px] py-[3px] leading-none text-amber-fill-ink">
           IT
         </span>
         Flow

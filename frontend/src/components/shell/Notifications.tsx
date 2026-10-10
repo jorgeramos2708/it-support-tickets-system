@@ -119,13 +119,7 @@ export function NotificationsBell() {
       </button>
 
       {open ? (
-        <div
-          className="absolute top-11 right-0 z-40 w-[min(360px,calc(100vw-2rem))] overflow-hidden rounded-[4px] border border-rule bg-raised"
-          style={{
-            boxShadow:
-              "0 24px 48px -12px rgba(21, 24, 30, 0.22), 0 2px 8px rgba(21, 24, 30, 0.08)",
-          }}
-        >
+        <div className="absolute top-11 right-0 z-40 w-[min(360px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-rule bg-raised shadow-3">
           <header className="flex items-center justify-between border-b border-rule px-4 py-2.5">
             <h2 className="label text-ink-2">Notificaciones</h2>
             <button

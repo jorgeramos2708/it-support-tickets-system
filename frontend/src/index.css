@@ -20,18 +20,18 @@
 
   /* Estructura */
   --color-rule: #e6e6df;
-  --color-rule-2: #c9cbc3;
+  --color-rule-2: #a8aa9f;
 
   /* Acento ámbar — único acento del mundo */
-  --color-amber: #b45309; /* texto/links (AA sobre claro) */
+  --color-amber: #a34a0a; /* texto/links (AA sobre papel y panel-2) */
   --color-amber-hi: #92400e; /* hover de texto ámbar */
   --color-amber-fill: #f5a524; /* relleno de acción primaria (ambos temas) */
   --color-amber-fill-ink: #17181c; /* texto sobre el relleno */
 
-  /* Estado */
-  --color-signal: #d92c20; /* vencido / danger */
-  --color-signal-deep: #b22116;
-  --color-good: #0e8345;
+  /* Estado — oscurecidos para AA sobre panel-2 (#f0f0ea) */
+  --color-signal: #c41e14; /* vencido / danger */
+  --color-signal-deep: #a11710;
+  --color-good: #0b6634;
 
   /* Prioridades semáforo: P1 rojo · P2 naranja · P3 amarillo · P4 verde */
   --color-p1: #dc2626;
@@ -180,7 +180,8 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-amber-fill);
+  /* --color-amber: bronce legible en claro (>=3:1), ámbar pleno en noche */
+  outline: 2px solid var(--color-amber);
   outline-offset: 2px;
 }
 

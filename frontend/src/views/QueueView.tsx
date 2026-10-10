@@ -1,6 +1,6 @@
-import { useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { MousePointerClick, X } from "lucide-react";
+import { AlertTriangle, MousePointerClick, RefreshCw, Search, X } from "lucide-react";
 import { TicketTable } from "../components/queue/TicketTable";
 import { Button } from "../components/ui/Button";
 import { TextInput } from "../components/ui/Field";
@@ -62,7 +62,17 @@ function FilterChip({
 
 export function QueueView() {
   const { practice } = useParams<{ practice: string }>();
-  const { tickets, now, hydrating } = useStore();
+  const {
+    tickets,
+    now,
+    hydrating,
+    hydrateFailed,
+    live,
+    hasMoreTickets,
+    loadMoreTickets,
+    reload,
+    getTicket,
+  } = useStore();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -80,6 +90,27 @@ export function QueueView() {
       );
     }
   };
+
+  // C7: deep-link a un ticket más viejo que la página 1 — buscar en
+  // páginas subsiguientes (máx. 5 cargas automáticas por selección)
+  const selectedTicket = selected ? getTicket(selected) : undefined;
+  const searchPagesRef = useRef(0);
+  useEffect(() => {
+    searchPagesRef.current = 0;
+  }, [selected]);
+  useEffect(() => {
+    if (!selected || !live || hydrating || selectedTicket) return;
+    if (!hasMoreTickets || searchPagesRef.current >= 5) return;
+    searchPagesRef.current += 1;
+    void loadMoreTickets();
+  }, [selected, live, hydrating, selectedTicket, hasMoreTickets, loadMoreTickets]);
+  const stillSearching =
+    !!selected &&
+    live &&
+    !selectedTicket &&
+    !hydrating &&
+    hasMoreTickets &&
+    searchPagesRef.current < 5;
 
   const [status, setStatus] = useState<TicketStatus | "todos">("todos");
   const [priority, setPriority] = useState<Priority | "todas">("todas");
@@ -183,6 +214,8 @@ export function QueueView() {
         <div className="min-w-0">
           {hydrating ? (
             <LoadingBox label="Cargando la cola del servidor…" />
+          ) : hydrateFailed ? (
+            <HydrateError onRetry={() => void reload()} />
           ) : (
             <TicketTable
               tickets={filtered}
@@ -220,17 +253,21 @@ export function QueueView() {
           )}
         >
           {selected ? (
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => select(null)}
-                aria-label="Cerrar el detalle"
-                className="absolute -top-1 right-0 z-10 flex size-7 cursor-pointer items-center justify-center rounded-lg text-ink-3 transition-colors hover:bg-row-hover hover:text-ink"
-              >
-                <X size={15} strokeWidth={2} aria-hidden />
-              </button>
-              <TicketDetail key={selected} code={selected} pane />
-            </div>
+            stillSearching ? (
+              <SearchingPane />
+            ) : (
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => select(null)}
+                  aria-label="Cerrar el detalle"
+                  className="absolute -top-1 right-0 z-10 flex size-7 cursor-pointer items-center justify-center rounded-lg text-ink-3 transition-colors hover:bg-row-hover hover:text-ink"
+                >
+                  <X size={15} strokeWidth={2} aria-hidden />
+                </button>
+                <TicketDetail key={selected} code={selected} pane />
+              </div>
+            )
           ) : (
             <EmptyPane />
           )}
@@ -255,6 +292,43 @@ function EmptyPane() {
       <p className="max-w-[240px] text-[13px] leading-relaxed text-ink-3">
         Elige un ticket de la lista y su detalle se abrirá aquí, sin perder la
         cola de vista.
+      </p>
+    </div>
+  );
+}
+
+/** D9: un fallo de hidratación nunca es "cola vacía". */
+function HydrateError({ onRetry }: { onRetry: () => void }) {
+  return (
+    <div
+      role="alert"
+      className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-rule bg-raised px-6 py-14 text-center"
+    >
+      <AlertTriangle size={24} strokeWidth={1.5} aria-hidden className="text-amber" />
+      <p className="text-[15px] font-semibold text-ink">
+        No se pudo cargar la cola del servidor
+      </p>
+      <p className="max-w-sm text-[13px] leading-relaxed text-ink-3">
+        La conexión con los microservicios falló. Esto no significa que no
+        haya tickets — reintenta cuando el servicio responda.
+      </p>
+      <Button variant="primary" size="sm" className="mt-1" onClick={onRetry}>
+        <RefreshCw size={14} strokeWidth={1.75} aria-hidden />
+        Reintentar
+      </Button>
+    </div>
+  );
+}
+
+/** C7: el ticket deep-linkeado vive en páginas más antiguas. */
+function SearchingPane() {
+  return (
+    <div className="flex h-full flex-col items-center justify-center gap-3 px-8 text-center">
+      <Search size={24} strokeWidth={1.5} aria-hidden className="animate-pulse text-ink-3" />
+      <p className="text-[14px] font-semibold text-ink-2">Buscando el ticket…</p>
+      <p className="max-w-[240px] text-[13px] leading-relaxed text-ink-3">
+        Es más antiguo que la primera página de la cola; estamos cargando
+        páginas anteriores del servidor.
       </p>
     </div>
   );

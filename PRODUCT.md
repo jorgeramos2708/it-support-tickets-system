@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-Frontend: React + Vite + Tailwind CSS + shadcn/ui (user-confirmed). Part of a planned microservices system: NestJS services, PostgreSQL per service, RabbitMQ, Redis, MinIO, Traefik gateway, all in Docker. The frontend is a SPA served behind the gateway and consumes only the gateway's REST API with JWT auth.
+Frontend: React + Vite + Tailwind CSS v4 (tokens en @theme) + class-variance-authority + cmdk (paleta ⌘K) + lucide-react + vitest. Part of a shipped microservices system: 7 NestJS services (auth, incidents, problems, changes, cmdb, kb, notifications), PostgreSQL per service, RabbitMQ, Prometheus+Grafana, all in Docker behind a host Caddy gateway (Traefik standalone override available). The frontend is a SPA served behind the gateway and consumes only the gateway's REST API with JWT auth.
 
 ## Users
 
@@ -34,7 +34,7 @@ Planned microservices: auth, users, incidents, request catalog, problems, change
 
 ## Brand Commitments
 
-Name: **TickITFlow** (binding). Logo: to be designed — enterprise-grade, contrasting colors, elegant (binding user requirements). Overall look: professional, enterprise, elegant (binding). Component sources to build on: shadcn/ui, tweakcn (theming), Tremor (charts), motion-primitives + 21st.dev (motion), Tailark (marketing/portal blocks).
+Name: **TickITFlow** (binding). Logo: to be designed — enterprise-grade, contrasting colors, elegant (binding user requirements). Overall look: professional, enterprise, elegant (binding). Components are hand-built in-repo on Tailwind v4 tokens + cva; charts are hand-rolled SVG in the world's grammar (no chart library shipped).
 
 ## Evidence on Hand
 

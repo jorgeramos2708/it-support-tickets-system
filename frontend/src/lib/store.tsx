@@ -88,9 +88,13 @@ interface StoreValue {
   now: number;
   me: string;
   hydrating: boolean;
+  /** La hidratación en vivo falló — la cola vacía NO es un estado real */
+  hydrateFailed: boolean;
   live: boolean;
   hasMoreTickets: boolean;
   loadMoreTickets: () => Promise<void>;
+  /** Reintento manual tras una hidratación fallida */
+  reload: () => Promise<void>;
   pulses: Record<string, number>;
   getTicket: (id: string) => Ticket | undefined;
   createTicket: (input: CreateTicketInput) => Promise<Ticket>;
@@ -134,6 +138,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [now, setNow] = useState(() => Date.now());
   const [pulses, setPulses] = useState<Record<string, number>>({});
   const [hydrating, setHydrating] = useState(live);
+  const [hydrateFailed, setHydrateFailed] = useState(false);
   const [hasMoreTickets, setHasMoreTickets] = useState(false);
   const levelsRef = useRef<Record<string, string>>({});
 
@@ -195,8 +200,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setArticles(articleDtos.map(apiToArticle));
       // Si llegaron 100, probablemente hay más (paginación)
       setHasMoreTickets(ticketDtos.length >= 100);
+      setHydrateFailed(false);
     } catch (err) {
       console.error("[store] hidratación falló:", err);
+      // La cola vacía no es un estado real: exponer el fallo
+      setTickets([]);
+      setHydrateFailed(true);
     } finally {
       setHydrating(false);
     }
@@ -631,9 +640,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     now,
     me,
     hydrating,
+  hydrateFailed,
     live,
     hasMoreTickets,
     loadMoreTickets,
+  reload: hydrate,
     pulses,
     getTicket,
     createTicket,

@@ -43,14 +43,14 @@ export class ErrorBoundary extends Component<Props, State> {
                 <button
                   type="button"
                   onClick={() => window.location.assign("/")}
-                  className="h-9 cursor-pointer rounded-xl bg-signal px-4 text-sm font-medium text-paper transition-colors duration-150 hover:bg-signal-deep"
+                  className="h-9 cursor-pointer rounded-xl bg-amber-fill px-4 text-sm font-bold text-amber-fill-ink transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow"
                 >
                   Volver al inicio
                 </button>
                 <button
                   type="button"
                   onClick={() => window.location.reload()}
-                  className="h-9 cursor-pointer rounded-xl border border-rule-2 bg-raised px-4 text-sm font-medium text-ink transition-colors duration-150 hover:border-ink"
+                  className="h-9 cursor-pointer rounded-xl border border-rule-2 bg-raised px-4 text-sm font-bold text-ink transition-colors duration-150 hover:border-amber"
                 >
                   Recargar
                 </button>

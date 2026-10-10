@@ -253,7 +253,7 @@ export function TicketTable({
                     pulse > 0 && "animate-pulse-row",
                     selected && "bg-row-selected",
                     // Foco de teclado: ring ámbar, nunca el fondo de selección
-                    focused && "outline-2 -outline-offset-2 outline-amber-fill",
+                    focused && "outline-2 -outline-offset-2 outline-amber",
                   )}
                   onClick={() => {
                     // El clic del ratón sustituye al foco de teclado:

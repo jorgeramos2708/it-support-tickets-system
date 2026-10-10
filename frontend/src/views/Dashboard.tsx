@@ -1,9 +1,9 @@
-import { useMemo, type ReactNode } from "react";
+import { useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowDown, ArrowRight, ArrowUp } from "lucide-react";
 import { TicketTable } from "../components/queue/TicketTable";
 import { Button } from "../components/ui/Button";
-import { LoadingBox } from "../components/ui/Module";
+import { LoadingBox, Module } from "../components/ui/Module";
 import { KPI_DELTAS, VOLUME_7D } from "../lib/data";
 import { SLA_LEVEL_TEXT, fmtDuration, fmtRelative, fmtRemaining, slaOf } from "../lib/sla";
 import { useStore } from "../lib/store";
@@ -99,7 +99,7 @@ function KpiCell({
               {unit}
             </span>
             <span
-              className="text-[10px] text-ink-3/60"
+              className="text-[10.5px] font-semibold text-ink-3"
               title="Deltas de demostración — no reales en modo demo"
             >
               demo
@@ -108,30 +108,6 @@ function KpiCell({
         ) : null}
       </p>
     </div>
-  );
-}
-
-function Module({
-  title,
-  count,
-  children,
-  className,
-}: {
-  title: string;
-  count?: string;
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <section className={cn("overflow-hidden rounded-xl border border-rule", className)}>
-      <header className="flex items-center gap-2 border-b border-rule px-4 py-2.5">
-        <h2 className="label text-ink-2">{title}</h2>
-        {count ? (
-          <span className="font-mono text-[11px] tabular-nums text-ink-3">{count}</span>
-        ) : null}
-      </header>
-      {children}
-    </section>
   );
 }
 
@@ -214,7 +190,7 @@ function VolumeChart({
 }
 
 export function Dashboard() {
-  const { tickets, now, me, hydrating, live } = useStore();
+  const { tickets, now, me, hydrating, hydrateFailed, live, reload } = useStore();
   const navigate = useNavigate();
 
   const open = useMemo(
@@ -354,6 +330,24 @@ export function Dashboard() {
         </div>
         {hydrating ? (
           <LoadingBox label="Cargando la cola del servidor…" />
+        ) : hydrateFailed ? (
+          <div
+            role="alert"
+            className="flex flex-wrap items-center gap-3 rounded-2xl border border-rule bg-raised px-4 py-3"
+          >
+            <p className="text-[13.5px] text-ink-2">
+              No se pudo cargar la cola del servidor — los KPIs pueden estar
+              incompletos.
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              className="ml-auto"
+              onClick={() => void reload()}
+            >
+              Reintentar
+            </Button>
+          </div>
         ) : (
           <TicketTable
             tickets={critical}
@@ -431,7 +425,7 @@ export function Dashboard() {
               {volume.reduce((acc, d) => acc + d.count, 0)} registrados esta
               semana
               {!live ? (
-                <span className="text-[10px] text-ink-3/60" title="Serie de demostración — no real en modo demo">
+                <span className="text-[10.5px] font-semibold text-ink-3" title="Serie de demostración — no real en modo demo">
                   demo
                 </span>
               ) : null}

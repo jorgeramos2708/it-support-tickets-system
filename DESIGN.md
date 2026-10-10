@@ -19,12 +19,12 @@ colors:
   dia-muted: "#626977"
   ambar-fill: "#f5a524"
   ambar-fill-ink: "#17181c"
-  ambar-texto-dia: "#b45309"
+  ambar-texto-dia: "#a34a0a"
   ambar-hi-dia: "#92400e"
   ambar-hi-noche: "#ffd27a"
-  danger-dia: "#d92c20"
+  danger-dia: "#c41e14"
   danger-noche: "#ff8f85"
-  ok-dia: "#0e8345"
+  ok-dia: "#0b6634"
   ok-noche: "#7ddfa5"
   p1-dia: "#dc2626"
   p2-dia: "#c2410c"
@@ -129,7 +129,7 @@ TickITFlow es una mesa de servicio ITIL que vive en dos luces: la **noche** (def
 
 ### Noche (default)
 - **bg** #17181c · **panel** #202228 · **panel-2** #1c1d22 (detalle) · **row-hover** #262830 · **row-selected** #2a2b33 · **chip** #32343e
-- **texto** #ececf1 (15.1:1) · **texto-2** #c9ccda · **muted** #a8abba (8.2:1) · **border** #2e3038 · **border-fuerte** #3b3d49
+- **texto** #ececf1 (15.1:1) · **texto-2** #c9ccda · **muted** #a8abba (7.8:1 sobre papel, 7.0:1 sobre panel) · **border** #2e3038 · **border-fuerte** #3b3d49
 
 ### Día
 - **bg** #f6f6f2 · **panel** #ffffff · **panel-2** #f0f0ea · **row-hover** #f0f0ea · **row-selected** #f5efdf · **chip** #ecece6
@@ -137,10 +137,10 @@ TickITFlow es una mesa de servicio ITIL que vive en dos luces: la **noche** (def
 
 ### Acento — Ámbar (el único)
 - **Ámbar de relleno** #f5a524 (ambas luces): botón primario con texto #17181c (8.7:1), barra de selección, foco visible
-- **Ámbar de texto**: día #b45309 (AA sobre claro) / noche #f5a524; hover #92400e / #ffd27a
+- **Ámbar de texto**: día #a34a0a (AA sobre papel y panel-2) / noche #f5a524; hover #92400e / #ffd27a
 
 ### Estado
-- **Vencido/danger**: #d92c20 / #ff8f85 · **En tiempo/ok**: #0e8345 / #7ddfa5
+- **Vencido/danger**: #c41e14 / #ff8f85 · **En tiempo/ok**: #0b6634 / #7ddfa5 (día oscurecidos para AA sobre panel-2)
 
 ### Prácticas ITIL (matices en badges y gráficas)
 - Incidente: danger · Requerimiento: cobalto #1d4ed8/#7fa6f0 · Problema: ámbar · Cambio: violeta #7c3aed/#a97df5

@@ -1,4 +1,5 @@
 import { EmailService } from "./email.service";
+import { encryptSetting } from "./settings-crypto";
 
 /**
  * M9 — verificación de que el escaping HTML de emails neutraliza
@@ -94,5 +95,87 @@ describe("EmailService — escaping HTML (M9)", () => {
     });
     expect(text).toContain("<script>alert(1)</script>");
     expect(text).not.toMatch(/<html|<!DOCTYPE/);
+  });
+});
+
+describe("EmailService — migrateLegacyPass (hallazgo C9)", () => {
+  function makeRepo(rows: Array<{ key: string; value: string }>) {
+    const queries: unknown[][] = [];
+    const settingsRepo = {
+      find: async () => rows.map((r) => ({ ...r, updatedAt: new Date() })),
+      manager: {
+        transaction: async (cb: (em: { query: unknown }) => Promise<void>) =>
+          cb({
+            query: async (...args: unknown[]) => {
+              queries.push(args);
+            },
+          }),
+      },
+    };
+    return { settingsRepo, queries };
+  }
+
+  it("plaintext legado: UPDATE condicional con el valor del snapshot y settings usables", async () => {
+    const rows = [
+      { key: "smtp.host", value: "smtp.test.local" },
+      { key: "smtp.port", value: "2525" },
+      { key: "smtp.enabled", value: "true" },
+      { key: "smtp.pass", value: "legacy-plain" },
+    ];
+    const { settingsRepo, queries } = makeRepo(rows);
+    const svc = new EmailService(settingsRepo as never);
+    await svc.reload();
+
+    // UPDATE condicional (WHERE value = $2): un PUT concurrente no puede ser clobbered
+    expect(queries).toHaveLength(1);
+    expect(String(queries[0][0])).toContain(
+      "WHERE key = 'smtp.pass' AND value = $2",
+    );
+    // em.query(sql, [encValue, plaintextSnapshot]) — params es un solo argumento
+    const params = queries[0][1] as unknown[];
+    expect(String(params[0])).toMatch(/^enc:v1:/);
+    expect(params[1]).toBe("legacy-plain");
+
+    // El snapshot legible sigue alimentando la config en esta pasada
+    const current = (svc as unknown as { current: { pass: string; host: string } }).current;
+    expect(current.pass).toBe("legacy-plain");
+    expect(current.host).toBe("smtp.test.local");
+  });
+
+  it("valor ya cifrado: no hay migración (idempotente)", async () => {
+    const rows = [
+      { key: "smtp.pass", value: encryptSetting("ya-cifrado") },
+    ];
+    const { settingsRepo, queries } = makeRepo(rows);
+    const svc = new EmailService(settingsRepo as never);
+    await svc.reload();
+    expect(queries).toHaveLength(0);
+    const current = (svc as unknown as { current: { pass: string } }).current;
+    expect(current.pass).toBe("ya-cifrado");
+  });
+
+  it("fallo del write de migración NO deshabilita la config legible (C6)", async () => {
+    const rows = [
+      { key: "smtp.host", value: "smtp.test.local" },
+      { key: "smtp.enabled", value: "true" },
+      { key: "smtp.pass", value: "legacy-plain" },
+    ];
+    const settingsRepo = {
+      find: async () => rows.map((r) => ({ ...r, updatedAt: new Date() })),
+      manager: {
+        transaction: async (cb: (em: { query: unknown }) => Promise<void>) =>
+          cb({
+            query: async () => {
+              throw new Error("lock timeout");
+            },
+          }),
+      },
+    };
+    const svc = new EmailService(settingsRepo as never);
+    await svc.reload();
+    const current = (svc as unknown as { current: { host: string; pass: string } | null }).current;
+    // El write falló pero la lectura sigue viva
+    expect(current?.host).toBe("smtp.test.local");
+    expect(current?.pass).toBe("legacy-plain");
   });
 });

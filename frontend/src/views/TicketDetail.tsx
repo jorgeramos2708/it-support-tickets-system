@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { FileText } from "lucide-react";
 import { PriorityChip, PracticeBadge, StatusBadge } from "../components/ui/Chips";
@@ -16,6 +16,7 @@ import {
   type Ticket,
   type TicketStatus,
 } from "../lib/types";
+import { Module, Propiedad } from "../components/ui/Module";
 import { EmptyQueue } from "./QueueView";
 
 const KIND_TEXT: Record<EventKind, string> = {
@@ -35,26 +36,6 @@ function eventTitle(ev: Ticket["events"][number]): string {
 
 function fmtSize(kb: number): string {
   return kb < 1024 ? `${kb} KB` : `${(kb / 1024).toFixed(1)} MB`;
-}
-
-function Propiedad({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <div className="flex items-baseline gap-3 border-t border-rule px-4 py-2.5 first:border-t-0">
-      <dt className="label w-24 shrink-0 text-ink-3">{label}</dt>
-      <dd className="min-w-0 flex-1 text-[13px] text-ink-2">{children}</dd>
-    </div>
-  );
-}
-
-function AsideModule({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <section className="overflow-hidden rounded-xl border border-rule">
-      <header className="border-b border-rule px-4 py-2.5">
-        <h2 className="label text-ink-2">{title}</h2>
-      </header>
-      {children}
-    </section>
-  );
 }
 
 export function TicketDetail({
@@ -80,13 +61,30 @@ export function TicketDetail({
   const ticket = id ? getTicket(id) : undefined;
 
   if (!ticket) {
+    if (pane) {
+      return (
+        <div className="flex h-full flex-col items-center justify-center gap-2 px-8 py-16 text-center">
+          <p className="text-[14px] font-semibold text-ink-2">
+            Ticket no encontrado
+          </p>
+          <p className="max-w-[240px] text-[13px] leading-relaxed text-ink-3">
+            No existe en el servidor con este identificador. Cierra el panel
+            con la ✕ para volver a la cola.
+          </p>
+        </div>
+      );
+    }
     return (
       <EmptyQueue
         title="Ticket no encontrado"
         hint="El identificador no corresponde a ningún ticket registrado. Puede haber sido eliminado o el enlace estar incompleto."
         action={
-          <Button variant="outline" className="mt-2" onClick={() => navigate("/cola/incidente")}>
-            Volver a incidentes
+          <Button
+            variant="outline"
+            className="mt-2"
+            onClick={() => navigate(-1)}
+          >
+            Volver
           </Button>
         }
       />
@@ -244,13 +242,13 @@ export function TicketDetail({
         </div>
 
         <aside className={cn("space-y-6", !pane && "lg:col-span-4")}>
-          <AsideModule title={open ? "SLA en curso" : "SLA final"}>
+          <Module title={open ? "SLA en curso" : "SLA final"}>
             <div className="px-4 py-4">
               <SLAMeter ticket={ticket} now={now} variant="large" />
             </div>
-          </AsideModule>
+          </Module>
 
-          <AsideModule title="Propiedades">
+          <Module title="Propiedades">
             <dl>
               <Propiedad label="Solicitante">{ticket.requester}</Propiedad>
               <Propiedad label="Departamento">{ticket.dept}</Propiedad>
@@ -268,10 +266,10 @@ export function TicketDetail({
                 </span>
               </Propiedad>
             </dl>
-          </AsideModule>
+          </Module>
 
           {ticket.attachments.length > 0 ? (
-            <AsideModule title="Adjuntos">
+            <Module title="Adjuntos">
               <ul>
                 {ticket.attachments.map((file) => (
                   <li
@@ -288,7 +286,7 @@ export function TicketDetail({
                   </li>
                 ))}
               </ul>
-            </AsideModule>
+            </Module>
           ) : null}
 
           {sla.level === "breach" && open ? (
