@@ -153,7 +153,8 @@ function VolumeChart({
     >
       {data.map((d, i) => {
         const h = (d.count / max) * 36;
-        const x = i * 24;
+        // +4px de sangría para que "Dom" centrado no se clipee en el borde
+        const x = 4 + i * 24;
         return (
           <g key={d.day}>
             <rect

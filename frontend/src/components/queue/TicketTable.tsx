@@ -293,14 +293,6 @@ export function TicketTable({
           </tbody>
         </TableShell>
       </div>
-      <div className="flex items-center justify-between border-t border-rule bg-chip/60 px-3 py-2">
-        <span className="font-mono text-[11px] tabular-nums text-ink-3">
-          {rows.length} {rows.length === 1 ? "ticket" : "tickets"}
-        </span>
-        <span className="font-mono text-[11px] text-ink-3">
-          j/k navegar · ⏎ abrir · clic en cabecera ordena
-        </span>
-      </div>
     </div>
   );
 }

@@ -1,13 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Download } from "lucide-react";
 import { Module } from "../components/ui/Module";
 import { PriorityChip, StatusBadge } from "../components/ui/Chips";
 import { Button } from "../components/ui/Button";
 import { cn } from "../lib/cn";
 import { exportCsv } from "../lib/csv";
-import { api } from "../lib/api";
-import { useAuth } from "../lib/auth";
-import { dailySeries, type DaySeries } from "../lib/metrics";
 import { fmtDuration, slaOf } from "../lib/sla";
 import { useStore } from "../lib/store";
 import {
@@ -62,47 +59,7 @@ function BarRow({
 const PRIORITIES: Priority[] = ["P1", "P2", "P3", "P4"];
 
 export function ReportesView() {
-  const { tickets, now, live } = useStore();
-  const { token } = useAuth();
-
-  /** Tendencia 14 días: en vivo desde daily_metrics del servidor; en demo derivada de la cola local. */
-  const [trend, setTrend] = useState<DaySeries[] | null>(null);
-  const [trendSource, setTrendSource] = useState<"servidor" | "cola">("cola");
-  useEffect(() => {
-    let cancelled = false;
-    if (live && token) {
-      api
-        .listMetrics(token, 14)
-        .then((rows) => {
-          if (cancelled) return;
-          const byDay = new Map<string, DaySeries>();
-          for (const r of rows) {
-            const entry = byDay.get(r.day) ?? { day: r.day, created: 0, resolved: 0 };
-            entry.created += r.created;
-            entry.resolved += r.resolved;
-            byDay.set(r.day, entry);
-          }
-          setTrend(
-            [...byDay.values()].sort((a, b) => a.day.localeCompare(b.day)),
-          );
-          setTrendSource("servidor");
-        })
-        .catch((err) => {
-          console.error("[reportes] métricas del servidor:", err);
-          if (!cancelled) {
-            setTrend(dailySeries(tickets, 14));
-            setTrendSource("cola");
-          }
-        });
-    } else {
-      setTrend(dailySeries(tickets, 14));
-      setTrendSource("cola");
-    }
-    return () => {
-      cancelled = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [live, token]);
+  const { tickets, now } = useStore();
 
   /** Histograma de los últimos 7 días derivado de la cola real (hidratada). */
   const volume = useMemo(() => {
@@ -324,7 +281,9 @@ export function ReportesView() {
                 const max = Math.max(...volume.map((d) => d.count), 1);
                 return volume.map((d, i) => {
                   const h = (d.count / max) * 36;
-                  const x = i * 24;
+                  // +4px de sangría: "dom"/"sáb" centrados quedan completos
+                  // dentro del viewBox (antes la primera etiqueta se clipeaba)
+                  const x = 4 + i * 24;
                   const esDescanso = d.day === "sáb" || d.day === "dom";
                   return (
                     <g key={`${d.day}-${i}`}>
@@ -372,71 +331,6 @@ export function ReportesView() {
             </p>
           </div>
         </Module>
-
-        {trend ? (
-          <Module
-            title="Tendencia 14 días"
-            className="lg:col-span-12"
-          >
-            <div className="px-4 py-4">
-              <div className="flex items-center gap-4 pb-3">
-                <span className="label text-ink-3">Registrados</span>
-                <span aria-hidden className="size-2 rounded-[1px] bg-ink" />
-                <span className="label text-ink-3">Resueltos</span>
-                <span aria-hidden className="size-2 rounded-[1px] bg-ink/35" />
-                <span className="ml-auto font-mono text-[11px] tabular-nums text-ink-3">
-                  pico {Math.max(...trend.map((d) => Math.max(d.created, d.resolved)), 0)} ·{" "}
-                  {trendSource === "servidor"
-                    ? "daily_metrics del servidor"
-                    : "derivado de la cola local"}
-                </span>
-              </div>
-              <svg
-                viewBox="0 0 168 64"
-                className="w-full"
-                role="img"
-                aria-label="Registrados y resueltos por día, últimos 14 días"
-              >
-                {(() => {
-                  const max = Math.max(
-                    ...trend.map((d) => Math.max(d.created, d.resolved)),
-                    1,
-                  );
-                  return trend.map((d, i) => {
-                    const hc = (d.created / max) * 36;
-                    const hr = (d.resolved / max) * 36;
-                    const x = i * 12;
-                    return (
-                      <g key={d.day}>
-                        <rect x={x} y={46 - hc} width={5} height={hc} className="fill-ink" />
-                        <rect x={x + 6} y={46 - hr} width={5} height={hr} className="fill-ink/35" />
-                        {i % 2 === 0 ? (
-                          <text
-                            x={x + 3}
-                            y={58}
-                            textAnchor="middle"
-                            fontSize={7.5}
-                            className="fill-ink-3"
-                          >
-                            {d.day.slice(8)}
-                          </text>
-                        ) : null}
-                      </g>
-                    );
-                  });
-                })()}
-                <line
-                  x1={0}
-                  y1={46.5}
-                  x2={168}
-                  y2={46.5}
-                  className="stroke-rule-2"
-                  strokeWidth={1}
-                />
-              </svg>
-            </div>
-          </Module>
-        ) : null}
       </div>
     </div>
   );
