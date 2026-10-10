@@ -70,10 +70,10 @@ export function Landing() {
           </p>
 
           <div className="mt-14 flex items-end justify-between gap-8">
-            <div className="grid grid-cols-3 flex-1 gap-6">
+            <div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
               {STEPS.map(([n, title, body]) => (
                 <div key={n} className="border-t-2 border-rule pt-4">
-                  <p className="font-mono text-[12px] tabular-nums text-amber">
+                  <p className="font-mono text-[12px] tabular-nums text-ink-3">
                     {n}
                   </p>
                   <p className="mt-1.5 font-display text-[15px] font-bold text-ink">
@@ -161,13 +161,13 @@ export function Landing() {
           <nav aria-label="Navegación" className="flex items-center gap-4 text-[13px]">
             <Link
               to="/portal"
-              className="text-ink underline decoration-rule-2 underline-offset-[3px] hover:decoration-ink"
+              className="link-grow hover:link-grow-hover font-bold text-amber hover:text-amber-hi"
             >
               Portal
             </Link>
             <Link
               to="/"
-              className="text-ink underline decoration-rule-2 underline-offset-[3px] hover:decoration-ink"
+              className="link-grow hover:link-grow-hover font-bold text-amber hover:text-amber-hi"
             >
               Consola de agentes
             </Link>

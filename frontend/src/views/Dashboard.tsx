@@ -322,7 +322,7 @@ export function Dashboard() {
           </span>
           <Link
             to="/cola/incidente"
-            className="ml-auto flex items-center gap-1 text-[13px] text-ink underline decoration-rule-2 underline-offset-[3px] transition-colors duration-150 hover:decoration-ink"
+            className="ml-auto flex items-center gap-1 text-[13px] link-grow hover:link-grow-hover font-bold text-amber hover:text-amber-hi"
           >
             Ver todos los incidentes
             <ArrowRight size={13} strokeWidth={1.75} aria-hidden />

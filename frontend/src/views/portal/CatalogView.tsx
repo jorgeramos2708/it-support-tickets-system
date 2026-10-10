@@ -83,7 +83,7 @@ export function CatalogView() {
           <h2 className="label text-ink-2">Antes de abrir un ticket</h2>
           <Link
             to="/portal/ayuda"
-            className="text-[12.5px] text-ink underline decoration-rule-2 underline-offset-[3px] hover:decoration-ink"
+            className="text-[12.5px] link-grow hover:link-grow-hover font-bold text-amber hover:text-amber-hi"
           >
             Ver toda la ayuda
           </Link>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Bell, X } from "lucide-react";
 import { api, type ApiNotification } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
@@ -21,6 +21,31 @@ export function NotificationsBell() {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<ApiNotification[]>([]);
   const [lastEvent, setLastEvent] = useState<ApiNotification | null>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const bellRef = useRef<HTMLButtonElement>(null);
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
+
+  // D7: Escape y click-fuera cierran; el foco entra al abrir (dialog)
+  useEffect(() => {
+    if (!open) return;
+    closeBtnRef.current?.focus();
+    const onDocKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setOpen(false);
+        bellRef.current?.focus();
+      }
+    };
+    const onDocDown = (e: MouseEvent) => {
+      if (!wrapRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("keydown", onDocKey);
+    document.addEventListener("mousedown", onDocDown);
+    return () => {
+      document.removeEventListener("keydown", onDocKey);
+      document.removeEventListener("mousedown", onDocDown);
+    };
+  }, [open]);
 
   const load = useCallback(() => {
     if (!live || !token) return;
@@ -98,9 +123,16 @@ export function NotificationsBell() {
 
   if (!live) return null;
 
+  // Cierre accesible: Escape y click-fuera; el foco vuelve a la campana
+  const closePopover = () => {
+    setOpen(false);
+    bellRef.current?.focus();
+  };
+
   return (
-    <div className="relative">
+    <div className="relative" ref={wrapRef}>
       <button
+        ref={bellRef}
         type="button"
         onClick={() => {
           setOpen((v) => !v);
@@ -108,6 +140,7 @@ export function NotificationsBell() {
         }}
         aria-label={`Notificaciones (${items.length})`}
         aria-expanded={open}
+        aria-haspopup="dialog"
         className={cn(
           "flex size-8 cursor-pointer items-center justify-center rounded-xl transition-colors duration-150",
           open
@@ -119,14 +152,26 @@ export function NotificationsBell() {
       </button>
 
       {open ? (
-        <div className="absolute top-11 right-0 z-40 w-[min(360px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-rule bg-raised shadow-3">
+        <div
+          role="dialog"
+          aria-label="Notificaciones recientes"
+          className="absolute top-11 right-0 z-40 w-[min(360px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-rule bg-raised shadow-3"
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              e.preventDefault();
+              e.stopPropagation();
+              closePopover();
+            }
+          }}
+        >
           <header className="flex items-center justify-between border-b border-rule px-4 py-2.5">
             <h2 className="label text-ink-2">Notificaciones</h2>
             <button
+              ref={closeBtnRef}
               type="button"
-              onClick={() => setOpen(false)}
+              onClick={() => closePopover()}
               aria-label="Cerrar notificaciones"
-              className="cursor-pointer text-ink-3 transition-colors duration-150 hover:text-ink"
+              className="cursor-pointer rounded-lg p-1 text-ink-3 transition-colors duration-150 hover:bg-row-hover hover:text-ink"
             >
               <X size={14} strokeWidth={2} aria-hidden />
             </button>

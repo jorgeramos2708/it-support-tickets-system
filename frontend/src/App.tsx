@@ -104,10 +104,19 @@ function Shell() {
 
   return (
     <div className="flex h-screen flex-col bg-paper">
+      <a
+        href="#contenido"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-lg focus:bg-amber-fill focus:px-4 focus:py-2 focus:font-bold focus:text-amber-fill-ink"
+      >
+        Saltar al contenido
+      </a>
       <TopBar onOpenPalette={() => setPaletteOpen(true)} />
       <div className="flex min-h-0 flex-1">
         <PracticeRail />
-        <main className="min-w-0 flex-1 overflow-y-auto px-5 py-7 md:px-8">
+        <main
+          id="contenido"
+          className="min-w-0 flex-1 overflow-y-auto px-5 py-7 md:px-8"
+        >
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/cola/:practice" element={<QueueView />} />

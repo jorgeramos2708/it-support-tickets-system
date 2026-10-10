@@ -83,7 +83,7 @@ export function Acceso() {
           ¿Primera vez?{" "}
           <Link
             to="/landing"
-            className="text-ink underline decoration-rule-2 underline-offset-[3px] hover:decoration-ink"
+            className="link-grow hover:link-grow-hover font-bold text-amber hover:text-amber-hi"
           >
             Mira la presentación
           </Link>

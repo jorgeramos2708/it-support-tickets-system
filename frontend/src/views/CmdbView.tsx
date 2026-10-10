@@ -194,7 +194,7 @@ export function CmdbView() {
                                   <li key={t.id}>
                                     <Link
                                       to={`/ticket/${t.id}`}
-                                      className="flex items-baseline gap-2 text-[13px] text-ink underline decoration-rule-2 underline-offset-[3px] hover:decoration-ink"
+                                      className="flex items-baseline gap-2 text-[13px] link-grow hover:link-grow-hover font-bold text-amber hover:text-amber-hi"
                                     >
                                       <span className="font-mono text-[11.5px] text-ink-3">
                                         {t.id}

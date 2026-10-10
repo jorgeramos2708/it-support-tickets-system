@@ -55,7 +55,7 @@ export function NewTicket() {
       <nav aria-label="Ruta" className="flex items-center gap-2 text-[13px]">
         <Link
           to={`/cola/${practice}`}
-          className="text-ink underline decoration-rule-2 underline-offset-[3px] transition-colors duration-150 hover:decoration-ink"
+          className="link-grow hover:link-grow-hover font-bold text-amber hover:text-amber-hi"
         >
           {PRACTICE_LABEL[practice]}s
         </Link>

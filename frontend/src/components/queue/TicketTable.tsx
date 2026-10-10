@@ -157,6 +157,13 @@ export function TicketTable({
 
   const rows = table.getRowModel().rows;
 
+  const focusRow = (id: string) => {
+    const el = containerRef.current?.querySelector(
+      `tr[data-id="${id}"]`,
+    ) as HTMLTableRowElement | null;
+    el?.focus();
+  };
+
   const onKeyDown = (e: KeyboardEvent) => {
     if (rows.length === 0) return;
     const index = rows.findIndex((r) => r.original.id === focusedId);
@@ -164,10 +171,12 @@ export function TicketTable({
       e.preventDefault();
       const next = Math.min(rows.length - 1, index + 1);
       setFocusedId(rows[next].original.id);
+      focusRow(rows[next].original.id);
     } else if (e.key === "k" || e.key === "ArrowUp") {
       e.preventDefault();
       const prev = Math.max(0, index - 1);
       setFocusedId(rows[prev].original.id);
+      focusRow(rows[prev].original.id);
     } else if (e.key === "Enter") {
       if (focusedId) {
         e.preventDefault();
@@ -196,12 +205,7 @@ export function TicketTable({
 
   return (
     <div className="overflow-hidden rounded-2xl border border-rule bg-raised shadow-1">
-      <div
-        ref={containerRef}
-        tabIndex={0}
-        onKeyDown={onKeyDown}
-        className="focus:outline-none overflow-x-auto"
-      >
+      <div ref={containerRef} onKeyDown={onKeyDown} className="overflow-x-auto">
         <TableShell>
           <thead>
             {table.getHeaderGroups().map((hg) => (
@@ -245,7 +249,13 @@ export function TicketTable({
               return (
                 <tr
                   key={`${row.original.id}-${pulse}`}
+                  data-id={row.original.id}
                   aria-selected={onSelect ? selected : undefined}
+                  // Roving tabindex: exactamente una fila es tabbable —
+                  // lectores de pantalla anuncian fila y aria-selected
+                  tabIndex={
+                    focused || (!focusedId && i === 0) ? 0 : -1
+                  }
                   style={entered || pulse > 0 ? undefined : rowStyle}
                   className={cn(
                     "cursor-pointer border-b border-rule transition-colors duration-200 last:border-b-0 hover:bg-row-hover",
@@ -265,6 +275,7 @@ export function TicketTable({
                   {row.getVisibleCells().map((cell, ci) => (
                     <td
                       key={cell.id}
+                      role="gridcell"
                       className={cn(
                         "px-3 py-2.5",
                         HIDE_ON[cell.column.id],
@@ -296,6 +307,8 @@ export function TicketTable({
 
 function TableShell({ children }: { children: ReactNode }) {
   return (
-    <table className="w-full border-collapse text-left">{children}</table>
+    <table role="grid" aria-label="Cola de tickets" className="w-full border-collapse text-left">
+      {children}
+    </table>
   );
 }

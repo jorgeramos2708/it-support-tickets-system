@@ -89,8 +89,3 @@ export function LoadingBox({ label }: { label: string }) {
     </div>
   );
 }
-
-/** Esqueleto de una sola línea, para espacios compactos. */
-export function SkeletonLine({ className }: { className?: string }) {
-  return <div aria-hidden className={cn("skeleton h-4", className)} />;
-}

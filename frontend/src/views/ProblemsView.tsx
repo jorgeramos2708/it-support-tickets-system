@@ -161,7 +161,7 @@ export function ProblemDetail() {
       <nav aria-label="Ruta" className="flex items-center gap-2 text-[13px]">
         <Link
           to="/problemas"
-          className="text-ink underline decoration-rule-2 underline-offset-[3px] transition-colors duration-150 hover:decoration-ink"
+          className="link-grow hover:link-grow-hover font-bold text-amber hover:text-amber-hi"
         >
           Problemas
         </Link>
@@ -233,7 +233,7 @@ export function ProblemDetail() {
                     setRca(problem.causeRaiz ?? "");
                     setEditingRca(true);
                   }}
-                  className="cursor-pointer text-[12px] text-ink-3 underline decoration-rule-2 underline-offset-[3px] hover:text-ink hover:decoration-ink"
+                  className="cursor-pointer text-[12px] link-grow hover:link-grow-hover font-bold text-amber hover:text-amber-hi"
                 >
                   Editar
                 </button>

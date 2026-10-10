@@ -43,7 +43,7 @@ export function CatalogRequestView() {
         <p className="mt-1 text-[13px] text-ink-3">
           El elemento del catálogo no existe.
         </p>
-        <Link to="/portal" className="mt-3 inline-block text-[13px] text-ink underline decoration-rule-2 underline-offset-[3px] hover:decoration-ink">
+        <Link to="/portal" className="mt-3 inline-block text-[13px] link-grow hover:link-grow-hover font-bold text-amber hover:text-amber-hi">
           Volver al catálogo
         </Link>
       </div>
@@ -124,7 +124,7 @@ function PortalForm({
       <nav aria-label="Ruta" className="flex items-center gap-2 text-[13px]">
         <Link
           to="/portal"
-          className="text-ink underline decoration-rule-2 underline-offset-[3px] transition-colors duration-150 hover:decoration-ink"
+          className="link-grow hover:link-grow-hover font-bold text-amber hover:text-amber-hi"
         >
           Catálogo
         </Link>

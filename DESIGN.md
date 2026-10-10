@@ -146,7 +146,7 @@ TickITFlow es una mesa de servicio ITIL que vive en dos luces: la **noche** (def
 - Incidente: danger · Requerimiento: cobalto #1d4ed8/#7fa6f0 · Problema: ámbar · Cambio: violeta #7c3aed/#a97df5
 
 ### Named Rules
-**La Regla del Ámbar Único.** El ámbar es acción, selección, foco o riesgo. Si un elemento es ámbar sin significar una de esas cuatro cosas, es un defecto. El semáforo P1–P4 es la única familia cromática con permiso de saturación aparte.
+**La Regla del Ámbar Único.** El ámbar es acción, selección, foco, riesgo o enlace (a.link del spec es acento por definición). Si un elemento es ámbar sin significar una de esas cinco cosas, es un defecto. El semáforo P1–P4 es la única familia cromática con permiso de saturación aparte.
 **La Regla de las Dos Luces.** Cada color existe en pareja día/noche; jamás se hardcodea un valor: se usa el token semántico (paper, raised, ink, rule, signal, good, amber, p1–p4) y la pareja se resuelve por [data-theme].
 
 ## Typography
