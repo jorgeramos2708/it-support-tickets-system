@@ -122,6 +122,12 @@ async function main() {
   });
   check("usuario NO escribe en ticket ajeno (403)", otherPatch.status === 403, String(otherPatch.status));
 
+  const otherRead = await req(`/api/incidents/tickets/${code}`, { token: tu });
+  check("usuario NO lee ticket ajeno (403)", otherRead.status === 403, String(otherRead.status));
+
+  const ownRead = await req(`/api/incidents/tickets/${userCode}`, { token: tu });
+  check("usuario SÍ lee su propio ticket", ownRead.status === 200, String(ownRead.status));
+
   // 5. Separación de prácticas: problemas y cambios solo desde la consola
   const userProblem = await req("/api/problems/problems", {
     method: "POST",

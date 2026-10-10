@@ -34,28 +34,53 @@ export class EmailService implements OnModuleInit {
 
   /**
    * Migración perezosa: si smtp.pass quedó en plaintext (pre-cifrado),
-   * se re-guarda cifrado con AES-256-GCM.
+   * se re-guarda cifrado. El UPDATE es condicional (solo si SIGUE siendo
+   * plaintext) — un PUT concurrente con password nuevo no puede ser
+   * revertido por el snapshot stale de esta migración.
    */
   private async migrateLegacyPass(rows: SettingEntity[]): Promise<void> {
     const passRow = rows.find((r) => r.key === "smtp.pass");
-    if (passRow && passRow.value && !isEncrypted(passRow.value)) {
-      await this.settingsRepo.upsert(
-        { key: "smtp.pass", value: encryptSetting(passRow.value), updatedAt: new Date() },
-        ["key"],
+    if (!passRow || !passRow.value || isEncrypted(passRow.value)) return;
+    // Marca de condición con la que compite un PUT concurrente:
+    // solo cifra si el valor en DB sigue siendo el plaintext leído
+    await this.settingsRepo.manager.transaction(async (em) => {
+      await em.query(
+        `UPDATE settings SET value = $1, updated_at = NOW()
+          WHERE key = 'smtp.pass' AND value = $2`,
+        [encryptSetting(passRow.value), passRow.value],
       );
-      console.log("[email] smtp.pass migrado a cifrado en reposo");
-    }
+    });
+    console.log("[email] smtp.pass migrado a cifrado en reposo");
   }
 
   /** Lee la configuración de la tabla settings y reconstruye el transporter. */
   async reload(): Promise<void> {
+    let rows: SettingEntity[] = [];
     try {
-      const rows = await this.settingsRepo.find();
-      await this.migrateLegacyPass(rows);
-      this.current = smtpSettingsFromRows(rows);
+      rows = await this.settingsRepo.find();
     } catch {
       // Si la tabla no existe aún (primera migración), usar env vars
       this.current = null;
+    }
+
+    if (rows.length > 0) {
+      // La migración es un write: fuera del try de lectura, con error
+      // propio — un fallo aquí jamás deshabilita el SMTP legible
+      try {
+        await this.migrateLegacyPass(rows);
+      } catch (err) {
+        console.error(
+          "[email] migración de smtp.pass falló (se reintenta en el próximo reload):",
+          (err as Error).message,
+        );
+      }
+      const settings = smtpSettingsFromRows(rows);
+      if (settings.passStatus === "unreadable") {
+        console.error(
+          "[email] smtp.pass cifrado no es legible (clave rotada o dato corrupto) — auth deshabilitado; re-ingresa el password en Configuración",
+        );
+      }
+      this.current = settings;
     }
 
     if (this.current?.enabled && this.current.host) {
@@ -64,9 +89,11 @@ export class EmailService implements OnModuleInit {
           host: this.current.host,
           port: this.current.port,
           secure: this.current.secure || this.current.port === 465,
-          auth: this.current.user
-            ? { user: this.current.user, pass: this.current.pass }
-            : undefined,
+          // Sin pass (limpiado o ilegible) no hay auth: relay sin autenticar
+          auth:
+            this.current.user && this.current.pass
+              ? { user: this.current.user, pass: this.current.pass }
+              : undefined,
         });
         console.log(
           `[email] SMTP activo: ${this.current.host}:${this.current.port} → ${this.current.recipients.length} destinatarios`,
@@ -117,7 +144,7 @@ export class EmailService implements OnModuleInit {
         host: smtp.host,
         port: smtp.port,
         secure: smtp.secure || smtp.port === 465,
-        auth: smtp.user ? { user: smtp.user, pass: smtp.pass } : undefined,
+        auth: smtp.user && smtp.pass ? { user: smtp.user, pass: smtp.pass } : undefined,
       });
       await testTransporter.sendMail({
         from: smtp.from,

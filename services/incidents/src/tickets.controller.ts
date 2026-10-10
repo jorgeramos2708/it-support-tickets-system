@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   Param,
   Patch,
@@ -45,8 +46,19 @@ export class TicketsController {
   }
 
   @Get("tickets/:code")
-  async byCode(@Param("code") code: string): Promise<TicketDto> {
-    return this.tickets.byCode(code);
+  async byCode(
+    @Param("code") code: string,
+    @Req() req?: Request,
+  ): Promise<TicketDto> {
+    const tokenUser = (req as unknown as { user?: { name?: string; role?: string } })
+      .user;
+    const dto = await this.tickets.byCode(code);
+    // Coherente con el filtro de requester de la lista: un usuario final
+    // solo puede leer sus propios tickets (hallazgo ALTO del audit)
+    if (tokenUser?.role === "usuario" && dto.requester !== tokenUser?.name) {
+      throw new ForbiddenException("Solo puedes ver tus propios tickets");
+    }
+    return dto;
   }
 
   @Post("tickets")

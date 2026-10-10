@@ -1,5 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
-import { decryptSetting } from "./settings-crypto";
+import { decryptSettingEx } from "./settings-crypto";
 
 @Entity("settings")
 @Unique("UQ_key", ["key"])
@@ -30,6 +30,9 @@ export interface SmtpSettings {
   recipients: string[];
 }
 
+/** Estado del pass legible por el admin: set | empty | unreadable. */
+export type PassStatus = "set" | "empty" | "unreadable";
+
 export const DEFAULT_SMTP: SmtpSettings = {
   host: "",
   port: 587,
@@ -57,15 +60,37 @@ export function smtpSettingsFromEnv(): SmtpSettings {
   };
 }
 
-export function smtpSettingsFromRows(rows: SettingEntity[]): SmtpSettings {
+export function smtpSettingsFromRows(
+  rows: SettingEntity[],
+): SmtpSettings & { passStatus: PassStatus } {
   const map = new Map(rows.map((r) => [r.key, r.value]));
   const env = smtpSettingsFromEnv();
   const get = (key: string, fallback: string) => map.get(key) ?? fallback;
+  const storedPass = map.get("smtp.pass");
+  const decrypted =
+    storedPass !== undefined ? decryptSettingEx(storedPass) : undefined;
+  // Sin fila en DB → fallback a la env var (input de operador confiable)
+  const pass =
+    decrypted !== undefined
+      ? decrypted.ok
+        ? decrypted.value
+        : ""
+      : env.pass;
+  const passStatus: PassStatus =
+    decrypted === undefined
+      ? env.pass
+        ? "set"
+        : "empty"
+      : decrypted.ok
+        ? decrypted.value
+          ? "set"
+          : "empty"
+        : "unreadable";
   return {
     host: get("smtp.host", env.host),
     port: Number(get("smtp.port", String(env.port))) || 587,
     user: get("smtp.user", env.user),
-    pass: decryptSetting(get("smtp.pass", env.pass)),
+    pass,
     from: get("smtp.from", env.from),
     secure: get("smtp.secure", String(env.secure)) === "true",
     enabled: get("smtp.enabled", String(env.enabled)) === "true",
@@ -73,14 +98,19 @@ export function smtpSettingsFromRows(rows: SettingEntity[]): SmtpSettings {
       .split(",")
       .map((e) => e.trim())
       .filter(Boolean),
+    passStatus,
   };
 }
 
-export function maskSmtpSettings(s: SmtpSettings): SmtpSettings & {
+export function maskSmtpSettings(
+  s: SmtpSettings & { passStatus?: PassStatus },
+): SmtpSettings & {
   pass: string | null;
+  passStatus: PassStatus;
 } {
   return {
     ...s,
     pass: s.pass ? "••••••••" : "",
+    passStatus: s.passStatus ?? (s.pass ? "set" : "empty"),
   };
 }

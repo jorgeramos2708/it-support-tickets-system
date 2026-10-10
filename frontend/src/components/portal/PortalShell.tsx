@@ -26,8 +26,8 @@ function PortalNavLink({
       className={cn(
         "rounded-xl px-3 py-1.5 text-[13px] transition-colors duration-150",
         active
-          ? "bg-ink font-medium text-paper"
-          : "text-ink-2 hover:bg-ink/5",
+          ? "bg-amber-fill font-bold text-amber-fill-ink"
+          : "text-ink-2 hover:bg-row-hover",
       )}
     >
       {label}
@@ -102,6 +102,16 @@ export function PortalShell({ children }: { children: ReactNode }) {
           ) : null}
         </div>
       </header>
+
+      {/* Navegación móvil: sin ella el portal es inalcanzable <640px */}
+      <nav
+        aria-label="Portal"
+        className="flex items-center gap-1 border-b border-rule bg-paper px-4 pb-2 sm:hidden"
+      >
+        <PortalNavLink to="/portal" label="Catálogo" exact />
+        <PortalNavLink to="/portal/mis-tickets" label="Mis tickets" />
+        <PortalNavLink to="/portal/ayuda" label="Ayuda" />
+      </nav>
 
       <main className="mx-auto w-full max-w-[980px] flex-1 px-5 py-8 md:px-8 md:py-10">
         {children}

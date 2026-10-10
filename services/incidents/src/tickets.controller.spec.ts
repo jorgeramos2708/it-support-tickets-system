@@ -28,8 +28,11 @@ function makeController() {
     async (code: string, body: unknown, actor: string, role: string) =>
       ({ ...baseDto, code }) as TicketDto,
   );
-  const controller = new TicketsController({ create, patch } as never);
-  return { controller, create, patch };
+  const byCode = jest.fn(
+    async (code: string) => ({ ...baseDto, code }) as TicketDto,
+  );
+  const controller = new TicketsController({ create, patch, byCode } as never);
+  return { controller, create, patch, byCode };
 }
 
 function reqWith(name?: string, role?: string) {
@@ -90,5 +93,33 @@ describe("TicketsController — delegación con rol y actor del token", () => {
       "Jorge Ramos",
       "agente",
     );
+  });
+
+  it("byCode: usuario NO puede leer ticket ajeno (403)", async () => {
+    const { controller, byCode } = makeController();
+    byCode.mockResolvedValue({ ...baseDto, requester: "Otra Persona" });
+    await expect(
+      controller.byCode("INC-2401", reqWith("M. Aguilar", "usuario")),
+    ).rejects.toMatchObject({ status: 403 });
+  });
+
+  it("byCode: usuario SÍ puede leer su propio ticket", async () => {
+    const { controller, byCode } = makeController();
+    byCode.mockResolvedValue({ ...baseDto, requester: "M. Aguilar" });
+    const dto = await controller.byCode(
+      "INC-2401",
+      reqWith("M. Aguilar", "usuario"),
+    );
+    expect(dto.requester).toBe("M. Aguilar");
+  });
+
+  it("byCode: agente puede leer cualquier ticket", async () => {
+    const { controller, byCode } = makeController();
+    byCode.mockResolvedValue({ ...baseDto, requester: "Otra Persona" });
+    const dto = await controller.byCode(
+      "INC-2401",
+      reqWith("Jorge Ramos", "agente"),
+    );
+    expect(dto.code).toBe("INC-2401");
   });
 });

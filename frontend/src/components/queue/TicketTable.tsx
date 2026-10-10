@@ -49,8 +49,9 @@ export function TicketTable({
   const [focusedId, setFocusedId] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Entrada escalonada solo en la primera carga: después, el feedback
-  // de actualización lo da el flash ámbar (pulses), no el re-vuelo.
+  // Entrada escalonada solo en la primera carga: el retardo máximo
+  // (6×50ms) + duración (450ms) = 750ms queda dentro del gate de 800ms,
+  // y un pulse temprano no re-vuela la fila (la entrada se salta).
   const [entered, setEntered] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setEntered(true), 800);
@@ -60,9 +61,7 @@ export function TicketTable({
   const openRow = (id: string) => {
     if (onSelect) onSelect(id);
     else navigate(`/ticket/${id}`);
-  };
-
-  const columns = useMemo<ColumnDef<Ticket>[]>(
+  };  const columns = useMemo<ColumnDef<Ticket>[]>(
     () => [
       {
         id: "sla",
@@ -197,7 +196,12 @@ export function TicketTable({
 
   return (
     <div className="overflow-hidden rounded-2xl border border-rule bg-raised shadow-1">
-      <div ref={containerRef} tabIndex={0} onKeyDown={onKeyDown} className="focus:outline-none">
+      <div
+        ref={containerRef}
+        tabIndex={0}
+        onKeyDown={onKeyDown}
+        className="focus:outline-none overflow-x-auto"
+      >
         <TableShell>
           <thead>
             {table.getHeaderGroups().map((hg) => (
@@ -237,20 +241,26 @@ export function TicketTable({
               const pulse = pulses[row.original.id] ?? 0;
               const focused = focusedId === row.original.id;
               const selected = selectedId === row.original.id;
-              const rowStyle = { "--i": Math.min(i, 12) } as CSSProperties;
+              const rowStyle = { "--i": Math.min(i, 6) } as CSSProperties;
               return (
                 <tr
                   key={`${row.original.id}-${pulse}`}
                   aria-selected={onSelect ? selected : undefined}
-                  style={entered ? undefined : rowStyle}
+                  style={entered || pulse > 0 ? undefined : rowStyle}
                   className={cn(
                     "cursor-pointer border-b border-rule transition-colors duration-200 last:border-b-0 hover:bg-row-hover",
-                    !entered && "animate-rise stagger",
+                    !entered && pulse === 0 && "animate-rise stagger",
                     pulse > 0 && "animate-pulse-row",
                     selected && "bg-row-selected",
-                    focused && !selected && "bg-row-selected outline-2 -outline-offset-2 outline-amber-fill",
+                    // Foco de teclado: ring ámbar, nunca el fondo de selección
+                    focused && "outline-2 -outline-offset-2 outline-amber-fill",
                   )}
-                  onClick={() => openRow(row.original.id)}
+                  onClick={() => {
+                    // El clic del ratón sustituye al foco de teclado:
+                    // sin esto, la fila j/k previa queda "pegada"
+                    if (focusedId !== row.original.id) setFocusedId(null);
+                    openRow(row.original.id);
+                  }}
                 >
                   {row.getVisibleCells().map((cell, ci) => (
                     <td

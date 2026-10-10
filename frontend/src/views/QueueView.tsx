@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, useRef, useState, type ReactNode } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { MousePointerClick, X } from "lucide-react";
 import { TicketTable } from "../components/queue/TicketTable";
@@ -67,11 +67,18 @@ export function QueueView() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const selected = searchParams.get("ticket");
+  const paneRef = useRef<HTMLElement>(null);
   const select = (id: string | null) => {
     const next = new URLSearchParams(searchParams);
     if (id) next.set("ticket", id);
     else next.delete("ticket");
     setSearchParams(next, { replace: true });
+    // En móvil el panel vive bajo la tabla: llevarlo a la vista al elegir
+    if (id && window.innerWidth < 1024) {
+      requestAnimationFrame(() =>
+        paneRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
+      );
+    }
   };
 
   const [status, setStatus] = useState<TicketStatus | "todos">("todos");
@@ -202,6 +209,7 @@ export function QueueView() {
         </div>
 
         <aside
+          ref={paneRef}
           aria-label="Detalle del ticket seleccionado"
           className={cn(
             "lg:sticky lg:top-0 lg:-mr-8 lg:-mb-7 lg:h-[calc(100vh-3.5rem)] lg:overflow-y-auto",

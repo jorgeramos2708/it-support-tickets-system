@@ -34,12 +34,14 @@ export function ConfiguracionView() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [isError, setIsError] = useState(false);
+  const [passUnreadable, setPassUnreadable] = useState(false);
 
   useEffect(() => {
     if (!token) return;
     api
       .getSmtpSettings(token)
       .then((res) => {
+        setPassUnreadable(res.smtp.passStatus === "unreadable");
         setSmtp({
           host: res.smtp.host,
           port: String(res.smtp.port),
@@ -75,7 +77,8 @@ export function ConfiguracionView() {
         host: smtp.host,
         port: Number(smtp.port) || 587,
         user: smtp.user,
-        ...(smtp.pass && smtp.pass !== "••••••••" ? { pass: smtp.pass } : {}),
+        // "" limpia la contraseña (relay sin auth); la máscara intacta no toca nada
+        ...(smtp.pass !== "••••••••" ? { pass: smtp.pass } : {}),
         from: smtp.from,
         secure: smtp.secure,
         enabled: smtp.enabled,
@@ -85,6 +88,7 @@ export function ConfiguracionView() {
           .filter(Boolean),
       });
       setMessage("Configuración guardada");
+      setPassUnreadable(false);
       setIsError(false);
     } catch {
       setMessage("Error al guardar la configuración");
@@ -228,6 +232,16 @@ export function ConfiguracionView() {
             <Send size={14} strokeWidth={1.75} aria-hidden />
             Probar email
           </Button>
+          {passUnreadable ? (
+            <p
+              role="alert"
+              className="flex items-center gap-2 rounded-xl border border-rule bg-raised px-3 py-2 text-[13px] text-ink-2"
+            >
+              <span aria-hidden className="size-2 shrink-0 rounded-full bg-signal animate-pulse-dot" />
+              La contraseña guardada no se puede descifrar (clave rotada o dato
+              corrupto). Re-ingresa el password SMTP y guarda para restaurarla.
+            </p>
+          ) : null}
           {message ? (
             <p className={`text-[13px] ${isError ? "text-signal" : "text-good"}`}>
               {message}

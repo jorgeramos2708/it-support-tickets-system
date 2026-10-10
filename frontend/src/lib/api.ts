@@ -325,10 +325,19 @@ export const api = {
     ),
 
   getSmtpSettings: (token: string) =>
-    request<{ smtp: { host: string; port: number; user: string; pass: string | null; from: string; secure: boolean; enabled: boolean; recipients: string[] } }>(
-      "/notifications/settings/smtp",
-      token,
-    ),
+    request<{
+      smtp: {
+        host: string;
+        port: number;
+        user: string;
+        pass: string | null;
+        passStatus?: "set" | "empty" | "unreadable";
+        from: string;
+        secure: boolean;
+        enabled: boolean;
+        recipients: string[];
+      };
+    }>("/notifications/settings/smtp", token),
 
   updateSmtpSettings: (
     token: string,

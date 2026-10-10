@@ -212,6 +212,10 @@ services:
     environment:
       DATABASE_URL: postgres://tickit:${POSTGRES_PASSWORD:-tickit}@notifications-db:5432/notifications
       JWT_SECRET: ${JWT_SECRET:-tickitflow-dev-secret-not-for-production-32chars}
+      # Clave dedicada del cifrado en reposo (smtp.pass). Sin ella se usa la
+      # derivación v1 del JWT_SECRET — configurarla desacopla la rotación
+      # de credenciales de auth del cifrado de settings (hallazgo S1)
+      SETTINGS_SECRET: ${SETTINGS_SECRET:-}
       RABBITMQ_URL: amqp://${RABBITMQ_USER:-tickit}:${RABBITMQ_PASS:-tickit}@rabbitmq:5672
       SMTP_HOST: ${SMTP_HOST:-}
       SMTP_PORT: ${SMTP_PORT:-587}

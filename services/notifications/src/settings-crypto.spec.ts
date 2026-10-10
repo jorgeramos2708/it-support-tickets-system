@@ -1,4 +1,9 @@
-import { decryptSetting, encryptSetting, isEncrypted } from "./settings-crypto";
+import {
+  decryptSetting,
+  decryptSettingEx,
+  encryptSetting,
+  isEncrypted,
+} from "./settings-crypto";
 
 describe("settings-crypto (M13 — password SMTP cifrado en reposo)", () => {
   it("roundtrip: decrypt(encrypt(x)) === x y el plaintext nunca aparece en el sobre", () => {
@@ -30,5 +35,42 @@ describe("settings-crypto (M13 — password SMTP cifrado en reposo)", () => {
     const [iv, , data] = enc.slice("enc:v1:".length).split(":");
     const badTag = Buffer.from("tag-falso").toString("base64");
     expect(decryptSetting(`enc:v1:${iv}:${badTag}:${data}`)).toBe("");
+  });
+
+  it("v2: SETTINGS_SECRET dedicada — el sobre usa enc:v2 y es legible", () => {
+    process.env.SETTINGS_SECRET = "settings-secret-dedicada-de-32-chars!!";
+    try {
+      const enc = encryptSetting("pass-v2");
+      expect(enc.startsWith("enc:v2:")).toBe(true);
+      expect(decryptSetting(enc)).toBe("pass-v2");
+    } finally {
+      delete process.env.SETTINGS_SECRET;
+    }
+  });
+
+  it("v2 sin SETTINGS_SECRET al descifrar → señal unreadable explícita", () => {
+    process.env.SETTINGS_SECRET = "settings-secret-dedicada-de-32-chars!!";
+    const enc = encryptSetting("pass-v2");
+    delete process.env.SETTINGS_SECRET;
+    const r = decryptSettingEx(enc);
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.reason).toBe("unreadable");
+    // El ciphertext JAMÁS se devuelve como valor
+    expect(decryptSetting(enc)).toBe("");
+  });
+
+  it("rotación de clave (hallazgo S1): sobres v1 viejos → unreadable, no el ciphertext", () => {
+    const enc = encryptSetting("secreto-original"); // v1 con la clave actual
+    // Simular rotación del JWT_SECRET (fuente de la clave v1)
+    const prev = process.env.JWT_SECRET;
+    process.env.JWT_SECRET = "jwt-secret-rotado-totalmente-distinto-32chars";
+    try {
+      const r = decryptSettingEx(enc);
+      expect(r.ok).toBe(false);
+      if (!r.ok) expect(r.reason).toBe("unreadable");
+    } finally {
+      if (prev === undefined) delete process.env.JWT_SECRET;
+      else process.env.JWT_SECRET = prev;
+    }
   });
 });
