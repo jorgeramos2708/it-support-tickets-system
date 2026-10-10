@@ -14,6 +14,11 @@ async function getChannel(): Promise<amqp.Channel> {
       if (!ch) throw new Error("canal no disponible");
       await ch.assertExchange(EXCHANGE, "topic", { durable: true });
       channel = ch;
+      // Un reinicio de RabbitMQ mata el canal cacheado: invalidarlo para
+      // que el proximo publish reconecte en vez de perder el evento
+      conn.on("close", () => {
+        if (channel === ch) channel = null;
+      });
       console.log("[bus] conectado a RabbitMQ");
       return ch;
     } catch (err) {
@@ -40,6 +45,7 @@ export async function publishEvent(
       { persistent: true },
     );
   } catch (err) {
+    channel = null; // canal probablemente muerto: reconectar en el proximo evento
     console.error("[bus] fallo publicando evento:", (err as Error).message);
   }
 }

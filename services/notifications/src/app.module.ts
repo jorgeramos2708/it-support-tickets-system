@@ -81,6 +81,18 @@ export class BusConsumer implements OnModuleInit {
             }
           })();
         });
+        // Un reinicio de RabbitMQ mata esta conexión: re-conectar solo,
+        // con la misma lógica de reintentos del arranque
+        let reconnecting = false;
+        conn.on("close", () => {
+          if (reconnecting) return;
+          reconnecting = true;
+          console.warn("[bus] conexión cerrada — re-conectando en 5s");
+          setTimeout(() => {
+            reconnecting = false;
+            void this.onModuleInit();
+          }, 5000);
+        });
         console.log("[notification-service] consumiendo itil.events → notifications.feed");
         return;
       } catch (err) {
