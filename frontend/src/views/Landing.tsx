@@ -151,29 +151,6 @@ export function Landing() {
           </div>
         </section>
       </main>
-
-      <footer className="border-t border-rule">
-        <div className="mx-auto flex max-w-[1100px] flex-wrap items-center justify-between gap-4 px-5 py-6 md:px-8">
-          <p className="text-[12.5px] text-ink-3">
-            TickITFlow · Demostración con datos sintéticos ·{" "}
-            <span className="font-mono text-[11px]">v0.1</span>
-          </p>
-          <nav aria-label="Navegación" className="flex items-center gap-4 text-[13px]">
-            <Link
-              to="/portal"
-              className="link-grow hover:link-grow-hover font-bold text-amber hover:text-amber-hi"
-            >
-              Portal
-            </Link>
-            <Link
-              to="/"
-              className="link-grow hover:link-grow-hover font-bold text-amber hover:text-amber-hi"
-            >
-              Consola de agentes
-            </Link>
-          </nav>
-        </div>
-      </footer>
     </div>
   );
 }

@@ -1,6 +1,14 @@
-import { useId } from "react";
 import { cn } from "../lib/cn";
+import logoDia from "../assets/brand/tickitflow-dia.png";
+import logoNoche from "../assets/brand/tickitflow-noche.png";
 
+const ASPECT = 217 / 165;
+
+/**
+ * Logo TickITFlow (arte del usuario, recolorizado a la paleta del sistema:
+ * cian -> ambar, blanco -> tinta del tema, fondo transparente).
+ * Dos variantes dia/noche intercambiadas por CSS ([data-theme]).
+ */
 export function LogoMark({
   size = 28,
   className,
@@ -8,53 +16,30 @@ export function LogoMark({
   size?: number;
   className?: string;
 }) {
-  const maskId = useId();
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 64 64"
-      className={className}
-      role="img"
-      aria-label="TickITFlow"
+    <span
+      className={cn("relative inline-block shrink-0", className)}
+      style={{ width: size * ASPECT, height: size }}
     >
-      <mask id={maskId}>
-        <rect x="-4" y="-4" width="72" height="72" fill="black" />
-        <rect x="0" y="0" width="64" height="64" rx="10" fill="white" />
-        <circle cx="64" cy="32" r="9" fill="black" />
-      </mask>
-      <rect
-        x="0"
-        y="0"
-        width="64"
-        height="64"
-        rx="10"
-        fill="currentColor"
-        mask={`url(#${maskId})`}
+      <img
+        src={logoDia}
+        alt=""
+        className="logo-variant-dia absolute inset-0 h-full w-full"
       />
-      <path
-        d="M15 36 H29.5 L38 45 L53 22"
-        fill="none"
-        className="stroke-paper"
-        strokeWidth="7"
-        strokeLinecap="square"
-        strokeLinejoin="miter"
+      <img
+        src={logoNoche}
+        alt=""
+        className="logo-variant-noche absolute inset-0 h-full w-full"
       />
-    </svg>
+    </span>
   );
 }
 
 export function LogoLockup({ className }: { className?: string }) {
   return (
-    <span className={cn("flex items-center gap-2.5", className)}>
-      <LogoMark size={26} className="shrink-0 text-amber-fill" />
-      <span className="font-display hidden text-[17px] leading-none font-semibold tracking-tight whitespace-nowrap sm:inline">
-        Tick
-        <span className="mx-[2px] inline-flex -translate-y-[1px] items-center rounded-lg bg-amber-fill px-[5px] py-[3px] leading-none text-amber-fill-ink">
-          IT
-        </span>
-        Flow
-      </span>
+    <span className={cn("flex items-center", className)}>
+      <LogoMark size={30} />
+      <span className="sr-only">TickITFlow</span>
     </span>
   );
 }

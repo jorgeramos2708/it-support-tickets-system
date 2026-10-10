@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   AlertCircle,
   ArrowLeftRight,
@@ -12,7 +12,6 @@ import {
   Settings,
 } from "lucide-react";
 import { LogoLockup } from "../../brand/Logo";
-import { Button } from "../ui/Button";
 import { cn } from "../../lib/cn";
 import { useAuth } from "../../lib/auth";
 import { useStore } from "../../lib/store";
@@ -35,7 +34,6 @@ const ICONS = {
 type RailIcon = keyof typeof ICONS;
 
 export function TopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
-  const navigate = useNavigate();
   const { user, live, logout } = useAuth();
   const name = user?.name ?? "Jorge Ramos";
   const initials = name
@@ -72,25 +70,6 @@ export function TopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
       </button>
 
       <div className="ml-auto flex items-center gap-2 md:gap-3">
-        <Button
-          variant="primary"
-          size="sm"
-          className="h-9 px-3"
-          onClick={() => navigate("/nuevo?practice=incidente")}
-        >
-          Nuevo incidente
-        </Button>
-        <span
-          title={
-            live
-              ? "Todo el contenido viene en vivo de los microservicios, con datos sembrados de demostración."
-              : "Todos los datos de esta consola son sintéticos, para demostración."
-          }
-          className="label rounded-xl border border-rule px-2 py-1 text-ink-3"
-        >
-          {live ? "Datos en vivo" : "Datos demo"}
-        </span>
-        <span className="hidden h-5 w-px bg-rule lg:block" aria-hidden />
         <ThemeToggle />
         <NotificationsBell />
         <span className="flex items-center gap-2">

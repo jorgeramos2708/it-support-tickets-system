@@ -14,7 +14,7 @@ Toda afirmación verificable mapea a un artefacto del repo. Lo no listado aquí 
 | "Modo dual, sin engaños" (Landing) | `frontend/src/lib/mode.ts` + chips "Datos en vivo"/"Datos demo" en `Shell.tsx`/`PortalShell.tsx`; KPIs demo etiquetados `demo` en `Dashboard.tsx` | Alta | Tal cual |
 | "prioridad calculada por matriz de impacto × urgencia" (Landing) | Chips P1–P4 (`frontend/src/lib/types.ts` Priority, `Chips.tsx` semáforo), SLA por prioridad en `frontend/src/lib/sla.ts` | Alta | Tal cual |
 | "consola de agentes y portal de autoservicio" (Landing) | Rutas `/` (Shell consola) y `/portal/*` (`App.tsx`, PortalShell) con separación de roles (`usuario` → portal) | Alta | Tal cual |
-| Versión `v0.1` (Shell, PortalShell, Landing footer) | `package.json` version 0.1.x de cada servicio | Alta | Actualizar al subir versión |
+| Versión `v0.1` (rail de la consola) | `package.json` version 0.1.x de cada servicio; los footers del portal y la landing se retiraron por decisión del usuario — el único indicador es el del rail | Alta | Actualizar al subir versión |
 | "Demostración con datos sintéticos" (footers) | Sin datos de clientes reales: seeds demo + e2e — nada presentado como real | Alta | Tal cual — obligatorio mantener el etiquetado |
 
 ## Fuera de alcance afirmativo (prohibido hasta tener evidencia)

@@ -122,27 +122,6 @@ export function PortalShell({ children }: { children: ReactNode }) {
       <main id="contenido" className="mx-auto w-full max-w-[980px] flex-1 px-5 py-8 md:px-8 md:py-10">
         {children}
       </main>
-
-      <footer className="border-t border-rule px-6 py-4">
-        <p className="mx-auto max-w-[980px] text-[12px] text-ink-3">
-          TickITFlow — Portal de autoservicio de TI ·{" "}
-          <span className="font-mono text-[11px]">v0.1</span> · Datos sintéticos
-          de demostración ·{" "}
-          <Link
-            to="/landing"
-            className="link-grow hover:link-grow-hover font-bold text-amber hover:text-amber-hi"
-          >
-            presentación
-          </Link>{" "}
-          · Consola de agentes:{" "}
-          <Link
-            to="/"
-            className="link-grow hover:link-grow-hover font-bold text-amber hover:text-amber-hi"
-          >
-            entrar
-          </Link>
-        </p>
-      </footer>
     </div>
   );
 }

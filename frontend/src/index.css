@@ -332,6 +332,14 @@ button {
   color: var(--color-ink-3);
 }
 
+/* ═══ Logo: variantes dia/noche intercambiadas por tema ═══ */
+[data-theme="light"] .logo-variant-noche {
+  display: none;
+}
+[data-theme="dark"] .logo-variant-dia {
+  display: none;
+}
+
 /* ═══ Accesibilidad: motion solo si el usuario lo acepta ═══ */
 @media (prefers-reduced-motion: reduce) {
   *,
