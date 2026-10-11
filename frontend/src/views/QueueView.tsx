@@ -210,7 +210,7 @@ export function QueueView() {
       </div>
 
       {/* Master-detail: lista a la izquierda, panel de detalle pegajoso a la derecha */}
-      <div className="mt-4 grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_440px] xl:grid-cols-[minmax(0,1fr)_480px]">
+      <div className="mt-4 grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_480px] xl:grid-cols-[minmax(0,1fr)_520px]">
         <div className="min-w-0">
           {hydrating ? (
             <LoadingBox label="Cargando la cola del servidor…" />
@@ -246,9 +246,11 @@ export function QueueView() {
           aria-label="Detalle del ticket seleccionado"
           className={cn(
             "lg:sticky lg:top-0 lg:-mr-8 lg:-mb-7 lg:h-[calc(100vh-3.5rem)] lg:overflow-y-auto",
-            "lg:border-l lg:border-rule lg:bg-panel-2 lg:px-6 lg:py-6",
+            "lg:border-l lg:border-rule lg:bg-panel-2 lg:px-7 lg:py-6",
+            // Sin lg:p-0 aqui: tailwind-merge daria prioridad a p-0 sobre el
+            // px/py-6 de arriba y el contenido quedaria pegado a los bordes
             selected
-              ? "rounded-2xl border border-rule bg-panel-2 p-5 lg:rounded-none lg:border-0 lg:p-0"
+              ? "rounded-2xl border border-rule bg-panel-2 p-5 lg:rounded-none lg:border-0"
               : "hidden lg:block",
           )}
         >

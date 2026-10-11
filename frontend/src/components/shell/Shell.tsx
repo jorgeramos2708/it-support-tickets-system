@@ -51,19 +51,6 @@ export function TopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
         type="button"
         onClick={onOpenPalette}
         aria-label="Buscar (abre la paleta de comandos)"
-        className="ml-2 hidden h-9 w-80 cursor-pointer items-center gap-2 rounded-xl border border-rule bg-raised px-3 text-left text-[13px] text-ink-3 transition-colors duration-150 hover:border-ink md:flex"
-      >
-        <Search size={14} strokeWidth={1.75} aria-hidden />
-        Buscar tickets, acciones…
-        <kbd className="ml-auto rounded-md border border-rule px-1.5 py-0.5 font-mono text-[11px] text-ink-3">
-          ⌘K
-        </kbd>
-      </button>
-
-      <button
-        type="button"
-        onClick={onOpenPalette}
-        aria-label="Buscar (abre la paleta de comandos)"
         className="flex size-9 cursor-pointer items-center justify-center rounded-xl border border-rule bg-raised text-ink-2 transition-colors duration-150 hover:border-ink md:hidden"
       >
         <Search size={15} strokeWidth={1.75} aria-hidden />
@@ -165,7 +152,6 @@ type CountKey =
   | "kb";
 
 export function PracticeRail() {
-  const { live } = useStore();
   return (
     <nav
       aria-label="Prácticas"
@@ -230,11 +216,6 @@ export function PracticeRail() {
         </div>
         <div className="border-t border-rule px-4 py-3">
           <p className="font-mono text-[11px] text-ink-3">TickITFlow v0.1</p>
-          <p className="mt-0.5 text-[11px] leading-snug text-ink-3">
-            {live
-              ? "Contenido en vivo de los microservicios; datos sembrados de demostración."
-              : "Datos sintéticos de demostración."}
-          </p>
         </div>
       </div>
     </nav>

@@ -38,7 +38,9 @@ export function LogoMark({
 export function LogoLockup({ className }: { className?: string }) {
   return (
     <span className={cn("flex items-center", className)}>
-      <LogoMark size={30} />
+      {/* Alto 45px (ancho ~59 por el aspect 217/165); 40x45 literal
+          deformaria el arte */}
+      <LogoMark size={45} />
       <span className="sr-only">TickITFlow</span>
     </span>
   );
